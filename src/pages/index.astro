@@ -83,7 +83,7 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 					{h.pipelineSteps.map(([title, body], index) => {
 						const detail = h.pipelineDetails[index];
 						return (
-							<details class="pipeline-detail-card" id={`step-${index + 1}`} open={index === 0}>
+							<details class="pipeline-detail-card" id={`step-${index + 1}`}>
 								<summary>
 									<span class="step-node large">{stepMarks[index]}</span>
 									<span class="summary-copy">
@@ -97,9 +97,16 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 									<h3>Principle</h3>
 									<p>{detail.principle}</p>
 									<h3>Formula</h3>
-									<pre class="formula-block"><code>{detail.formula}</code></pre>
+									<div class="formula-block" set:html={detail.formulaHtml}></div>
 									<h3>Configuration example</h3>
-									<pre><code>{detail.code}</code></pre>
+									<dl class="config-list">
+										{detail.config.map(([key, value]) => (
+											<>
+												<dt>{key}</dt>
+												<dd>{value}</dd>
+											</>
+										))}
+									</dl>
 									<h3>Quality checks</h3>
 									<ul>{detail.checks.map((item) => <li>{item}</li>)}</ul>
 								</div>
@@ -184,5 +191,16 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 			</section>
 		</main>
 		<Footer lang={lang} />
+		<script is:inline data-pipeline-accordion>
+			document.querySelectorAll('.pipeline-detail-card').forEach((card) => {
+				card.addEventListener('toggle', () => {
+					if (!card.open) return;
+					document.querySelectorAll('.pipeline-detail-card[open]').forEach((other) => {
+						if (other !== card) other.removeAttribute('open');
+					});
+				});
+			});
+		</script>
+
 	</body>
 </html>

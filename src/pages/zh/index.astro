@@ -44,7 +44,7 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 				</div>
 				<div class="hero-copy">
 					<p class="eyebrow">{h.eyebrow}</p>
-					<h1 id="hero-title">{h.title}</h1>
+					<h1 id="hero-title"><span>GRACE Level‑2</span><span>数据处理流程</span></h1>
 					<p class="subtitle">{h.subtitle}</p>
 					<p class="hero-text">{h.text}</p>
 					<div class="hero-actions">
@@ -83,7 +83,7 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 					{h.pipelineSteps.map(([title, body], index) => {
 						const detail = h.pipelineDetails[index];
 						return (
-							<details class="pipeline-detail-card" id={`step-${index + 1}`} open={index === 0}>
+							<details class="pipeline-detail-card" id={`step-${index + 1}`}>
 								<summary>
 									<span class="step-node large">{stepMarks[index]}</span>
 									<span class="summary-copy">
@@ -97,9 +97,16 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 									<h3>原理</h3>
 									<p>{detail.principle}</p>
 									<h3>公式</h3>
-									<pre class="formula-block"><code>{detail.formula}</code></pre>
+									<div class="formula-block" set:html={detail.formulaHtml}></div>
 									<h3>配置示例</h3>
-									<pre><code>{detail.code}</code></pre>
+									<dl class="config-list">
+										{detail.config.map(([key, value]) => (
+											<>
+												<dt>{key}</dt>
+												<dd>{value}</dd>
+											</>
+										))}
+									</dl>
 									<h3>质量检查</h3>
 									<ul>{detail.checks.map((item) => <li>{item}</li>)}</ul>
 								</div>
@@ -184,5 +191,16 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 			</section>
 		</main>
 		<Footer lang={lang} />
+		<script is:inline data-pipeline-accordion>
+			document.querySelectorAll('.pipeline-detail-card').forEach((card) => {
+				card.addEventListener('toggle', () => {
+					if (!card.open) return;
+					document.querySelectorAll('.pipeline-detail-card[open]').forEach((other) => {
+						if (other !== card) other.removeAttribute('open');
+					});
+				});
+			});
+		</script>
+
 	</body>
 </html>
