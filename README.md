@@ -1,63 +1,66 @@
-# Astro Starter Kit: Blog
+# GRACE L2 Notes
 
-```sh
-npm create astro@latest -- --template blog
-```
+Static technical site for GRACE and GRACE-FO Level-2 processing notes, reproducible workflow records, filtering notes, and software release links.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Production domain: <https://myair.info>
 
-Features:
-
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Project structure
 
 ```text
-├── public/
+├── .github/workflows/deploy.yml  # GitHub Pages deployment workflow
+├── public/                       # Static files copied as-is, including CNAME and favicons
 ├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
+│   ├── assets/                   # Optimized images and fonts used by Astro
+│   ├── components/               # Shared site components
+│   ├── content/blog/             # Markdown/MDX blog posts
+│   ├── layouts/                  # Blog post layout
+│   └── pages/                    # Route files: home, blog, about, downloads, RSS
 ├── astro.config.mjs
-├── README.md
 ├── package.json
-└── tsconfig.json
+└── package-lock.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Generated directories are intentionally excluded from version control: `node_modules/`, `dist/`, and `.astro/`.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Local development
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+```sh
+npm install
+npm run dev
+```
 
-Any static assets, like images, can be placed in the `public/` directory.
+Build and preview the production output:
 
-## 🧞 Commands
+```sh
+npm run build
+npm run preview
+```
 
-All commands are run from the root of the project, from a terminal:
+## Blog workflow
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+Add new posts under `src/content/blog/`. Required frontmatter:
 
-## 👀 Want to learn more?
+```yaml
+title: 'Post title'
+description: 'Short description for SEO and listing pages.'
+pubDate: 'May 27 2026'
+heroImage: '../../assets/grace/example.png'
+```
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The homepage reads recent articles directly from the blog collection, so the article list does not need to be edited manually.
 
-## Credit
+## Software downloads
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Large installers should not be committed to this website repository. Publish them as GitHub Release assets, then link to the release page from `src/pages/downloads.astro`.
+
+Recommended release checklist:
+
+1. Build and test the installer locally.
+2. Create a version tag such as `v0.1.0`.
+3. Upload the installer as a GitHub Release asset.
+4. Add release notes, supported platform, package type, and checksum.
+5. Verify the public link from the Downloads page after deployment.
+
+## Deployment
+
+The site is deployed by GitHub Actions using `.github/workflows/deploy.yml`. Push to `main`, then check the Pages deployment status in the repository Actions tab.

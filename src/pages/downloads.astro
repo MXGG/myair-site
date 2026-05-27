@@ -1,0 +1,158 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead
+			title={`Downloads | ${SITE_TITLE}`}
+			description="Download page for GRACE Level-2 processing software releases and related build notes."
+		/>
+		<style>
+			main {
+				width: min(1080px, calc(100% - 40px));
+				margin: 0 auto;
+				padding: 72px 0;
+			}
+
+			.page-title {
+				display: grid;
+				max-width: 780px;
+				gap: 14px;
+				margin-bottom: 32px;
+			}
+
+			.download-card,
+			.note-card {
+				border: 1px solid var(--line);
+				background: rgba(255, 255, 255, 0.72);
+				box-shadow: var(--shadow);
+			}
+
+			.download-card {
+				display: grid;
+				grid-template-columns: 1fr auto;
+				gap: 28px;
+				align-items: center;
+				padding: 28px;
+			}
+
+			.download-card h2 {
+				margin-bottom: 8px;
+				font-size: 1.35rem;
+			}
+
+			.download-card p,
+			.note-card p,
+			.note-card li {
+				color: #40536b;
+			}
+
+			.release-button {
+				display: inline-flex;
+				min-height: 42px;
+				align-items: center;
+				justify-content: center;
+				padding: 0 18px;
+				border-radius: 4px;
+				background: linear-gradient(180deg, #1e83b4, #0c6594);
+				color: white;
+				font-weight: 700;
+				box-shadow: 0 10px 24px rgba(15, 111, 157, 0.24);
+			}
+
+			.release-button:hover {
+				color: white;
+				transform: translateY(-2px);
+			}
+
+			.note-grid {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 18px;
+				margin-top: 18px;
+			}
+
+			.note-card {
+				padding: 24px;
+			}
+
+			.note-card h3 {
+				margin-bottom: 10px;
+				font-size: 1rem;
+			}
+
+			.note-card ul {
+				margin: 0;
+				padding-left: 1.1rem;
+			}
+
+			.note-card li + li {
+				margin-top: 8px;
+			}
+
+			@media (max-width: 720px) {
+				main {
+					width: min(100% - 28px, 1080px);
+					padding: 46px 0;
+				}
+
+				.download-card,
+				.note-grid {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="page-title">
+				<p class="section-label">Software</p>
+				<h1>Downloads</h1>
+				<p>
+					Stable installers and packaged releases should be distributed through GitHub Releases.
+					The website can link to those release assets without storing large binary files inside
+					the static site repository.
+				</p>
+			</div>
+
+			<section class="download-card" aria-labelledby="release-title">
+				<div>
+					<h2 id="release-title">GRACE Level-2 Processing Software</h2>
+					<p>
+						Publish each installer as a versioned release asset, then keep this page pointed to
+						the latest stable release or to a specific verified version.
+					</p>
+				</div>
+				<a class="release-button" href={releaseUrl}>Open GitHub Releases</a>
+			</section>
+
+			<section class="note-grid" aria-label="Release notes">
+				<article class="note-card">
+					<h3>Recommended distribution rule</h3>
+					<ul>
+						<li>Use GitHub Releases for `.exe`, `.msi`, `.zip`, or installer packages.</li>
+						<li>Keep the website repository focused on source code, pages, and small static assets.</li>
+						<li>Use semantic version labels such as `v0.1.0`, `v0.2.0`, or `v1.0.0`.</li>
+					</ul>
+				</article>
+				<article class="note-card">
+					<h3>Before publishing</h3>
+					<ul>
+						<li>Record the version, release date, supported Windows version, and checksum.</li>
+						<li>State whether the package is an installer, portable build, or source archive.</li>
+						<li>Test the download link after GitHub Pages finishes deployment.</li>
+					</ul>
+				</article>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

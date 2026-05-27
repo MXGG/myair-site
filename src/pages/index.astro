@@ -1,30 +1,32 @@
 ---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import DashboardImage from '../assets/grace/dashboard.png';
+import GravityHeroImage from '../assets/grace/gravity-hero.png';
+import PreviewImage from '../assets/grace/preview.png';
 
 const pipelineSteps = [
-	['Acquire', 'GRACE Level-1B spherical harmonics'],
-	['Preprocess', 'De-striping, filtering of correlated errors'],
-	['Synthesis', 'Convert to spatial grid (SH -> grid)'],
-	['Post-process', 'Gaussian / Hankel filtering & scaling'],
-	['Products', 'EWH, mascon, trends, basins, diagnostics'],
+	['Acquire', 'GRACE/GRACE-FO Level-2 GSM spherical harmonic coefficients'],
+	['Correct', 'Low-degree replacement, GIA correction, and mean-field removal'],
+	['Filter', 'De-striping, Gaussian/Fan/DDK routing, and HSAF experiments'],
+	['Synthesize', 'Convert spherical harmonics to gridded EWH anomalies'],
+	['Validate', 'Preview, basin averages, trends, and diagnostic products'],
 ];
 
-const recentArticles = [
-	['Hankel filtering for GRACE Level-2: theory and practice', 'May 20, 2026'],
-	['Understanding leakage and signal preservation', 'May 18, 2026'],
-	['Path to consistent EWH units (mmEWH vs cmEWH)', 'May 15, 2026'],
-	['HSAF experiments and adaptive filtering', 'May 12, 2026'],
-	['From P4M6 harmonics to basin mass change', 'May 08, 2026'],
-];
+const posts = (await getCollection('blog'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 5);
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} image={GravityHeroImage} />
 	</head>
 	<body>
 		<Header />
@@ -33,11 +35,11 @@ const recentArticles = [
 				<div class="hero-copy">
 					<p class="eyebrow">Satellite Gravity Field</p>
 					<h1 id="hero-title">GRACE Level-2 Processing Workflow</h1>
-					<p class="subtitle">From spherical harmonics to gridded EWH products</p>
+					<p class="subtitle">From Level-2 GSM spherical harmonics to gridded EWH products</p>
 					<p class="hero-text">
-						Notes, methods, and reproducible recipes for transforming GRACE Level-1B spherical
-						harmonic solutions into physically-consistent, high-resolution equivalent water
-						height (EWH) fields.
+						Technical notes and reproducible workflow records for transforming GRACE and
+						GRACE-FO Level-2 spherical harmonic solutions into physically consistent equivalent
+						water height (EWH) products.
 					</p>
 					<div class="hero-actions">
 						<a class="button primary" href="#pipeline">Explore the Pipeline -></a>
@@ -45,14 +47,14 @@ const recentArticles = [
 					</div>
 				</div>
 				<div class="hero-media" aria-hidden="true">
-					<img src="/grace/gravity-hero.png" alt="" />
+					<Image src={GravityHeroImage} width={1180} height={720} alt="" loading="eager" />
 				</div>
 			</section>
 
 			<section class="pipeline-strip" id="pipeline" aria-label="Processing pipeline">
 				<div class="pipeline-intro">
 					<h2>Processing Pipeline</h2>
-					<p>From L1B harmonics to gridded EWH products</p>
+					<p>From Level-2 harmonics to gridded EWH products</p>
 				</div>
 				<div class="pipeline-flow">
 					{
@@ -77,18 +79,18 @@ const recentArticles = [
 				<div class="panel" id="data">
 					<h2>Data Products</h2>
 					<div class="media-row">
-						<img src="/grace/preview.png" alt="Gridded EWH preview" />
+						<Image src={PreviewImage} width={148} height={148} alt="Gridded EWH preview" />
 						<div>
 							<h3>Gridded EWH</h3>
-							<p>Monthly EWH anomalies on 0.25 degree or 1 degree grids with uncertainty.</p>
+							<p>Monthly EWH anomalies on controlled grids with product metadata and diagnostics.</p>
 							<a href="/blog/third-post/">Learn more -></a>
 						</div>
 					</div>
 					<div class="media-row">
-						<img src="/grace/dashboard.png" alt="Mascon and pipeline dashboard" />
+						<Image src={DashboardImage} width={148} height={148} alt="Mascon and pipeline dashboard" />
 						<div>
-							<h3>Mascon Solutions</h3>
-							<p>Leakage-reduced mascon products for mass change studies.</p>
+							<h3>Mascon Comparison</h3>
+							<p>Independent reference products for checking spatial patterns and basin series.</p>
 							<a href="/blog/first-post/">Learn more -></a>
 						</div>
 					</div>
@@ -99,16 +101,16 @@ const recentArticles = [
 					<div class="method-row">
 						<div class="mini-plot line-plot" aria-hidden="true"></div>
 						<div>
-							<h3>Hankel Filter</h3>
-							<p>Optimized for minimizing leakage and preserving signal.</p>
+							<h3>HSAF</h3>
+							<p>Hankel-spectrum filtering for stripe suppression and signal preservation.</p>
 							<a href="/blog/second-post/">Read notes -></a>
 						</div>
 					</div>
 					<div class="method-row">
 						<div class="mini-plot gaussian-plot" aria-hidden="true"></div>
 						<div>
-							<h3>Gaussian Smoothing</h3>
-							<p>Control effective resolution and suppress high-degree noise.</p>
+							<h3>Gaussian / Fan / DDK</h3>
+							<p>Baseline filter families for reproducible comparison and product routing.</p>
 							<a href="/blog/second-post/">Read notes -></a>
 						</div>
 					</div>
@@ -118,10 +120,10 @@ const recentArticles = [
 					<h2>Recent Articles</h2>
 					<ul>
 						{
-							recentArticles.map(([title, date]) => (
+							posts.map((post) => (
 								<li>
-									<a href="/blog/">{title}</a>
-									<span>{date}</span>
+									<a href={`/blog/${post.id}/`}>{post.data.title}</a>
+									<span><FormattedDate date={post.data.pubDate} /></span>
 								</li>
 							))
 						}

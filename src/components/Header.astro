@@ -6,19 +6,13 @@ import HeaderLink from './HeaderLink.astro';
 <header>
 	<nav>
 		<a class="brand" href="/">{SITE_TITLE}</a>
-		<div class="internal-links">
+		<div class="internal-links" aria-label="Primary navigation">
 			<HeaderLink href="/#pipeline">Pipeline</HeaderLink>
 			<HeaderLink href="/#data">Data</HeaderLink>
 			<HeaderLink href="/#methods">Methods</HeaderLink>
-			<HeaderLink href="/blog">Blog</HeaderLink>
-		</div>
-		<div class="tools" aria-label="Display tools">
-			<span aria-hidden="true">
-				<svg viewBox="0 0 24 24"><path d="m21 21-4.3-4.3m2.3-5.2a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" /></svg>
-			</span>
-			<span aria-hidden="true">
-				<svg viewBox="0 0 24 24"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m13.7-5.7 1.4-1.4M4.9 19.1l1.4-1.4m0-11.4L4.9 4.9m14.2 14.2-1.4-1.4M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" /></svg>
-			</span>
+			<HeaderLink href="/blog/">Blog</HeaderLink>
+			<HeaderLink href="/downloads/">Downloads</HeaderLink>
+			<HeaderLink href="/about/">About</HeaderLink>
 		</div>
 	</nav>
 </header>
@@ -56,7 +50,7 @@ import HeaderLink from './HeaderLink.astro';
 	.internal-links {
 		display: flex;
 		align-items: center;
-		gap: 28px;
+		gap: 24px;
 		margin-left: auto;
 		font-size: 0.9rem;
 	}
@@ -71,29 +65,15 @@ import HeaderLink from './HeaderLink.astro';
 		color: var(--accent-strong);
 	}
 
-	.tools {
-		display: flex;
-		gap: 20px;
-		margin-left: 22px;
-		color: var(--ink);
-	}
+	@media (max-width: 900px) {
+		nav {
+			width: calc(100% - 32px);
+		}
 
-	.tools span {
-		display: inline-flex;
-		width: 22px;
-		height: 22px;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.tools svg {
-		width: 19px;
-		height: 19px;
-		fill: none;
-		stroke: currentColor;
-		stroke-linecap: round;
-		stroke-linejoin: round;
-		stroke-width: 2;
+		.internal-links {
+			gap: 16px;
+			font-size: 0.84rem;
+		}
 	}
 
 	@media (max-width: 760px) {
@@ -101,8 +81,7 @@ import HeaderLink from './HeaderLink.astro';
 			width: calc(100% - 28px);
 		}
 
-		.internal-links,
-		.tools {
+		.internal-links {
 			display: none;
 		}
 
