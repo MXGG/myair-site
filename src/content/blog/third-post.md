@@ -2,6 +2,8 @@
 title: 'Preview is a quality-control surface'
 description: 'The preview page should verify stack structure and product behavior without becoming the processing source of truth.'
 pubDate: 'May 25 2026'
+tags: ['Preview', 'Quality control', 'EWH']
+readingMinutes: 3
 heroImage: '../../assets/grace/preview.png'
 ---
 

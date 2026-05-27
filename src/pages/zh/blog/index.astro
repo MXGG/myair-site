@@ -1,15 +1,15 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { getBlogPath, paths, site } from '../../data/site';
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import FormattedDate from '../../../components/FormattedDate.astro';
+import Header from '../../../components/Header.astro';
+import { getBlogPath, paths, site } from '../../../data/site';
 
-const lang = 'en';
+const lang = 'zh';
 const t = site[lang];
-const posts = (await getCollection('blog')).sort(
+const posts = (await getCollection('blogZh')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
 const [featured, ...rest] = posts;
@@ -19,10 +19,10 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 <!doctype html>
 <html lang={t.langCode}>
 	<head>
-		<BaseHead title={`${t.blog.title} | ${t.title}`} description={t.blog.lead} lang={lang} alternateHref={paths.zh.blog} />
+		<BaseHead title={`${t.blog.title} | ${t.title}`} description={t.blog.lead} lang={lang} alternateHref={paths.en.blog} />
 	</head>
 	<body>
-		<Header lang={lang} alternateHref={paths.zh.blog} />
+		<Header lang={lang} alternateHref={paths.en.blog} />
 		<main class="blog-shell">
 			<section class="page-hero compact">
 				<p class="eyebrow">{t.blog.eyebrow}</p>
@@ -30,7 +30,7 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 				<p>{t.blog.lead}</p>
 			</section>
 
-			<section class="blog-layout" aria-label="Blog articles">
+			<section class="blog-layout" aria-label="博客文章">
 				<div class="blog-main">
 					{featured && (
 						<article class="featured-post">
@@ -78,8 +78,8 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 					<section class="aside-card">
 						<h2>{t.blog.resourcesTitle}</h2>
 						<div class="resource-links">
-							<a href={paths.en.downloads}>{t.nav.downloads}</a>
-							<a href={paths.en.rss}>{t.footer.rss}</a>
+							<a href={paths.zh.downloads}>{t.nav.downloads}</a>
+							<a href={paths.zh.rss}>{t.footer.rss}</a>
 						</div>
 					</section>
 				</aside>

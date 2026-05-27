@@ -1,10 +1,10 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
-import { paths, site } from '../data/site';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { paths, site } from '../../data/site';
 
-const lang = 'en';
+const lang = 'zh';
 const t = site[lang];
 const d = t.downloads;
 const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
@@ -13,10 +13,10 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 <!doctype html>
 <html lang={t.langCode}>
 	<head>
-		<BaseHead title={`${d.title} | ${t.title}`} description={d.lead} lang={lang} alternateHref={paths.zh.downloads} />
+		<BaseHead title={`${d.title} | ${t.title}`} description={d.lead} lang={lang} alternateHref={paths.en.downloads} />
 	</head>
 	<body>
-		<Header lang={lang} alternateHref={paths.zh.downloads} />
+		<Header lang={lang} alternateHref={paths.en.downloads} />
 		<main class="page-shell">
 			<section class="page-hero compact">
 				<p class="eyebrow">{d.eyebrow}</p>
@@ -32,7 +32,7 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 				<a class="button primary" href={releaseUrl}>{d.button}</a>
 			</section>
 
-			<section class="note-grid" aria-label="Release notes">
+			<section class="note-grid" aria-label="发布说明">
 				{d.notes.map((note) => (
 					<article class="note-card">
 						<h3>{note.title}</h3>

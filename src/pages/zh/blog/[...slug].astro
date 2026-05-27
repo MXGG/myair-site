@@ -1,16 +1,16 @@
 ---
 import { getCollection, render } from 'astro:content';
-import BlogPost from '../../layouts/BlogPost.astro';
-import { getAlternatePath } from '../../data/site';
+import BlogPost from '../../../layouts/BlogPost.astro';
+import { getAlternatePath } from '../../../data/site';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
+	const posts = await getCollection('blogZh');
 	return posts.map((post) => ({ params: { slug: post.id }, props: post }));
 }
 const post = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BlogPost {...post.data} lang="en" slug={post.id} alternateHref={getAlternatePath('en', 'blog', post.id)}>
+<BlogPost {...post.data} lang="zh" slug={post.id} alternateHref={getAlternatePath('zh', 'blog', post.id)}>
 	<Content />
 </BlogPost>

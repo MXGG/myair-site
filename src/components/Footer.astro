@@ -1,47 +1,104 @@
 ---
+import type { Lang } from '../data/site';
+import { paths, site } from '../data/site';
+
+interface Props {
+	lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
 const today = new Date();
+const t = site[lang];
+const p = paths[lang];
 ---
 
-<footer>
-	<div>
-		<strong>GRACE L2 Notes</strong>
-		<span>Processing notes, filter comparisons, and reproducible workflow records.</span>
+<footer class="site-footer">
+	<div class="footer-brand">
+		<strong>{t.title}</strong>
+		<p>{t.footer.summary}</p>
 	</div>
-	<p>&copy; {today.getFullYear()} myair.info</p>
+	<div class="footer-links" aria-label={t.footer.sections}>
+		<span>{t.footer.sections}</span>
+		<a href={p.home}>{t.nav.home}</a>
+		<a href={p.blog}>{t.nav.blog}</a>
+		<a href={p.downloads}>{t.nav.downloads}</a>
+		<a href={p.about}>{t.nav.about}</a>
+	</div>
+	<div class="footer-links" aria-label={t.footer.resources}>
+		<span>{t.footer.resources}</span>
+		<a href={p.rss}>{t.footer.rss}</a>
+		<a href="https://github.com/MXGG/myair-site/releases">{t.footer.releases}</a>
+		<a href="https://myair.info/">{t.footer.domain}</a>
+	</div>
+	<p class="copyright">&copy; {today.getFullYear()} myair.info</p>
 </footer>
 
 <style>
-	footer {
-		display: flex;
-		width: min(1180px, calc(100% - 40px));
+	.site-footer {
+		display: grid;
+		width: min(var(--container), calc(100% - 48px));
 		margin: 0 auto;
-		padding: 56px 0 72px;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 24px;
-		border-top: 1px solid rgba(27, 39, 56, 0.1);
+		padding: 54px 0 68px;
+		grid-template-columns: minmax(280px, 1fr) auto auto;
+		gap: 42px;
+		border-top: 1px solid var(--line-soft);
 		color: var(--muted);
 		font-size: 0.92rem;
 	}
 
-	footer div {
+	.footer-brand {
 		display: grid;
-		gap: 6px;
+		gap: 8px;
+		max-width: 440px;
 	}
 
-	footer strong {
+	.footer-brand strong {
 		color: var(--ink);
+		font-size: 1.04rem;
 	}
 
-	footer p {
-		margin: 0;
+	.footer-links {
+		display: grid;
+		gap: 8px;
+		align-content: start;
 	}
 
-	@media (max-width: 640px) {
-		footer {
-			width: min(100% - 28px, 1180px);
-			flex-direction: column;
-			padding: 38px 0 56px;
+	.footer-links span {
+		color: var(--ink);
+		font-weight: 740;
+	}
+
+	.footer-links a {
+		color: var(--muted);
+	}
+
+	.footer-links a:hover {
+		color: var(--accent-strong);
+	}
+
+	.copyright {
+		grid-column: 1 / -1;
+		padding-top: 16px;
+		border-top: 1px solid var(--line-soft);
+		font-size: 0.84rem;
+	}
+
+	@media (max-width: 780px) {
+		.site-footer {
+			width: min(100% - 28px, var(--container));
+			grid-template-columns: 1fr 1fr;
+			gap: 28px;
+			padding: 42px 0 56px;
+		}
+
+		.footer-brand {
+			grid-column: 1 / -1;
+		}
+	}
+
+	@media (max-width: 520px) {
+		.site-footer {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

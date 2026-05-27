@@ -2,6 +2,8 @@
 title: 'A reproducible GRACE Level-2 workflow'
 description: 'A compact map from monthly GSM spherical harmonics to gridded equivalent water height stacks.'
 pubDate: 'May 27 2026'
+tags: ['Workflow', 'Level-2', 'EWH']
+readingMinutes: 3
 heroImage: '../../assets/grace/dashboard.png'
 ---
 

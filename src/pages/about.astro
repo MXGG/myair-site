@@ -1,30 +1,20 @@
 ---
 import AboutHeroImage from '../assets/grace/dashboard.png';
 import Layout from '../layouts/BlogPost.astro';
+import { paths, site } from '../data/site';
+
+const lang = 'en';
+const t = site[lang];
 ---
 
 <Layout
-	title="About GRACE L2 Notes"
-	description="A technical notebook for GRACE and GRACE-FO Level-2 processing practice."
+	lang={lang}
+	title={t.about.title}
+	description={t.about.description}
 	pubDate={new Date('May 27 2026')}
+	tags={['About', 'Workflow', 'Documentation']}
 	heroImage={AboutHeroImage}
+	alternateHref={paths.zh.about}
 >
-	<p>
-		GRACE L2 Notes is a working blog for a GRACE/GRACE-FO Level-2 processing workspace. It
-		focuses on reproducible runs, filter-product comparisons, output conventions, and the gap
-		between saved scientific data and preview rendering.
-	</p>
-
-	<p>
-		The underlying project maintains MATLAB and Python implementations side by side. Both paths
-		are expected to follow the same JSON configuration, data layout, product tags, and output
-		metadata so local GUI runs and HPC submissions can be compared without changing the science
-		contract.
-	</p>
-
-	<p>
-		The main topics are spherical-harmonic inversion, low-degree replacement, GIA options,
-		Gaussian smoothing, P4M6 de-striping, FAN filtering, DDK routing, HSAF experiments, EWH stack
-		layout, and preview quality control.
-	</p>
+	{t.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
 </Layout>

@@ -1,19 +1,19 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
-import { getBlogPath, paths, site } from '../data/site';
-import DashboardImage from '../assets/grace/dashboard.png';
-import GravityHeroImage from '../assets/grace/gravity-hero.png';
-import PreviewImage from '../assets/grace/preview.png';
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import Header from '../../components/Header.astro';
+import { getBlogPath, paths, site } from '../../data/site';
+import DashboardImage from '../../assets/grace/dashboard.png';
+import GravityHeroImage from '../../assets/grace/gravity-hero.png';
+import PreviewImage from '../../assets/grace/preview.png';
 
-const lang = 'en';
+const lang = 'zh';
 const t = site[lang];
 const h = t.home;
-const posts = (await getCollection('blog'))
+const posts = (await getCollection('blogZh'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
 ---
@@ -21,10 +21,10 @@ const posts = (await getCollection('blog'))
 <!doctype html>
 <html lang={t.langCode}>
 	<head>
-		<BaseHead title={t.title} description={t.description} image={GravityHeroImage} lang={lang} alternateHref={paths.zh.home} />
+		<BaseHead title={t.title} description={t.description} image={GravityHeroImage} lang={lang} alternateHref={paths.en.home} />
 	</head>
 	<body>
-		<Header lang={lang} alternateHref={paths.zh.home} />
+		<Header lang={lang} alternateHref={paths.en.home} />
 		<main class="home-shell">
 			<section class="hero" aria-labelledby="hero-title">
 				<div class="hero-copy">
@@ -34,9 +34,9 @@ const posts = (await getCollection('blog'))
 					<p class="hero-text">{h.text}</p>
 					<div class="hero-actions">
 						<a class="button primary" href="#pipeline">{h.primaryAction}</a>
-						<a class="button ghost" href={paths.en.blog}>{h.secondaryAction}</a>
+						<a class="button ghost" href={paths.zh.blog}>{h.secondaryAction}</a>
 					</div>
-					<div class="hero-stats" aria-label="Site summary">
+					<div class="hero-stats" aria-label="站点概览">
 						{h.stats.map(([value, label]) => (
 							<div>
 								<strong>{value}</strong>
@@ -67,7 +67,7 @@ const posts = (await getCollection('blog'))
 				</div>
 			</section>
 
-			<section class="section-grid" aria-label="GRACE Level-2 site sections">
+			<section class="section-grid" aria-label="GRACE Level-2 网站栏目">
 				<div class="panel feature-panel" id="data">
 					<div class="panel-title">
 						<p class="section-label">02</p>
@@ -101,7 +101,7 @@ const posts = (await getCollection('blog'))
 								<div>
 									<h3>{card.title}</h3>
 									<p>{card.text}</p>
-									<a href="/blog/second-post/">{t.blog.read}</a>
+									<a href="/zh/blog/second-post/">{t.blog.read}</a>
 								</div>
 							</article>
 						))}
@@ -122,7 +122,7 @@ const posts = (await getCollection('blog'))
 							</a>
 						))}
 					</div>
-					<a class="all-link" href={paths.en.blog}>{h.allArticles}</a>
+					<a class="all-link" href={paths.zh.blog}>{h.allArticles}</a>
 				</div>
 			</section>
 
@@ -131,7 +131,7 @@ const posts = (await getCollection('blog'))
 					<h2 id="release-title">{h.releaseTitle}</h2>
 					<p>{h.releaseText}</p>
 				</div>
-				<a class="button primary" href={paths.en.downloads}>{h.releaseAction}</a>
+				<a class="button primary" href={paths.zh.downloads}>{h.releaseAction}</a>
 			</section>
 
 			<section class="closing-note">

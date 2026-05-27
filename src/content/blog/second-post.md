@@ -2,6 +2,8 @@
 title: 'Filter products as a graph, not a checklist'
 description: 'Why P4M6, Gaussian, FAN, DDK, and HSAF should be traced as one product graph.'
 pubDate: 'May 26 2026'
+tags: ['Filtering', 'HSAF', 'Product graph']
+readingMinutes: 3
 heroImage: '../../assets/grace/processing-setup.png'
 ---
 

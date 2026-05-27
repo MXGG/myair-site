@@ -1,0 +1,20 @@
+---
+import AboutHeroImage from '../../assets/grace/dashboard.png';
+import Layout from '../../layouts/BlogPost.astro';
+import { paths, site } from '../../data/site';
+
+const lang = 'zh';
+const t = site[lang];
+---
+
+<Layout
+	lang={lang}
+	title={t.about.title}
+	description={t.about.description}
+	pubDate={new Date('May 27 2026')}
+	tags={['关于', '处理流程', '文档']}
+	heroImage={AboutHeroImage}
+	alternateHref={paths.en.about}
+>
+	{t.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+</Layout>
