@@ -17,26 +17,35 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 	</head>
 	<body>
 		<Header lang={lang} alternateHref={paths.zh.downloads} />
-		<main class="page-shell">
-			<section class="page-hero compact">
+		<main class="page-shell downloads-shell">
+			<section class="page-hero compact downloads-hero">
 				<p class="eyebrow">{d.eyebrow}</p>
 				<h1>{d.title}</h1>
 				<p>{d.lead}</p>
 			</section>
 
-			<section class="download-card" aria-labelledby="release-title">
-				<div>
-					<h2 id="release-title">{d.cardTitle}</h2>
+			<section class="software-card" aria-labelledby="software-title">
+				<div class="software-main">
+					<p class="section-label">{d.versionLabel}</p>
+					<h2 id="software-title">{d.cardTitle}</h2>
 					<p>{d.cardText}</p>
+					<div class="software-actions">
+						<a class="button primary" href={releaseUrl}>{d.button}</a>
+						<span>{d.releaseHint}</span>
+					</div>
 				</div>
-				<a class="button primary" href={releaseUrl}>{d.button}</a>
+				<div class="software-meta" aria-label="Software metadata">
+					{d.meta.map(([key, value]) => (
+						<div><span>{key}</span><strong>{value}</strong></div>
+					))}
+				</div>
 			</section>
 
-			<section class="note-grid" aria-label="Release notes">
-				{d.notes.map((note) => (
-					<article class="note-card">
-						<h3>{note.title}</h3>
-						<ul>{note.items.map((item) => <li>{item}</li>)}</ul>
+			<section class="download-feature-grid" aria-label="Software features">
+				{d.features.map((feature) => (
+					<article class="download-feature-card">
+						<h3>{feature.title}</h3>
+						<p>{feature.text}</p>
 					</article>
 				))}
 			</section>

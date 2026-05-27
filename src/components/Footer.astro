@@ -16,10 +16,18 @@ const p = paths[lang];
 	<div class="footer-brand">
 		<strong>{t.title}</strong>
 		<p>{t.footer.summary}</p>
+		<div class="developer-block">
+			<span>{t.footer.developerLabel}</span>
+			<p>{t.footer.developerZh}</p>
+			<p>{t.footer.developerEn}</p>
+			<p>{t.footer.address}</p>
+			<a href="mailto:lilx@hust.edu.cn">lilx@hust.edu.cn</a>
+		</div>
 	</div>
 	<div class="footer-links" aria-label={t.footer.sections}>
 		<span>{t.footer.sections}</span>
 		<a href={p.home}>{t.nav.home}</a>
+		<a href={p.pipeline}>{t.nav.pipeline}</a>
 		<a href={p.blog}>{t.nav.blog}</a>
 		<a href={p.downloads}>{t.nav.downloads}</a>
 		<a href={p.about}>{t.nav.about}</a>
@@ -30,31 +38,62 @@ const p = paths[lang];
 		<a href="https://github.com/MXGG/myair-site/releases">{t.footer.releases}</a>
 		<a href="https://myair.info/">{t.footer.domain}</a>
 	</div>
-	<p class="copyright">&copy; {today.getFullYear()} myair.info</p>
+	<p class="copyright">&copy; {today.getFullYear()} {t.footer.copyright}</p>
 </footer>
 
 <style>
 	.site-footer {
 		display: grid;
-		width: min(var(--container), calc(100% - 48px));
+		width: min(var(--container-xl), calc(100% - 64px));
 		margin: 0 auto;
-		padding: 54px 0 68px;
-		grid-template-columns: minmax(280px, 1fr) auto auto;
-		gap: 42px;
+		padding: 58px 0 72px;
+		grid-template-columns: minmax(420px, 1.1fr) auto auto;
+		gap: 54px;
 		border-top: 1px solid var(--line-soft);
 		color: var(--muted);
-		font-size: 0.92rem;
+		font-size: 0.96rem;
 	}
 
 	.footer-brand {
 		display: grid;
-		gap: 8px;
-		max-width: 440px;
+		gap: 12px;
+		max-width: 760px;
 	}
 
-	.footer-brand strong {
+	.footer-brand > strong {
 		color: var(--ink);
-		font-size: 1.04rem;
+		font-size: 1.08rem;
+	}
+
+	.developer-block {
+		display: grid;
+		gap: 4px;
+		margin-top: 12px;
+		padding: 18px;
+		border: 1px solid var(--line-soft);
+		border-radius: 18px;
+		background: color-mix(in srgb, var(--surface) 78%, transparent);
+	}
+
+	.developer-block span,
+	.footer-links span {
+		color: var(--ink);
+		font-weight: 760;
+	}
+
+	.developer-block p {
+		margin: 0;
+		line-height: 1.65;
+	}
+
+	.developer-block a,
+	.footer-links a {
+		color: var(--muted);
+	}
+
+	.developer-block a:hover,
+	.footer-links a:hover {
+		color: var(--accent-strong);
 	}
 
 	.footer-links {
@@ -63,41 +102,30 @@ const p = paths[lang];
 		align-content: start;
 	}
 
-	.footer-links span {
-		color: var(--ink);
-		font-weight: 740;
-	}
-
-	.footer-links a {
-		color: var(--muted);
-	}
-
-	.footer-links a:hover {
-		color: var(--accent-strong);
-	}
-
 	.copyright {
 		grid-column: 1 / -1;
 		padding-top: 16px;
 		border-top: 1px solid var(--line-soft);
-		font-size: 0.84rem;
+		font-size: 0.86rem;
 	}
 
-	@media (max-width: 780px) {
+	@media (max-width: 920px) {
 		.site-footer {
-			width: min(100% - 28px, var(--container));
+			width: min(100% - 32px, var(--container));
 			grid-template-columns: 1fr 1fr;
-			gap: 28px;
-			padding: 42px 0 56px;
+			gap: 30px;
+			padding: 44px 0 56px;
 		}
 
 		.footer-brand {
 			grid-column: 1 / -1;
+			max-width: none;
 		}
 	}
 
-	@media (max-width: 520px) {
+	@media (max-width: 560px) {
 		.site-footer {
+			width: min(100% - 28px, var(--container));
 			grid-template-columns: 1fr;
 		}
 	}

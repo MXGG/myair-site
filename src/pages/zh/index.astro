@@ -16,7 +16,13 @@ const h = t.home;
 const posts = (await getCollection('blogZh'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
-const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
+const stepIcons = [
+	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 27l13-6 6 6-6 13-4-9-9-4Z"/><path d="M27 9l12 12M32 4l12 12M18 18l12 12"/><path d="M31 21 21 31"/></svg>',
+	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 13h24M12 24h24M12 35h24"/><circle cx="19" cy="13" r="4"/><circle cx="30" cy="24" r="4"/><circle cx="22" cy="35" r="4"/></svg>',
+	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 16c8 0 8 16 16 16s8-16 16-16"/><path d="M10 34h28"/><path d="M32 10h8v8"/><path d="M40 10 29 21"/></svg>',
+	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 12h28v24H10z"/><path d="M10 20h28M10 28h28M19 12v24M29 12v24"/><path d="M6 40h36"/></svg>',
+	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 25l7 7 14-17"/><path d="M24 7a17 17 0 1 0 0 34 17 17 0 0 0 0-34Z"/></svg>',
+];
 ---
 
 <!doctype html>
@@ -53,23 +59,7 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 					</div>
 				</div>
 				<div class="hero-media" aria-hidden="true">
-					<Image src={GravityHeroImage} width={1500} height={900} alt="" loading="eager" />
-				</div>
-			</section>
-
-			<section class="quick-pipeline" aria-label="处理流程概览">
-				<div class="quick-title">
-					<h2>{h.pipelineTitle}</h2>
-					<p>{h.pipelineLead}</p>
-				</div>
-				<div class="quick-steps">
-					{h.pipelineSteps.map(([title, body], index) => (
-						<a href={`#step-${index + 1}`} class="quick-step">
-							<span class="step-node">{stepMarks[index]}</span>
-							<span><b>{String(index + 1).padStart(2, '0')}</b>{title}</span>
-							<small>{body}</small>
-						</a>
-					))}
+					<Image src={GravityHeroImage} width={1662} height={974} quality={92} alt="" loading="eager" />
 				</div>
 			</section>
 
@@ -85,7 +75,7 @@ const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 						return (
 							<details class="pipeline-detail-card" id={`step-${index + 1}`}>
 								<summary>
-									<span class="step-node large">{stepMarks[index]}</span>
+									<span class="step-icon" set:html={stepIcons[index]}></span>
 									<span class="summary-copy">
 										<span>{String(index + 1).padStart(2, '0')}</span>
 										<strong>{title}</strong>

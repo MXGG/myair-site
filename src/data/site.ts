@@ -47,6 +47,11 @@ export const site = {
 		},
 		footer: {
 			summary: 'Processing notes, filter comparisons, and reproducible workflow records.',
+			developerLabel: 'Developer information',
+			developerZh: '华中科技大学 国家精密重力测量科学中心 固体地球物理组开发',
+			developerEn: 'Huazhong University of Science and Technology, National Gravity Laboratory, Solid Geophysics',
+			address: 'Address: 1037 Luoyu Road, Hongshan District, Wuhan, Hubei, China',
+			copyright: 'GRACE L2 Notes. Developed by HUST National Gravity Laboratory, Solid Geophysics.',
 			sections: 'Sections',
 			resources: 'Resources',
 			rss: 'RSS Feed',
@@ -198,28 +203,23 @@ export const site = {
 			eyebrow: 'Software',
 			title: 'Downloads',
 			lead:
-				'Stable installers and packaged releases should be distributed through GitHub Releases. The website can link to release assets without storing large binary files inside the static site repository.',
-			cardTitle: 'GRACE Level-2 Processing Software',
+				'GRACE Level-2 Processing Software is packaged for local GRACE/GRACE-FO spherical-harmonic processing, filtering experiments, basin analysis, and preview quality control.',
+			versionLabel: 'GRACE L2 Processing Software',
+			cardTitle: 'Installer and release package',
 			cardText:
-				'Publish each installer as a versioned release asset, then keep this page pointed to the latest stable release or to a specific verified version.',
-			button: 'Open GitHub Releases',
-			notes: [
-				{
-					title: 'Recommended distribution rule',
-					items: [
-						'Use GitHub Releases for .exe, .msi, .zip, or installer packages.',
-						'Keep the website repository focused on source code, pages, and small static assets.',
-						'Use semantic version labels such as v0.1.0, v0.2.0, or v1.0.0.',
-					],
-				},
-				{
-					title: 'Before publishing',
-					items: [
-						'Record the version, release date, supported Windows version, and checksum.',
-						'State whether the package is an installer, portable build, or source archive.',
-						'Test the download link after GitHub Pages finishes deployment.',
-					],
-				},
+				'The program provides a desktop-oriented workflow for Level-2 data preparation, Gaussian/Fan/DDK/HSAF filtering, EWH product synthesis, basin statistics, and result preview. Stable packages are distributed through GitHub Releases.',
+			button: 'Open download page',
+			releaseHint: 'Release assets are hosted outside the static site repository.',
+			meta: [
+				['Platform', 'Windows desktop'],
+				['Scenario', 'GRACE/GRACE-FO Level-2 workflow'],
+				['Package', 'Installer or portable archive'],
+				['Status', 'Versioned release'],
+			],
+			features: [
+				{ title: 'Data preparation', text: 'Organize monthly GSM coefficients, low-degree replacement products, GIA settings, baseline periods, and processing metadata.' },
+				{ title: 'Filtering workflow', text: 'Run and compare Gaussian smoothing, Fan filtering, PnMm decorrelation, DDK products, and HSAF experiments through explicit product tags.' },
+				{ title: 'Product output', text: 'Generate gridded equivalent water height products, basin-mean time series, preview maps, and diagnostic outputs for quality control.' },
 			],
 		},
 	},
@@ -243,6 +243,11 @@ export const site = {
 		},
 		footer: {
 			summary: 'GRACE 二级数据处理记录、滤波方法对比与可复现流程说明。',
+			developerLabel: '开发者信息',
+			developerZh: '华中科技大学 国家精密重力测量科学中心 固体地球物理组开发',
+			developerEn: 'Huazhong University of Science and Technology, National Gravity Laboratory, Solid Geophysics',
+			address: '地址：武汉市洪山区珞喻路 1037 号',
+			copyright: 'GRACE L2 Notes. 华中科技大学国家精密重力测量科学中心固体地球物理组。',
 			sections: '站点栏目',
 			resources: '相关资源',
 			rss: 'RSS 订阅',
@@ -391,27 +396,22 @@ export const site = {
 		downloads: {
 			eyebrow: '软件',
 			title: '下载',
-			lead: '稳定安装包和打包版本建议通过 GitHub Releases 分发。网站负责提供说明和入口，不应把大型二进制文件长期放入静态网页仓库。',
-			cardTitle: 'GRACE Level-2 数据处理软件',
-			cardText: '每个安装包应作为带版本号的 Release Asset 发布，本页面指向最新稳定版本或指定验证版本。',
-			button: '打开 GitHub Releases',
-			notes: [
-				{
-					title: '推荐分发规则',
-					items: [
-						'使用 GitHub Releases 分发 .exe、.msi、.zip 或安装包。',
-						'网页仓库只保留源码、页面和小型静态资源。',
-						'采用 v0.1.0、v0.2.0、v1.0.0 等语义化版本标签。',
-					],
-				},
-				{
-					title: '发布前检查',
-					items: [
-						'记录版本、发布日期、支持的 Windows 版本和校验值。',
-						'说明该文件是安装版、便携版还是源码包。',
-						'GitHub Pages 部署完成后检查下载入口是否可正常打开。',
-					],
-				},
+			lead: 'GRACE Level-2 数据处理软件用于本地开展 GRACE/GRACE-FO 球谐系数处理、滤波试验、流域分析和结果预览质检。',
+			versionLabel: 'GRACE L2 Processing Software',
+			cardTitle: '安装包与版本发布',
+			cardText: '该程序面向 Level-2 数据准备、Gaussian/Fan/DDK/HSAF 滤波、等效水高产品合成、流域统计与图像预览等流程。稳定安装包通过 GitHub Releases 发布，本页面提供统一下载入口。',
+			button: '打开下载页面',
+			releaseHint: '安装包文件通过 Release Asset 分发，不直接存入静态网页仓库。',
+			meta: [
+				['运行平台', 'Windows 桌面端'],
+				['应用场景', 'GRACE/GRACE-FO Level-2 数据处理'],
+				['发布形式', '安装包或便携压缩包'],
+				['版本状态', '按版本发布'],
+			],
+			features: [
+				{ title: '数据准备', text: '组织月尺度 GSM 球谐系数、低阶项替换产品、GIA 设置、异常基准期和处理元数据。' },
+				{ title: '滤波流程', text: '支持 Gaussian 平滑、Fan 滤波、PnMm 去相关、DDK 产品和 HSAF 试验的独立产品路由与对比。' },
+				{ title: '产品输出', text: '生成格网等效水高产品、流域平均时间序列、预览图和质量诊断结果。' },
 			],
 		},
 	},
