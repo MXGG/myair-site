@@ -16,6 +16,7 @@ const h = t.home;
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
+const stepMarks = ['GSM', 'C₂₀', 'F', 'Σ', 'QC'];
 ---
 
 <!doctype html>
@@ -27,6 +28,20 @@ const posts = (await getCollection('blog'))
 		<Header lang={lang} alternateHref={paths.zh.home} />
 		<main class="home-shell">
 			<section class="hero" aria-labelledby="hero-title">
+				<div class="geo-labels" aria-hidden="true">
+					<span class="lat lat-60">60°N</span>
+					<span class="lat lat-30">30°N</span>
+					<span class="lat lat-0">0°</span>
+					<span class="lat lat-s30">30°S</span>
+					<span class="lat lat-s60">60°S</span>
+					<span class="lon lon-180">180°</span>
+					<span class="lon lon-120">120°W</span>
+					<span class="lon lon-60">60°W</span>
+					<span class="lon lon-0">0°</span>
+					<span class="lon lon-60e">60°E</span>
+					<span class="lon lon-120e">120°E</span>
+					<span class="lon lon-180e">180°</span>
+				</div>
 				<div class="hero-copy">
 					<p class="eyebrow">{h.eyebrow}</p>
 					<h1 id="hero-title">{h.title}</h1>
@@ -36,34 +51,61 @@ const posts = (await getCollection('blog'))
 						<a class="button primary" href="#pipeline">{h.primaryAction}</a>
 						<a class="button ghost" href={paths.en.blog}>{h.secondaryAction}</a>
 					</div>
-					<div class="hero-stats" aria-label="Site summary">
-						{h.stats.map(([value, label]) => (
-							<div>
-								<strong>{value}</strong>
-								<span>{label}</span>
-							</div>
-						))}
-					</div>
 				</div>
 				<div class="hero-media" aria-hidden="true">
-					<Image src={GravityHeroImage} width={1180} height={720} alt="" loading="eager" />
+					<Image src={GravityHeroImage} width={1500} height={900} alt="" loading="eager" />
+				</div>
+			</section>
+
+			<section class="quick-pipeline" aria-label="Processing pipeline summary">
+				<div class="quick-title">
+					<h2>{h.pipelineTitle}</h2>
+					<p>{h.pipelineLead}</p>
+				</div>
+				<div class="quick-steps">
+					{h.pipelineSteps.map(([title, body], index) => (
+						<a href={`#step-${index + 1}`} class="quick-step">
+							<span class="step-node">{stepMarks[index]}</span>
+							<span><b>{String(index + 1).padStart(2, '0')}</b>{title}</span>
+							<small>{body}</small>
+						</a>
+					))}
 				</div>
 			</section>
 
 			<section class="section-block pipeline-section" id="pipeline" aria-labelledby="pipeline-title">
-				<div class="section-heading">
+				<div class="section-heading wide-heading">
 					<p class="section-label">01</p>
 					<h2 id="pipeline-title">{h.pipelineTitle}</h2>
-					<p>{h.pipelineLead}</p>
+					<p>{h.pipelineDetailIntro}</p>
 				</div>
-				<div class="pipeline-flow">
-					{h.pipelineSteps.map(([title, body], index) => (
-						<article>
-							<span class="step-icon">{String(index + 1).padStart(2, '0')}</span>
-							<h3>{title}</h3>
-							<p>{body}</p>
-						</article>
-					))}
+				<div class="pipeline-detail-grid">
+					{h.pipelineSteps.map(([title, body], index) => {
+						const detail = h.pipelineDetails[index];
+						return (
+							<details class="pipeline-detail-card" id={`step-${index + 1}`} open={index === 0}>
+								<summary>
+									<span class="step-node large">{stepMarks[index]}</span>
+									<span class="summary-copy">
+										<span>{String(index + 1).padStart(2, '0')}</span>
+										<strong>{title}</strong>
+										<small>{body}</small>
+									</span>
+									<span class="expand-mark">+</span>
+								</summary>
+								<div class="step-detail prose-card">
+									<h3>Principle</h3>
+									<p>{detail.principle}</p>
+									<h3>Formula</h3>
+									<pre class="formula-block"><code>{detail.formula}</code></pre>
+									<h3>Configuration example</h3>
+									<pre><code>{detail.code}</code></pre>
+									<h3>Quality checks</h3>
+									<ul>{detail.checks.map((item) => <li>{item}</li>)}</ul>
+								</div>
+							</details>
+						);
+					})}
 				</div>
 			</section>
 

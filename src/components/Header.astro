@@ -33,6 +33,16 @@ const links = [
 			{links.map((link) => <HeaderLink href={link.href}>{link.label}</HeaderLink>)}
 		</div>
 
+		<div class="nav-actions" aria-label="Site tools">
+			<button class="icon-button" type="button" data-search-open aria-label={t.nav.search} title={t.nav.search}>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" /></svg>
+			</button>
+			<button class="icon-button" type="button" data-theme-toggle aria-label={t.nav.theme} title={t.nav.theme}>
+				<svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4V2m0 20v-2m8-8h2M2 12h2m14.36-6.36 1.42-1.42M4.22 19.78l1.42-1.42m12.72 0 1.42 1.42M4.22 4.22l1.42 1.42M12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /></svg>
+				<svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 14.3A8.4 8.4 0 0 1 9.7 3.6 8.6 8.6 0 1 0 20.4 14.3Z" /></svg>
+			</button>
+		</div>
+
 		<a class="language-switch" href={alternateHref} hreflang={lang === 'en' ? 'zh-CN' : 'en'}>
 			{t.nav.switch}
 		</a>
@@ -44,13 +54,99 @@ const links = [
 			</summary>
 			<div class="mobile-menu-panel">
 				{links.map((link) => <HeaderLink href={link.href}>{link.label}</HeaderLink>)}
+				<div class="mobile-tools">
+					<button class="text-tool" type="button" data-search-open>{t.nav.search}</button>
+					<button class="text-tool" type="button" data-theme-toggle>{t.nav.theme}</button>
+				</div>
 				<a class="mobile-language" href={alternateHref} hreflang={lang === 'en' ? 'zh-CN' : 'en'}>
 					{t.nav.switch}
 				</a>
 			</div>
 		</details>
 	</nav>
+
+	<div class="search-dialog" data-search-dialog hidden>
+		<div class="search-scrim" data-search-close></div>
+		<section class="search-panel" role="dialog" aria-modal="true" aria-label={t.search.openLabel}>
+			<div class="search-row">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.35-4.35M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" /></svg>
+				<input data-search-input type="search" placeholder={t.search.placeholder} autocomplete="off" />
+				<button type="button" data-search-close aria-label={t.search.closeLabel}>Esc</button>
+			</div>
+			<div class="search-results" data-search-results></div>
+		</section>
+	</div>
 </header>
+
+<script define:vars={{ searchItems: t.search.items, searchEmpty: t.search.empty }}>
+	const root = document.documentElement;
+	const setTheme = (mode) => {
+		root.dataset.theme = mode;
+		try {
+			localStorage.setItem('theme', mode);
+		} catch (error) {}
+	};
+
+	document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+		button.addEventListener('click', () => {
+			const current = root.dataset.theme === 'dark' ? 'dark' : 'light';
+			setTheme(current === 'dark' ? 'light' : 'dark');
+		});
+	});
+
+	const dialog = document.querySelector('[data-search-dialog]');
+	const input = dialog?.querySelector('[data-search-input]');
+	const results = dialog?.querySelector('[data-search-results]');
+	let lastFocused = null;
+
+	const normalize = (value) => value.toLowerCase().replace(/\s+/g, ' ').trim();
+	const renderResults = (query = '') => {
+		if (!results) return;
+		const q = normalize(query);
+		const matched = q
+			? searchItems.filter((item) => normalize(`${item.title} ${item.text}`).includes(q))
+			: searchItems;
+
+		if (!matched.length) {
+			results.innerHTML = `<p class="search-empty">${searchEmpty}</p>`;
+			return;
+		}
+
+		results.innerHTML = matched
+			.map(
+				(item) => `<a class="search-result" href="${item.href}"><strong>${item.title}</strong><span>${item.text}</span></a>`,
+			)
+			.join('');
+	};
+
+	const openSearch = () => {
+		if (!dialog || !input) return;
+		lastFocused = document.activeElement;
+		dialog.hidden = false;
+		document.body.classList.add('search-open');
+		renderResults(input.value);
+		window.setTimeout(() => input.focus(), 30);
+	};
+
+	const closeSearch = () => {
+		if (!dialog) return;
+		dialog.hidden = true;
+		document.body.classList.remove('search-open');
+		if (lastFocused instanceof HTMLElement) lastFocused.focus();
+	};
+
+	document.querySelectorAll('[data-search-open]').forEach((button) => button.addEventListener('click', openSearch));
+	document.querySelectorAll('[data-search-close]').forEach((button) => button.addEventListener('click', closeSearch));
+	input?.addEventListener('input', (event) => renderResults(event.currentTarget.value));
+
+	document.addEventListener('keydown', (event) => {
+		if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+			event.preventDefault();
+			openSearch();
+		}
+		if (event.key === 'Escape' && dialog && !dialog.hidden) closeSearch();
+	});
+</script>
 
 <style>
 	.site-header {
@@ -58,17 +154,17 @@ const links = [
 		top: 0;
 		z-index: 50;
 		border-bottom: 1px solid var(--line-soft);
-		background: rgba(255, 255, 255, 0.9);
+		background: color-mix(in srgb, var(--surface) 88%, transparent);
 		backdrop-filter: blur(18px);
 	}
 
 	.site-nav {
 		display: flex;
-		width: min(var(--container-wide), calc(100% - 48px));
-		height: 64px;
+		width: min(var(--container-xl), calc(100% - 48px));
+		height: 66px;
 		margin: 0 auto;
 		align-items: center;
-		gap: 22px;
+		gap: 18px;
 	}
 
 	.brand {
@@ -121,6 +217,59 @@ const links = [
 		font-weight: 740;
 	}
 
+	.nav-actions {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.icon-button,
+	.text-tool {
+		border: 1px solid var(--line);
+		background: color-mix(in srgb, var(--surface) 78%, transparent);
+		color: var(--ink);
+		cursor: pointer;
+		transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
+	}
+
+	.icon-button {
+		display: inline-grid;
+		width: 36px;
+		height: 36px;
+		place-items: center;
+		border-radius: 999px;
+	}
+
+	.icon-button:hover,
+	.text-tool:hover {
+		transform: translateY(-1px);
+		border-color: rgba(15, 111, 157, 0.36);
+		background: var(--blue-soft);
+	}
+
+	.icon-button svg,
+	.search-row svg {
+		width: 18px;
+		height: 18px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2;
+	}
+
+	.moon-icon {
+		display: none;
+	}
+
+	:global(html[data-theme='dark']) .sun-icon {
+		display: none;
+	}
+
+	:global(html[data-theme='dark']) .moon-icon {
+		display: block;
+	}
+
 	.language-switch {
 		display: inline-flex;
 		min-height: 34px;
@@ -129,7 +278,7 @@ const links = [
 		padding: 0 12px;
 		border: 1px solid var(--line);
 		border-radius: 999px;
-		background: rgba(255, 255, 255, 0.74);
+		background: color-mix(in srgb, var(--surface) 74%, transparent);
 		font-size: 0.86rem;
 		font-weight: 700;
 		white-space: nowrap;
@@ -155,7 +304,7 @@ const links = [
 		padding: 0 12px;
 		border: 1px solid var(--line);
 		border-radius: 999px;
-		background: white;
+		background: var(--surface);
 		color: var(--ink);
 		cursor: pointer;
 		font-size: 0.88rem;
@@ -185,25 +334,134 @@ const links = [
 		padding: 10px;
 		border: 1px solid var(--line);
 		border-radius: 18px;
-		background: rgba(255, 255, 255, 0.98);
+		background: color-mix(in srgb, var(--surface) 98%, transparent);
 		box-shadow: var(--shadow);
 		gap: 2px;
 	}
 
-	.mobile-menu-panel a {
+	.mobile-menu-panel a,
+	.text-tool {
 		padding: 11px 12px;
 		border-radius: 10px;
+		font: inherit;
 		font-weight: 700;
+		text-align: left;
 	}
 
 	.mobile-menu-panel a:hover,
-	.mobile-menu-panel a.active {
+	.mobile-menu-panel a.active,
+	.text-tool:hover {
 		background: var(--blue-soft);
+	}
+
+	.mobile-tools {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 8px;
+		padding: 8px 0;
 	}
 
 	.mobile-language {
 		margin-top: 6px;
 		border-top: 1px solid var(--line-soft);
+	}
+
+	.search-dialog[hidden] {
+		display: none;
+	}
+
+	.search-dialog {
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		display: grid;
+		place-items: start center;
+		padding: 86px 20px 20px;
+	}
+
+	.search-scrim {
+		position: absolute;
+		inset: 0;
+		background: rgba(7, 16, 27, 0.32);
+		backdrop-filter: blur(5px);
+	}
+
+	.search-panel {
+		position: relative;
+		z-index: 1;
+		width: min(720px, 100%);
+		border: 1px solid var(--line);
+		border-radius: 22px;
+		background: color-mix(in srgb, var(--surface) 98%, transparent);
+		box-shadow: var(--shadow);
+		overflow: hidden;
+	}
+
+	.search-row {
+		display: grid;
+		grid-template-columns: 24px 1fr auto;
+		gap: 12px;
+		align-items: center;
+		padding: 16px;
+		border-bottom: 1px solid var(--line-soft);
+	}
+
+	.search-row input {
+		width: 100%;
+		border: 0;
+		outline: 0;
+		background: transparent;
+		color: var(--ink);
+		font: inherit;
+		font-size: 1rem;
+	}
+
+	.search-row button {
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: var(--blue-soft);
+		color: var(--muted);
+		padding: 5px 10px;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	.search-results {
+		display: grid;
+		gap: 6px;
+		max-height: min(56vh, 520px);
+		overflow: auto;
+		padding: 10px;
+	}
+
+	.search-result {
+		display: grid;
+		gap: 4px;
+		padding: 14px;
+		border-radius: 14px;
+		color: var(--text);
+	}
+
+	.search-result:hover {
+		background: var(--blue-soft);
+	}
+
+	.search-result strong {
+		color: var(--ink);
+	}
+
+	.search-result span,
+	.search-empty {
+		color: var(--muted);
+		font-size: 0.92rem;
+	}
+
+	.search-empty {
+		padding: 18px;
+	}
+
+	:global(body.search-open) {
+		overflow: hidden;
 	}
 
 	@media (max-width: 980px) {
@@ -212,7 +470,8 @@ const links = [
 		}
 
 		.desktop-links,
-		.language-switch {
+		.language-switch,
+		.site-nav > .nav-actions {
 			display: none;
 		}
 
