@@ -39,11 +39,7 @@ Typical functions include:
 - supporting basin averaging, leakage correction, trend estimation, and product preview;
 - organizing output files with explicit product tags and reproducible processing records.
 
-Stable installers and packaged releases should be published through GitHub Releases:
 
-https://github.com/MXGG/myair-site/releases
-
-Large installer files should not be committed directly to this website repository.
 
 ## Website routes
 
@@ -100,3 +96,4 @@ Email: lilx@hust.edu.cn
 ## License and usage
 
 This repository mainly contains website source code, documentation pages, and release metadata. Software installers, binary packages, and versioned distributions should be managed through GitHub Releases.
+

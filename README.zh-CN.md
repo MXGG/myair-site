@@ -39,11 +39,7 @@ GRACE Level-2 数据处理软件用于支持 GRACE/GRACE-FO Level-2 产品的后
 - 支持流域平均、泄漏校正、趋势估计和产品预览；
 - 通过明确的产品标签和处理记录管理输出结果，提高处理流程的可追溯性。
 
-稳定版安装包和打包版本建议通过 GitHub Releases 发布：
 
-https://github.com/MXGG/myair-site/releases
-
-不建议将大型 `.exe`、`.msi` 或 `.zip` 安装包直接提交到网站源码仓库。
 
 ## 网站路由
 
@@ -100,3 +96,4 @@ npm.cmd run build
 ## 许可与使用说明
 
 本仓库主要包含网站源码、文档页面和版本发布信息。软件安装包、二进制文件和正式版本分发包应通过 GitHub Releases 管理。
+
