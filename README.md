@@ -1,31 +1,77 @@
-# GRACE L2 Notes
+﻿# GRACE L2 Notes
 
-Static Astro website for GRACE/GRACE-FO Level-2 processing notes, filter-product records, software download guidance, and bilingual documentation.
+[English](./README.md) | [简体中文](./README.zh-CN.md)
 
-## Main structure
+GRACE L2 Notes is a bilingual website for documenting GRACE/GRACE-FO Level-2 data processing workflows, filtering methods, product routes, software usage notes, and release information.
 
-- `src/pages/index.astro`: English home page.
-- `src/pages/zh/index.astro`: Simplified Chinese home page.
-- `src/pages/blog/`: English blog index and article routes.
-- `src/pages/zh/blog/`: Simplified Chinese blog index and article routes.
-- `src/content/blog/`: English Markdown posts.
-- `src/content/blogZh/`: Simplified Chinese Markdown posts.
-- `src/pages/downloads.astro` and `src/pages/zh/downloads.astro`: Download pages linking to GitHub Releases.
-- `src/data/site.ts`: Shared bilingual navigation, labels, page copy, and route definitions.
-- `src/styles/global.css`: Global responsive layout and UI styling.
+Website: https://myair.info  
+Chinese site: https://myair.info/zh/  
+Downloads: https://myair.info/downloads/  
+GitHub Releases: https://github.com/MXGG/myair-site/releases  
+Repository: https://github.com/MXGG/myair-site  
+GitHub profile: https://github.com/MXGG  
 
-## Local development
+## Overview
+
+This website serves as a technical documentation and blog portal for GRACE/GRACE-FO Level-2 data processing. It records the workflow from monthly GSM spherical harmonic coefficients to gridded equivalent water height products, with notes on preprocessing, filtering, spherical harmonic synthesis, validation, leakage correction, and product management.
+
+The website provides both English and Simplified Chinese pages, including processing workflow notes, method explanations, blog posts, software download information, and project background.
+
+## Main sections
+
+- **Processing Pipeline**: overview of the GRACE Level-2 processing chain, including data acquisition, low-degree coefficient replacement, GIA correction, filtering, synthesis, and validation.
+- **Data**: notes on Level-2 GSM products, equivalent water height grids, mascon references, basin averages, and auxiliary datasets.
+- **Methods**: technical notes on Gaussian smoothing, decorrelation filtering, DDK filtering, Hankel/HSAF filtering, leakage correction, scaling, and quality-control procedures.
+- **Blog**: bilingual posts about reproducible workflows, filter-product comparison, preview design, and processing assumptions.
+- **Downloads**: entrance for packaged software releases and installer downloads.
+- **About**: project and developer information.
+
+## GRACE Level-2 Processing Software
+
+The GRACE Level-2 Processing Software is designed to support post-processing and analysis of GRACE/GRACE-FO Level-2 products. It is intended for reproducible processing, filter comparison, basin-scale analysis, product preview, and quality-control review.
+
+Typical functions include:
+
+- loading GRACE/GRACE-FO Level-2 GSM spherical harmonic products;
+- applying preprocessing steps such as low-degree coefficient replacement, GIA correction, baseline removal, and missing-month handling;
+- generating and comparing filtering products, including Gaussian, decorrelation-based, DDK, and Hankel/HSAF filtering routes;
+- converting spherical harmonic coefficients into gridded equivalent water height products;
+- supporting basin averaging, leakage correction, trend estimation, and product preview;
+- organizing output files with explicit product tags and reproducible processing records.
+
+Stable installers and packaged releases should be published through GitHub Releases:
+
+https://github.com/MXGG/myair-site/releases
+
+Large installer files should not be committed directly to this website repository.
+
+## Website routes
+
+- `/` — English homepage
+- `/zh/` — Simplified Chinese homepage
+- `/blog/` — English blog
+- `/zh/blog/` — Simplified Chinese blog
+- `/downloads/` — English download page
+- `/zh/downloads/` — Simplified Chinese download page
+- `/about/` — English project information
+- `/zh/about/` — Simplified Chinese project information
+
+## Local maintenance
+
+Install dependencies and test the build:
 
 ```powershell
 cd D:\WebProjects\myair-site
+
 npm.cmd install
-npm.cmd run dev
+npm.cmd run build
 ```
 
-## Build before pushing
+Commit and push updates:
 
 ```powershell
 cd D:\WebProjects\myair-site
+
 git status
 npm.cmd run build
 
@@ -34,24 +80,23 @@ git commit -m "Update website"
 git push origin main
 ```
 
-## Add a blog post
+If Windows locks local Node dependencies, clean and reinstall them:
 
-1. Add the English post to `src/content/blog/<slug>.md`.
-2. Add the Simplified Chinese post to `src/content/blogZh/<slug>.md`.
-3. Keep the same slug in both folders so the language switch can map `/blog/<slug>/` and `/zh/blog/<slug>/`.
-4. Recommended frontmatter:
-
-```md
----
-title: 'Article title'
-description: 'Short article description.'
-pubDate: 'May 27 2026'
-tags: ['Workflow', 'Filtering']
-readingMinutes: 3
-heroImage: '../../assets/grace/preview.png'
----
+```powershell
+taskkill /F /IM node.exe
+taskkill /F /IM esbuild.exe
+cmd /c rmdir /s /q node_modules
+npm.cmd install
+npm.cmd run build
 ```
 
-## Publish installers
+## Developer information
 
-Use GitHub Releases for `.exe`, `.msi`, `.zip`, or other binary installers. Do not commit large installer binaries into the website repository. The `/downloads/` and `/zh/downloads/` pages already point to the repository release page.
+Developed by the Solid Geophysics Group, National Gravity Laboratory, Huazhong University of Science and Technology.
+
+Address: 1037 Luoyu Road, Hongshan District, Wuhan, China  
+Email: lilx@hust.edu.cn
+
+## License and usage
+
+This repository mainly contains website source code, documentation pages, and release metadata. Software installers, binary packages, and versioned distributions should be managed through GitHub Releases.
