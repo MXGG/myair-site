@@ -4,7 +4,7 @@ description: 'A compact map from monthly GSM spherical harmonics to gridded equi
 pubDate: 'May 27 2026'
 tags: ['Workflow', 'Level-2', 'EWH']
 readingMinutes: 3
-heroImage: '../../assets/grace/dashboard.png'
+heroImage: '../../assets/grace/processing-setup.png'
 ---
 
 The working rule for this pipeline is simple: keep MATLAB and Python aligned around the same configuration, the same data layout, and the same output conventions.
