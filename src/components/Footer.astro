@@ -10,18 +10,33 @@ const { lang = 'en' } = Astro.props;
 const today = new Date();
 const t = site[lang];
 const p = paths[lang];
+const isZh = lang === 'zh';
+const githubProfile = 'https://github.com/MXGG';
+const githubRepo = 'https://github.com/MXGG/myair-site';
+const email = 'lilx@hust.edu.cn';
 ---
 
 <footer class="site-footer">
 	<div class="footer-brand">
 		<strong>{t.title}</strong>
 		<p>{t.footer.summary}</p>
-		<div class="developer-block">
-			<span>{t.footer.developerLabel}</span>
-			<p>{t.footer.developerZh}</p>
-			<p>{t.footer.developerEn}</p>
-			<p>{t.footer.address}</p>
-			<a href="mailto:lilx@hust.edu.cn">lilx@hust.edu.cn</a>
+		<p class="footer-contact">
+			<span>{isZh ? '地址：武汉市洪山区珞喻路 1037 号' : 'Address: 1037 Luoyu Road, Hongshan District, Wuhan, China'}</span>
+			<a href={`mailto:${email}`}>{email}</a>
+		</p>
+		<div class="footer-social" aria-label={isZh ? '社交链接' : 'Social links'}>
+			<button class="social-button" type="button" data-wechat-open aria-label={isZh ? '微信公众号二维码' : 'WeChat QR code'} title={isZh ? '微信公众号' : 'WeChat'}>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.2 6.2C5.6 6.2 2.8 8.5 2.8 11.3c0 1.6.9 3 2.4 4l-.5 1.9 2.2-1.1c.7.2 1.5.4 2.3.4 3.5 0 6.4-2.3 6.4-5.1S12.7 6.2 9.2 6.2Z"/><path d="M14.8 10.5c3.1.2 5.5 2.3 5.5 4.8 0 1.4-.8 2.7-2.1 3.6l.4 1.7-2-1c-.6.2-1.3.3-2 .3-2.6 0-4.8-1.5-5.4-3.5"/><path d="M7.1 10.6h.01M11.2 10.6h.01M13.2 15h.01M16.8 15h.01"/></svg>
+			</button>
+			<a class="social-button" href={githubProfile} aria-label="GitHub profile" title="GitHub">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8a9.4 9.4 0 0 0-3 18.3c.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.1-1.1-1.4-1.1-1.4-.9-.6.1-.6.1-.6 1 0 1.6 1.1 1.6 1.1.9 1.5 2.4 1.1 2.9.8.1-.7.4-1.1.7-1.4-2.2-.3-4.6-1.1-4.6-4.9 0-1.1.4-2 1.1-2.7-.1-.3-.5-1.3.1-2.7 0 0 .9-.3 2.8 1a9.8 9.8 0 0 1 5.1 0c1.9-1.3 2.8-1 2.8-1 .6 1.4.2 2.4.1 2.7.7.7 1.1 1.6 1.1 2.7 0 3.8-2.3 4.6-4.6 4.9.4.3.7.9.7 1.8v2.7c0 .3.2.6.7.5A9.4 9.4 0 0 0 12 2.8Z"/></svg>
+			</a>
+			<a class="social-button" href={githubRepo} aria-label="GitHub repository" title={isZh ? '项目仓库' : 'Repository'}>
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4.5h10.5A2.5 2.5 0 0 1 18 7v13l-5-2-5 2V7A2.5 2.5 0 0 0 5.5 4.5H5Z"/><path d="M5.5 4.5A2.5 2.5 0 0 0 3 7v12.5h15"/><path d="M8 8h6M8 11h6"/></svg>
+			</a>
+			<a class="social-button" href={`mailto:${email}`} aria-label="Email" title="Email">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="m4 7 8 6 8-6"/></svg>
+			</a>
 		</div>
 	</div>
 	<div class="footer-links" aria-label={t.footer.sections}>
@@ -36,22 +51,82 @@ const p = paths[lang];
 		<span>{t.footer.resources}</span>
 		<a href={p.rss}>{t.footer.rss}</a>
 		<a href="https://github.com/MXGG/myair-site/releases">{t.footer.releases}</a>
+		<a href={githubRepo}>{isZh ? '项目仓库' : 'Repository'}</a>
 		<a href="https://myair.info/">{t.footer.domain}</a>
 	</div>
 	<p class="copyright">&copy; {today.getFullYear()} {t.footer.copyright}</p>
+
+	<button class="back-to-top" type="button" data-back-to-top aria-label={isZh ? '返回顶部' : 'Back to top'}>↑</button>
+
+	<div class="wechat-modal" data-wechat-modal hidden>
+		<div class="wechat-scrim" data-wechat-close></div>
+		<section class="wechat-card" role="dialog" aria-modal="true" aria-label={isZh ? '微信公众号二维码' : 'WeChat QR code'}>
+			<button type="button" data-wechat-close aria-label={isZh ? '关闭' : 'Close'}>×</button>
+			<h2>{isZh ? '关注公众号' : 'Follow on WeChat'}</h2>
+			<p>{isZh ? '微信扫码关注公众号，获取项目记录与更新。' : 'Scan the QR code with WeChat for project notes and updates.'}</p>
+			<img src="/social/wechat-qr.jpg" alt={isZh ? '微信公众号二维码' : 'WeChat QR code'} loading="lazy" />
+		</section>
+	</div>
 </footer>
+
+<script>
+	const topButton = document.querySelector('[data-back-to-top]');
+	const setTopButton = () => {
+		if (!topButton) return;
+		topButton.classList.toggle('visible', window.scrollY > 520);
+	};
+	window.addEventListener('scroll', setTopButton, { passive: true });
+	setTopButton();
+	topButton?.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+	const modal = document.querySelector('[data-wechat-modal]');
+	const openModal = () => {
+		if (!modal) return;
+		modal.hidden = false;
+		document.body.classList.add('modal-open');
+	};
+	const closeModal = () => {
+		if (!modal) return;
+		modal.hidden = true;
+		document.body.classList.remove('modal-open');
+	};
+	document.querySelectorAll('[data-wechat-open]').forEach((button) => button.addEventListener('click', openModal));
+	document.querySelectorAll('[data-wechat-close]').forEach((button) => button.addEventListener('click', closeModal));
+	document.addEventListener('keydown', (event) => {
+		if (event.key === 'Escape' && modal && !modal.hidden) closeModal();
+	});
+
+	const revealSelectors = [
+		'.hero-copy', '.hero-media', '.section-heading', '.pipeline-detail-card', '.panel', '.release-band', '.closing-note',
+		'.page-hero', '.software-card', '.download-feature-card', '.featured-post', '.post-card', '.aside-card', '.article-header', '.article-prose', '.hero-image'
+	];
+	const targets = Array.from(document.querySelectorAll(revealSelectors.join(',')));
+	if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+		document.body.classList.add('motion-ready');
+		targets.forEach((item) => item.classList.add('reveal'));
+		const observer = new IntersectionObserver((entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting) {
+					entry.target.classList.add('is-visible');
+					observer.unobserve(entry.target);
+				}
+			});
+		}, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+		targets.forEach((item) => observer.observe(item));
+	}
+</script>
 
 <style>
 	.site-footer {
 		display: grid;
 		width: min(var(--container-xl), calc(100% - 64px));
 		margin: 0 auto;
-		padding: 58px 0 72px;
+		padding: 56px 0 72px;
 		grid-template-columns: minmax(420px, 1.1fr) auto auto;
 		gap: 54px;
 		border-top: 1px solid var(--line-soft);
 		color: var(--muted);
-		font-size: 0.96rem;
+		font-size: 0.98rem;
 	}
 
 	.footer-brand {
@@ -62,38 +137,67 @@ const p = paths[lang];
 
 	.footer-brand > strong {
 		color: var(--ink);
-		font-size: 1.08rem;
+		font-size: 1.1rem;
 	}
 
-	.developer-block {
+	.footer-contact {
 		display: grid;
 		gap: 4px;
-		margin-top: 12px;
-		padding: 18px;
-		border: 1px solid var(--line-soft);
-		border-radius: 18px;
-		background: color-mix(in srgb, var(--surface) 78%, transparent);
-	}
-
-	.developer-block span,
-	.footer-links span {
-		color: var(--ink);
-		font-weight: 760;
-	}
-
-	.developer-block p {
-		margin: 0;
+		margin-top: 4px;
 		line-height: 1.65;
 	}
 
-	.developer-block a,
+	.footer-contact a,
 	.footer-links a {
 		color: var(--muted);
 	}
 
-	.developer-block a:hover,
+	.footer-contact a:hover,
 	.footer-links a:hover {
 		color: var(--accent-strong);
+	}
+
+	.footer-social {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-top: 8px;
+	}
+
+	.social-button {
+		display: inline-grid;
+		width: 40px;
+		height: 40px;
+		place-items: center;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--surface) 82%, transparent);
+		color: var(--ink);
+		cursor: pointer;
+		transition: transform 170ms ease, background-color 170ms ease, border-color 170ms ease;
+	}
+
+	.social-button:hover {
+		transform: translateY(-2px);
+		border-color: rgba(15, 111, 157, 0.36);
+		background: var(--blue-soft);
+		color: var(--accent-strong);
+	}
+
+	.social-button svg {
+		width: 21px;
+		height: 21px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.8;
+	}
+
+	.social-button[href*='github'] svg:first-child,
+	.social-button[aria-label='GitHub profile'] svg {
+		fill: currentColor;
+		stroke: none;
 	}
 
 	.footer-links {
@@ -102,21 +206,120 @@ const p = paths[lang];
 		align-content: start;
 	}
 
+	.footer-links span {
+		color: var(--ink);
+		font-weight: 780;
+	}
+
 	.copyright {
 		grid-column: 1 / -1;
 		padding-top: 16px;
 		border-top: 1px solid var(--line-soft);
-		font-size: 0.86rem;
+		font-size: 0.88rem;
 	}
+
+	.back-to-top {
+		position: fixed;
+		right: 22px;
+		bottom: 22px;
+		z-index: 60;
+		display: grid;
+		width: 44px;
+		height: 44px;
+		place-items: center;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--surface) 88%, transparent);
+		box-shadow: var(--shadow-soft);
+		color: var(--accent-strong);
+		font-size: 1.35rem;
+		font-weight: 800;
+		cursor: pointer;
+		opacity: 0;
+		pointer-events: none;
+		transform: translateY(12px);
+		transition: opacity 180ms ease, transform 180ms ease, background-color 180ms ease;
+	}
+
+	.back-to-top.visible {
+		opacity: 1;
+		pointer-events: auto;
+		transform: translateY(0);
+	}
+
+	.back-to-top:hover {
+		background: var(--blue-soft);
+		transform: translateY(-2px);
+	}
+
+	.wechat-modal[hidden] { display: none; }
+	.wechat-modal {
+		position: fixed;
+		inset: 0;
+		z-index: 120;
+		display: grid;
+		place-items: center;
+		padding: 20px;
+	}
+
+	.wechat-scrim {
+		position: absolute;
+		inset: 0;
+		background: rgba(7, 16, 27, 0.35);
+		backdrop-filter: blur(5px);
+	}
+
+	.wechat-card {
+		position: relative;
+		z-index: 1;
+		display: grid;
+		width: min(380px, 100%);
+		gap: 12px;
+		padding: 24px;
+		border: 1px solid var(--line);
+		border-radius: 24px;
+		background: color-mix(in srgb, var(--surface) 98%, transparent);
+		box-shadow: var(--shadow);
+		text-align: center;
+	}
+
+	.wechat-card h2 {
+		font-size: 1.5rem;
+	}
+
+	.wechat-card p {
+		color: var(--muted);
+	}
+
+	.wechat-card img {
+		width: 230px;
+		height: 230px;
+		margin: 4px auto 0;
+		border-radius: 12px;
+	}
+
+	.wechat-card button {
+		position: absolute;
+		right: 14px;
+		top: 14px;
+		width: 32px;
+		height: 32px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: var(--surface);
+		color: var(--ink);
+		cursor: pointer;
+		font-size: 1.2rem;
+	}
+
+	:global(body.modal-open) { overflow: hidden; }
 
 	@media (max-width: 920px) {
 		.site-footer {
 			width: min(100% - 32px, var(--container));
 			grid-template-columns: 1fr 1fr;
-			gap: 30px;
-			padding: 44px 0 56px;
+			gap: 32px;
 		}
-
 		.footer-brand {
 			grid-column: 1 / -1;
 			max-width: none;
@@ -125,8 +328,12 @@ const p = paths[lang];
 
 	@media (max-width: 560px) {
 		.site-footer {
-			width: min(100% - 28px, var(--container));
 			grid-template-columns: 1fr;
+			padding-bottom: 84px;
+		}
+		.back-to-top {
+			right: 16px;
+			bottom: 16px;
 		}
 	}
 </style>

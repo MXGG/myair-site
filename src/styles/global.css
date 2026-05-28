@@ -1944,3 +1944,80 @@ body:lang(zh-CN) .software-meta span {
 		font-size: 0.95rem;
 	}
 }
+
+/* Final interaction and academic typesetting polish */
+body.motion-ready .reveal {
+	opacity: 0;
+	transform: translateY(28px);
+	transition: opacity 680ms cubic-bezier(.2,.8,.2,1), transform 680ms cubic-bezier(.2,.8,.2,1);
+}
+
+body.motion-ready .reveal.is-visible {
+	opacity: 1;
+	transform: translateY(0);
+}
+
+.formula-block {
+	display: block;
+	width: 100%;
+	margin: 0.35rem 0 0.6rem;
+	padding: 1.15rem 1.25rem;
+	border: 1px solid var(--line);
+	border-radius: 16px;
+	background:
+		linear-gradient(180deg, color-mix(in srgb, var(--surface) 86%, transparent), color-mix(in srgb, var(--blue-soft) 50%, transparent));
+	color: var(--ink);
+	overflow-x: auto;
+	font-size: 1.02rem;
+}
+
+.formula-block mjx-container {
+	margin: 0 !important;
+	font-size: 112% !important;
+	min-width: max-content;
+}
+
+.config-list {
+	background: color-mix(in srgb, var(--surface) 86%, transparent);
+}
+
+.developer-profile {
+	display: grid;
+	gap: 12px;
+	margin: 2rem 0 0;
+	padding: 1.5rem;
+	border: 1px solid var(--line);
+	border-radius: var(--radius);
+	background: color-mix(in srgb, var(--surface) 82%, transparent);
+	box-shadow: var(--shadow-soft);
+}
+
+.developer-profile h2 {
+	font-size: clamp(1.45rem, 2.4vw, 2.2rem);
+	margin-bottom: 0.2rem;
+}
+
+.developer-profile p {
+	margin: 0;
+}
+
+.developer-profile strong {
+	color: var(--ink);
+}
+
+.downloads-shell .page-hero,
+.downloads-shell .software-card,
+.downloads-shell .download-feature-card {
+	background: color-mix(in srgb, var(--surface) 84%, transparent);
+}
+
+@media (max-width: 720px) {
+	.formula-block {
+		font-size: 0.92rem;
+		padding: 0.95rem 1rem;
+	}
+
+	.developer-profile {
+		padding: 1.15rem;
+	}
+}

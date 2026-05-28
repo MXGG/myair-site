@@ -16,6 +16,14 @@ const h = t.home;
 const posts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
+
+const formulaTex = [
+	String.raw`S(\theta,\lambda,t)=\{\Delta C_{lm}(t),\Delta S_{lm}(t)\},\quad 0\le m\le l\le l_{\max}`,
+	String.raw`\Delta C'_{lm}=\Delta C_{lm}-\Delta C_{lm,\mathrm{mean}}-\Delta C_{lm,\mathrm{GIA}}`,
+	String.raw`\hat{x}=F\{x\},\quad F\in\{\mathrm{Gaussian}(r),\mathrm{Fan}(r),\mathrm{PnMm},\mathrm{DDK}_k,\mathrm{HSAF}\}`,
+	String.raw`\mathrm{EWH}(\theta,\lambda)=\frac{a\rho_e}{3\rho_w}\sum_{l=0}^{l_{\max}}\sum_{m=0}^{l}\frac{2l+1}{1+k_l}\bar{P}_{lm}(\cos\theta)\left(\Delta C_{lm}\cos m\lambda+\Delta S_{lm}\sin m\lambda\right)`,
+	String.raw`\mathrm{TWSA}_{\mathrm{basin}}(t)=\frac{\sum_i A_i\,\mathrm{EWH}_i(t)}{\sum_i A_i}`,
+];
 const stepIcons = [
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 27l13-6 6 6-6 13-4-9-9-4Z"/><path d="M27 9l12 12M32 4l12 12M18 18l12 12"/><path d="M31 21 21 31"/></svg>',
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 13h24M12 24h24M12 35h24"/><circle cx="19" cy="13" r="4"/><circle cx="30" cy="24" r="4"/><circle cx="22" cy="35" r="4"/></svg>',
@@ -87,7 +95,7 @@ const stepIcons = [
 									<h3>Principle</h3>
 									<p>{detail.principle}</p>
 									<h3>Formula</h3>
-									<div class="formula-block" set:html={detail.formulaHtml}></div>
+									<div class="formula-block">{`\\[${formulaTex[index]}\\]`}</div>
 									<h3>Configuration example</h3>
 									<dl class="config-list">
 										{detail.config.map(([key, value]) => (
@@ -188,6 +196,7 @@ const stepIcons = [
 					document.querySelectorAll('.pipeline-detail-card[open]').forEach((other) => {
 						if (other !== card) other.removeAttribute('open');
 					});
+					if (window.MathJax?.typesetPromise) window.MathJax.typesetPromise([card]).catch(() => {});
 				});
 			});
 		</script>

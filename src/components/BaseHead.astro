@@ -38,6 +38,24 @@ const ogImage = new URL(image.src, Astro.url);
 <link rel="canonical" href={canonicalURL} />
 <meta name="generator" content={Astro.generator} />
 
+<script is:inline>
+	window.MathJax = {
+		tex: {
+			inlineMath: [['\\(', '\\)']],
+			displayMath: [['\\[', '\\]']],
+			processEscapes: true,
+		},
+		chtml: {
+			displayAlign: 'left',
+			displayIndent: '0',
+		},
+		startup: {
+			typeset: true,
+		},
+	};
+</script>
+<script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
 
 <title>{title}</title>
 <meta name="title" content={title} />
