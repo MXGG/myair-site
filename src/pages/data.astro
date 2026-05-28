@@ -1,0 +1,16 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { paths, site } from '../data/site';
+const lang = 'en';
+const t = site[lang];
+const h = t.home;
+const cards = [
+  ['Level-2 GSM', 'Monthly spherical harmonic coefficients from GRACE/GRACE-FO processing centers.'],
+  ['Gridded EWH', 'Equivalent water height anomaly grids produced from corrected coefficients.'],
+  ['Mascon references', 'Independent products for spatial pattern and basin-series comparison.'],
+  ['Auxiliary data', 'GIA, SLR replacement terms, basin masks, hydrology models, and altimetry references.'],
+];
+---
+<!doctype html><html lang={t.langCode}><head><BaseHead title={`Data Products | ${t.title}`} description={h.dataLead} lang={lang} alternateHref={paths.zh.data} /></head><body><Header lang={lang} alternateHref={paths.zh.data} /><main class="page-shell topic-page"><nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Data</span></nav><section class="page-hero compact"><p class="eyebrow">Data</p><h1>Data Products</h1><p>{h.dataLead}</p></section><section class="topic-card-grid">{cards.map(([title,text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p></article>)}</section><section class="note-callout"><strong>Quality principle</strong><p>Every product should keep its source, version, baseline, spatial grid, units, and filter route explicit.</p></section></main><Footer lang={lang} /></body></html>

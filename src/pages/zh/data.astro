@@ -1,0 +1,11 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { paths, site } from '../../data/site';
+const lang = 'zh';
+const t = site[lang];
+const h = t.home;
+const cards = [['Level-2 GSM','GRACE/GRACE-FO 处理中心发布的月尺度球谐系数产品。'],['格网 EWH','由改正球谐系数合成得到的等效水高异常格网。'],['Mascon 参考','用于空间形态、流域时间序列和趋势对比的独立产品。'],['辅助数据','GIA、SLR 替换项、流域掩膜、水文模型和测高资料等。']];
+---
+<!doctype html><html lang={t.langCode}><head><BaseHead title={`数据产品 | ${t.title}`} description={h.dataLead} lang={lang} alternateHref={paths.en.data} /></head><body><Header lang={lang} alternateHref={paths.en.data} /><main class="page-shell topic-page"><nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>数据</span></nav><section class="page-hero compact"><p class="eyebrow">Data</p><h1>数据产品</h1><p>{h.dataLead}</p></section><section class="topic-card-grid">{cards.map(([title,text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p></article>)}</section><section class="note-callout"><strong>质量原则</strong><p>每个产品都应明确来源、版本、基准期、空间格网、单位和滤波路线。</p></section></main><Footer lang={lang} /></body></html>

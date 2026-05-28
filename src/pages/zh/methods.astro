@@ -1,0 +1,11 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { paths, site } from '../../data/site';
+const lang = 'zh';
+const t = site[lang];
+const h = t.home;
+const methods = [['Gaussian 平滑','用于高阶噪声抑制的基础各向同性空间平滑方法。'],['去相关滤波','PnMm 等多项式去相关方法用于削弱南北向条带。'],['DDK 滤波','具有协方差约束特征的各向异性正则化滤波产品。'],['HSAF / Hankel 滤波','面向条带噪声抑制和信号保持的自适应谱分解方法。'],['泄漏校正','面向流域和封闭区域的尺度因子恢复与周边信号扣除。'],['质量验证','图像预览、流域序列、年振幅、趋势、RMSE 与外部产品一致性。']];
+---
+<!doctype html><html lang={t.langCode}><head><BaseHead title={`方法记录 | ${t.title}`} description={h.methodLead} lang={lang} alternateHref={paths.en.methods} /></head><body><Header lang={lang} alternateHref={paths.en.methods} /><main class="page-shell topic-page"><nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>方法</span></nav><section class="page-hero compact"><p class="eyebrow">Methods</p><h1>方法记录</h1><p>{h.methodLead}</p></section><section class="topic-card-grid">{methods.map(([title,text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p><a href="/zh/blog/second-post/">查看方法笔记</a></article>)}</section></main><Footer lang={lang} /></body></html>

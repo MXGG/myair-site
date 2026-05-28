@@ -1,0 +1,17 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import Footer from '../../components/Footer.astro';
+import Header from '../../components/Header.astro';
+import { paths, site } from '../../data/site';
+const lang = 'zh';
+const t = site[lang];
+const h = t.home;
+const topics = [
+  ['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/zh/blog/first-post/'],
+  ['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/zh/blog/first-post/'],
+  ['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/zh/blog/second-post/'],
+  ['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/zh/blog/third-post/'],
+  ['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/zh/blog/third-post/'],
+];
+---
+<!doctype html><html lang={t.langCode}><head><BaseHead title={`处理流程 | ${t.title}`} description={h.pipelineLead} lang={lang} alternateHref={paths.en.pipeline} /></head><body><Header lang={lang} alternateHref={paths.en.pipeline} /><main class="page-shell topic-page"><nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>处理流程</span></nav><section class="page-hero compact"><p class="eyebrow">Workflow</p><h1>处理流程</h1><p>{h.pipelineLead}</p></section><section class="topic-card-grid" aria-label="处理步骤">{topics.map(([num, title, text, href]) => <article class="topic-card"><span>{num}</span><h2>{title}</h2><p>{text}</p><a href={href}>查看相关文章</a></article>)}</section><section class="note-callout"><strong>实现说明</strong><p>详细的处理约定仍保留在首页交互式流程卡片中。本页面提供稳定的分享和搜索入口。</p><a class="button primary" href="/zh/#pipeline">打开交互式流程</a></section></main><Footer lang={lang} /></body></html>

@@ -24,23 +24,29 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 	<body>
 		<Header lang={lang} alternateHref={paths.en.blog} />
 		<main class="blog-shell">
+			<nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>博客</span></nav>
 			<section class="page-hero compact">
 				<p class="eyebrow">{t.blog.eyebrow}</p>
 				<h1>{t.blog.title}</h1>
 				<p>{t.blog.lead}</p>
 			</section>
 
+			<section class="blog-controls" aria-label="按主题筛选文章">
+				<button class="filter-chip active" type="button" data-filter="all">全部</button>
+				{topics.map((topic) => <button class="filter-chip" type="button" data-filter={topic}>{topic}</button>)}
+			</section>
+
 			<section class="blog-layout" aria-label="博客文章">
 				<div class="blog-main">
 					{featured && (
-						<article class="featured-post">
+						<article class="featured-post" data-post-card data-tags={(featured.data.tags ?? []).join('|')}>
 							<a href={getBlogPath(lang, featured.id)}>
-								{featured.data.heroImage && <Image width={920} height={460} src={featured.data.heroImage} alt="" />}
+								{featured.data.heroImage && <Image width={920} height={460} src={featured.data.heroImage} alt={`${featured.data.title}封面图`} />}
 								<div>
 									<p class="section-label">{t.blog.featured}</p>
 									<h2>{featured.data.title}</h2>
 									<p>{featured.data.description}</p>
-									<span><FormattedDate date={featured.data.pubDate} /></span>
+									<span><FormattedDate date={featured.data.pubDate} />{featured.data.readingMinutes && <> · {featured.data.readingMinutes} {t.blog.minutes}</>}</span>
 								</div>
 							</a>
 						</article>
@@ -48,12 +54,13 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 
 					<div class="article-list-heading">
 						<h2>{t.blog.latest}</h2>
+						<p data-filter-count>{posts.length} 篇笔记</p>
 					</div>
 					<div class="post-card-grid">
 						{rest.map((post) => (
-							<article class="post-card">
+							<article class="post-card" data-post-card data-tags={(post.data.tags ?? []).join('|')}>
 								<a href={getBlogPath(lang, post.id)}>
-									{post.data.heroImage && <Image width={520} height={292} src={post.data.heroImage} alt="" />}
+									{post.data.heroImage && <Image width={520} height={292} src={post.data.heroImage} alt={`${post.data.title}封面图`} />}
 									<div class="post-card-body">
 										<div class="post-meta"><FormattedDate date={post.data.pubDate} />{post.data.readingMinutes && <span>{post.data.readingMinutes} {t.blog.minutes}</span>}</div>
 										<h3>{post.data.title}</h3>
@@ -75,6 +82,11 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 						<h2>{t.blog.tagsTitle}</h2>
 						<div class="tag-list">{topics.map((topic) => <span>{topic}</span>)}</div>
 					</section>
+					<section class="aside-card recommended-card">
+						<h2>推荐起点</h2>
+						<a href="/zh/blog/first-post/">可复现的 GRACE Level-2 工作流</a>
+						<a href="/zh/blog/second-post/">将滤波产品作为产品图管理</a>
+					</section>
 					<section class="aside-card">
 						<h2>{t.blog.resourcesTitle}</h2>
 						<div class="resource-links">
@@ -86,5 +98,24 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 			</section>
 		</main>
 		<Footer lang={lang} />
+		<script is:inline>
+			const buttons = Array.from(document.querySelectorAll('[data-filter]'));
+			const cards = Array.from(document.querySelectorAll('[data-post-card]'));
+			const counter = document.querySelector('[data-filter-count]');
+			buttons.forEach((button) => {
+				button.addEventListener('click', () => {
+					const filter = button.dataset.filter;
+					buttons.forEach((item) => item.classList.toggle('active', item === button));
+					let shown = 0;
+					cards.forEach((card) => {
+						const tags = (card.dataset.tags || '').split('|');
+						const visible = filter === 'all' || tags.includes(filter);
+						card.hidden = !visible;
+						if (visible) shown += 1;
+					});
+					if (counter) counter.textContent = `${shown} 篇笔记`;
+				});
+			});
+		</script>
 	</body>
 </html>

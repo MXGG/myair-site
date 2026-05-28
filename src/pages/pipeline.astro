@@ -1,0 +1,33 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { paths, site } from '../data/site';
+const lang = 'en';
+const t = site[lang];
+const h = t.home;
+const topics = [
+  ['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/blog/first-post/'],
+  ['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/blog/first-post/'],
+  ['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/blog/second-post/'],
+  ['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/blog/third-post/'],
+  ['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/blog/third-post/'],
+];
+---
+<!doctype html>
+<html lang={t.langCode}>
+  <head><BaseHead title={`Processing Pipeline | ${t.title}`} description={h.pipelineLead} lang={lang} alternateHref={paths.zh.pipeline} /></head>
+  <body>
+    <Header lang={lang} alternateHref={paths.zh.pipeline} />
+    <main class="page-shell topic-page">
+      <nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Pipeline</span></nav>
+      <section class="page-hero compact">
+        <p class="eyebrow">Workflow</p><h1>Processing Pipeline</h1><p>{h.pipelineLead}</p>
+      </section>
+      <section class="topic-card-grid" aria-label="Pipeline steps">
+        {topics.map(([num, title, text, href]) => <article class="topic-card"><span>{num}</span><h2>{title}</h2><p>{text}</p><a href={href}>Read related note</a></article>)}
+      </section>
+      <section class="note-callout"><strong>Implementation note</strong><p>Detailed processing contracts remain on the homepage accordion. This page provides a stable URL for search engines and sharing.</p><a class="button primary" href="/#pipeline">Open interactive pipeline</a></section>
+    </main><Footer lang={lang} />
+  </body>
+</html>

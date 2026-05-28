@@ -1,0 +1,18 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { paths, site } from '../data/site';
+const lang = 'en';
+const t = site[lang];
+const h = t.home;
+const methods = [
+  ['Gaussian smoothing', 'Baseline isotropic spatial smoothing for high-degree noise suppression.'],
+  ['Decorrelated filtering', 'PnMm style polynomial de-correlation for north-south stripe reduction.'],
+  ['DDK filtering', 'Anisotropic regularized filtering with covariance-aware smoothing behavior.'],
+  ['HSAF / Hankel filtering', 'Adaptive spectral decomposition for stripe suppression and signal preservation.'],
+  ['Leakage correction', 'Scale factor and surrounding signal correction for bounded regions and basins.'],
+  ['Validation', 'Map preview, basin series, annual amplitude, trend, RMSE, and external product consistency.'],
+];
+---
+<!doctype html><html lang={t.langCode}><head><BaseHead title={`Methods | ${t.title}`} description={h.methodLead} lang={lang} alternateHref={paths.zh.methods} /></head><body><Header lang={lang} alternateHref={paths.zh.methods} /><main class="page-shell topic-page"><nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Methods</span></nav><section class="page-hero compact"><p class="eyebrow">Methods</p><h1>Method Notes</h1><p>{h.methodLead}</p></section><section class="topic-card-grid">{methods.map(([title,text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p><a href="/blog/second-post/">Read method note</a></article>)}</section></main><Footer lang={lang} /></body></html>

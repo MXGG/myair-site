@@ -6,7 +6,7 @@ import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
 import Header from '../components/Header.astro';
 import type { Lang } from '../data/site';
-import { getAlternatePath, site } from '../data/site';
+import { getAlternatePath, paths, site } from '../data/site';
 
 type BlogData = CollectionEntry<'blog'>['data'];
 interface Props extends BlogData {
@@ -17,7 +17,11 @@ interface Props extends BlogData {
 
 const { title, description, pubDate, updatedDate, heroImage, tags = [], readingMinutes, lang = 'en', slug, alternateHref } = Astro.props;
 const t = site[lang].blog;
+const s = site[lang];
+const p = paths[lang];
 const alt = alternateHref ?? (slug ? getAlternatePath(lang, 'blog', slug) : getAlternatePath(lang, 'blog'));
+const isZh = lang === 'zh';
+const authorName = isZh ? '固体地球物理组' : 'Solid Geophysics Group';
 ---
 
 <html lang={site[lang].langCode}>
@@ -26,35 +30,97 @@ const alt = alternateHref ?? (slug ? getAlternatePath(lang, 'blog', slug) : getA
 	</head>
 
 	<body>
+		<div class="reading-progress" data-reading-progress aria-hidden="true"></div>
 		<Header lang={lang} alternateHref={alt} />
-		<main class="article-shell">
-			<article class="article-frame">
-				<header class="article-header">
-					<div class="article-meta">
-						<span><FormattedDate date={pubDate} /></span>
-						{readingMinutes && <span>{readingMinutes} {t.minutes}</span>}
-						{updatedDate && <span>Updated <FormattedDate date={updatedDate} /></span>}
-					</div>
-					<h1>{title}</h1>
-					<p>{description}</p>
-					{tags.length > 0 && (
-						<div class="tag-list" aria-label="Article topics">
-							{tags.map((tag) => <span>{tag}</span>)}
+		<main class="article-shell article-shell-enhanced">
+			<nav class="breadcrumb" aria-label={isZh ? '面包屑导航' : 'Breadcrumb'}>
+				<a href={p.home}>{s.nav.home}</a><span>/</span><a href={p.blog}>{s.nav.blog}</a><span>/</span><span>{title}</span>
+			</nav>
+			<div class="article-layout">
+				<aside class="article-toc" aria-label={isZh ? '文章目录' : 'Table of contents'}>
+					<strong>{isZh ? '目录' : 'Contents'}</strong>
+					<nav data-article-toc><p>{isZh ? '正在生成目录…' : 'Generating outline…'}</p></nav>
+				</aside>
+				<article class="article-frame">
+					<header class="article-header">
+						<div class="article-meta">
+							<span><FormattedDate date={pubDate} /></span>
+							{readingMinutes && <span>{readingMinutes} {t.minutes}</span>}
+							{updatedDate && <span>{isZh ? '更新于' : 'Updated'} <FormattedDate date={updatedDate} /></span>}
+						</div>
+						<h1>{title}</h1>
+						<p>{description}</p>
+						<div class="article-author-line">
+							<span>{isZh ? '作者' : 'Author'}: <strong>{authorName}</strong></span>
+							<a href={p.about}>{isZh ? '项目信息' : 'Project profile'}</a>
+						</div>
+						{tags.length > 0 && (
+							<div class="tag-list" aria-label={isZh ? '文章主题' : 'Article topics'}>
+								{tags.map((tag) => <span>{tag}</span>)}
+							</div>
+						)}
+					</header>
+
+					{heroImage && (
+						<div class="hero-image">
+							<Image width={1120} height={560} src={heroImage} alt={`${title} cover`} />
 						</div>
 					)}
-				</header>
 
-				{heroImage && (
-					<div class="hero-image">
-						<Image width={1120} height={560} src={heroImage} alt="" />
+					<section class="article-summary-box" aria-label={isZh ? '文章摘要' : 'Article summary'}>
+						<strong>{isZh ? '摘要' : 'Summary'}</strong>
+						<p>{description}</p>
+					</section>
+
+					<div class="prose article-prose" data-article-content>
+						<slot />
 					</div>
-				)}
 
-				<div class="prose article-prose">
-					<slot />
-				</div>
-			</article>
+					<footer class="article-end-card">
+						<div>
+							<strong>{isZh ? '继续阅读' : 'Continue reading'}</strong>
+							<p>{isZh ? '返回博客列表，按主题筛选更多处理笔记。' : 'Return to the blog index and filter additional processing notes by topic.'}</p>
+						</div>
+						<a class="button primary" href={p.blog}>{isZh ? '返回博客' : 'Back to blog'}</a>
+					</footer>
+				</article>
+				<aside class="article-share" aria-label={isZh ? '分享' : 'Share'}>
+					<button type="button" data-copy-link>{isZh ? '复制链接' : 'Copy link'}</button>
+					<a href={`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(Astro.url.href)}`}>{isZh ? '邮件分享' : 'Email'}</a>
+				</aside>
+			</div>
 		</main>
 		<Footer lang={lang} />
+		<script is:inline>
+			const article = document.querySelector('[data-article-content]');
+			const toc = document.querySelector('[data-article-toc]');
+			const progress = document.querySelector('[data-reading-progress]');
+			if (article && toc) {
+				const headings = Array.from(article.querySelectorAll('h2, h3'));
+				if (!headings.length) toc.innerHTML = '<p>No section headings.</p>';
+				else {
+					toc.innerHTML = headings.map((heading, index) => {
+						if (!heading.id) heading.id = `section-${index + 1}`;
+						return `<a class="toc-${heading.tagName.toLowerCase()}" href="#${heading.id}">${heading.textContent}</a>`;
+					}).join('');
+				}
+			}
+			const updateProgress = () => {
+				if (!progress || !article) return;
+				const rect = article.getBoundingClientRect();
+				const total = Math.max(1, rect.height - window.innerHeight * 0.35);
+				const read = Math.min(Math.max(-rect.top, 0), total);
+				progress.style.transform = `scaleX(${read / total})`;
+			};
+			window.addEventListener('scroll', updateProgress, { passive: true });
+			window.addEventListener('resize', updateProgress);
+			updateProgress();
+			document.querySelector('[data-copy-link]')?.addEventListener('click', async (event) => {
+				try {
+					await navigator.clipboard.writeText(window.location.href);
+					event.currentTarget.textContent = document.documentElement.lang.startsWith('zh') ? '已复制' : 'Copied';
+				} catch (error) {}
+			});
+		</script>
 	</body>
 </html>
