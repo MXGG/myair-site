@@ -14,6 +14,7 @@ const posts = (await getCollection('blogZh')).sort(
 );
 const [featured, ...rest] = posts;
 const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? [])));
+const searchData = (post) => [post.data.title, post.data.description, ...(post.data.tags ?? [])].join(' ').toLowerCase();
 ---
 
 <!doctype html>
@@ -31,15 +32,24 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 				<p>{t.blog.lead}</p>
 			</section>
 
-			<section class="blog-controls" aria-label="按主题筛选文章">
-				<button class="filter-chip active" type="button" data-filter="all">全部</button>
-				{topics.map((topic) => <button class="filter-chip" type="button" data-filter={topic}>{topic}</button>)}
+			<section class="blog-discovery" aria-label="文章发现">
+				<label class="blog-search-card">
+					<span>检索笔记</span>
+					<input type="search" data-blog-search placeholder="搜索：处理流程、HSAF、EWH、预览..." autocomplete="off" />
+				</label>
+				<div class="blog-topic-card">
+					<span>按主题筛选</span>
+					<div class="blog-controls" aria-label="按主题筛选文章">
+						<button class="filter-chip active" type="button" data-filter="all">全部</button>
+						{topics.map((topic) => <button class="filter-chip" type="button" data-filter={topic}>{topic}</button>)}
+					</div>
+				</div>
 			</section>
 
 			<section class="blog-layout" aria-label="博客文章">
 				<div class="blog-main">
 					{featured && (
-						<article class="featured-post" data-post-card data-tags={(featured.data.tags ?? []).join('|')}>
+						<article class="featured-post" data-post-card data-tags={(featured.data.tags ?? []).join('|')} data-search={searchData(featured)}>
 							<a href={getBlogPath(lang, featured.id)}>
 								{featured.data.heroImage && <Image width={920} height={460} src={featured.data.heroImage} alt={`${featured.data.title}封面图`} />}
 								<div>
@@ -47,6 +57,7 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 									<h2>{featured.data.title}</h2>
 									<p>{featured.data.description}</p>
 									<span><FormattedDate date={featured.data.pubDate} />{featured.data.readingMinutes && <> · {featured.data.readingMinutes} {t.blog.minutes}</>}</span>
+									<div class="tag-list">{featured.data.tags?.map((tag) => <span>{tag}</span>)}</div>
 								</div>
 							</a>
 						</article>
@@ -58,7 +69,7 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 					</div>
 					<div class="post-card-grid">
 						{rest.map((post) => (
-							<article class="post-card" data-post-card data-tags={(post.data.tags ?? []).join('|')}>
+							<article class="post-card" data-post-card data-tags={(post.data.tags ?? []).join('|')} data-search={searchData(post)}>
 								<a href={getBlogPath(lang, post.id)}>
 									{post.data.heroImage && <Image width={520} height={292} src={post.data.heroImage} alt={`${post.data.title}封面图`} />}
 									<div class="post-card-body">
@@ -71,6 +82,7 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 							</article>
 						))}
 					</div>
+					<p class="empty-state" data-empty-state hidden>当前检索条件下没有匹配笔记。</p>
 				</div>
 
 				<aside class="blog-aside">
@@ -78,9 +90,11 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 						<h2>{t.blog.asideTitle}</h2>
 						<p>{t.blog.asideText}</p>
 					</section>
-					<section class="aside-card">
-						<h2>{t.blog.tagsTitle}</h2>
-						<div class="tag-list">{topics.map((topic) => <span>{topic}</span>)}</div>
+					<section class="aside-card topic-map-card">
+						<h2>主题地图</h2>
+						<div class="topic-map-list">
+							{topics.map((topic) => <button type="button" data-filter={topic}>{topic}</button>)}
+						</div>
 					</section>
 					<section class="aside-card recommended-card">
 						<h2>推荐起点</h2>
@@ -102,20 +116,31 @@ const topics = Array.from(new Set(posts.flatMap((post) => post.data.tags ?? []))
 			const buttons = Array.from(document.querySelectorAll('[data-filter]'));
 			const cards = Array.from(document.querySelectorAll('[data-post-card]'));
 			const counter = document.querySelector('[data-filter-count]');
+			const searchInput = document.querySelector('[data-blog-search]');
+			const emptyState = document.querySelector('[data-empty-state]');
+			let activeFilter = 'all';
+			const applyFilters = () => {
+				const query = (searchInput?.value || '').trim().toLowerCase();
+				let shown = 0;
+				cards.forEach((card) => {
+					const tags = (card.dataset.tags || '').split('|').filter(Boolean);
+					const topicMatch = activeFilter === 'all' || tags.includes(activeFilter);
+					const searchMatch = !query || (card.dataset.search || '').includes(query);
+					const visible = topicMatch && searchMatch;
+					card.hidden = !visible;
+					if (visible) shown += 1;
+				});
+				if (counter) counter.textContent = `${shown} 篇笔记`;
+				if (emptyState) emptyState.hidden = shown !== 0;
+			};
 			buttons.forEach((button) => {
 				button.addEventListener('click', () => {
-					const filter = button.dataset.filter;
-					buttons.forEach((item) => item.classList.toggle('active', item === button));
-					let shown = 0;
-					cards.forEach((card) => {
-						const tags = (card.dataset.tags || '').split('|');
-						const visible = filter === 'all' || tags.includes(filter);
-						card.hidden = !visible;
-						if (visible) shown += 1;
-					});
-					if (counter) counter.textContent = `${shown} 篇笔记`;
+					activeFilter = button.dataset.filter || 'all';
+					buttons.forEach((item) => item.classList.toggle('active', item.dataset.filter === activeFilter));
+					applyFilters();
 				});
 			});
+			searchInput?.addEventListener('input', applyFilters);
 		</script>
 	</body>
 </html>

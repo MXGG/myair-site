@@ -176,11 +176,13 @@ const stepIcons = [
 						<h2>{h.recentTitle}</h2>
 						<p>{h.recentLead}</p>
 					</div>
-					<div class="compact-post-list">
+					<div class="compact-post-list expanded">
 						{posts.map((post) => (
-							<a href={getBlogPath(lang, post.id)}>
-								<span><FormattedDate date={post.data.pubDate} /></span>
+							<a class="compact-post-card" href={getBlogPath(lang, post.id)}>
+								<span><FormattedDate date={post.data.pubDate} />{post.data.readingMinutes && <> · {post.data.readingMinutes} {t.blog.minutes}</>}</span>
 								<strong>{post.data.title}</strong>
+								<p>{post.data.description}</p>
+								<div class="tag-list">{post.data.tags?.slice(0, 3).map((tag) => <span>{tag}</span>)}</div>
 							</a>
 						))}
 					</div>

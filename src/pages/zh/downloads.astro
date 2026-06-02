@@ -49,6 +49,19 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 					</article>
 				))}
 			</section>
+			<section class="release-checklist" aria-labelledby="release-checklist-title">
+				<div>
+					<p class="section-label">下载前检查</p>
+					<h2 id="release-checklist-title">版本核对清单</h2>
+					<p>发布页作为安装包与版本说明的统一入口，运行本地处理前应先核对版本信息。</p>
+				</div>
+				<ol>
+					<li><strong>版本</strong><span>核对 release 标签、包类型和支持的 Windows 版本。</span></li>
+					<li><strong>数据路径</strong><span>将 GSM 输入、替换产品、掩膜和输出栈分别放入独立目录。</span></li>
+					<li><strong>可复现</strong><span>每个导出产品都应同步保存 JSON 配置和滤波产品标识。</span></li>
+				</ol>
+			</section>
+
 			<section class="faq-card" aria-labelledby="faq-title">
 				<h2 id="faq-title">常见问题</h2>
 				<details><summary>安装前需要核对哪些信息？</summary><p>建议核对版本号、支持的 Windows 版本，以及当前发布包是安装版还是便携版。</p></details>

@@ -9,24 +9,75 @@ import type { Lang } from '../data/site';
 import { getAlternatePath, paths, site } from '../data/site';
 
 type BlogData = CollectionEntry<'blog'>['data'];
+type RelatedPost = {
+	title: string;
+	description: string;
+	href: string;
+	pubDate: Date;
+	readingMinutes?: number;
+	tags?: string[];
+};
+
 interface Props extends BlogData {
 	lang?: Lang;
 	slug?: string;
 	alternateHref?: string;
+	relatedPosts?: RelatedPost[];
+	previousPost?: RelatedPost;
+	nextPost?: RelatedPost;
 }
 
-const { title, description, pubDate, updatedDate, heroImage, tags = [], readingMinutes, lang = 'en', slug, alternateHref } = Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	tags = [],
+	readingMinutes,
+	lang = 'en',
+	slug,
+	alternateHref,
+	relatedPosts = [],
+	previousPost,
+	nextPost,
+} = Astro.props;
 const t = site[lang].blog;
 const s = site[lang];
 const p = paths[lang];
 const alt = alternateHref ?? (slug ? getAlternatePath(lang, 'blog', slug) : getAlternatePath(lang, 'blog'));
 const isZh = lang === 'zh';
 const authorName = isZh ? '固体地球物理组' : 'Solid Geophysics Group';
+const authorUrl = new URL(p.about, Astro.site).href;
+const articleUrl = Astro.url.href;
+const articleLd = JSON.stringify({
+	'@context': 'https://schema.org',
+	'@type': 'Article',
+	headline: title,
+	description,
+	datePublished: pubDate.toISOString(),
+	dateModified: (updatedDate ?? pubDate).toISOString(),
+	inLanguage: site[lang].langCode,
+	mainEntityOfPage: articleUrl,
+	image: heroImage ? new URL(heroImage.src, Astro.url).href : undefined,
+	author: {
+		'@type': 'Organization',
+		name: authorName,
+		url: authorUrl,
+	},
+	publisher: {
+		'@type': 'Organization',
+		name: s.title,
+		url: new URL(p.home, Astro.site).href,
+	},
+	keywords: tags.join(', '),
+});
 ---
 
 <html lang={site[lang].langCode}>
 	<head>
 		<BaseHead title={title} description={description} image={heroImage} lang={lang} alternateHref={alt} />
+		<script type="application/ld+json" set:html={articleLd}></script>
 	</head>
 
 	<body>
@@ -76,6 +127,50 @@ const authorName = isZh ? '固体地球物理组' : 'Solid Geophysics Group';
 						<slot />
 					</div>
 
+					{(previousPost || nextPost) && (
+						<nav class="article-pager" aria-label={isZh ? '前后文章' : 'Previous and next articles'}>
+							{previousPost ? (
+								<a href={previousPost.href}>
+									<span>{isZh ? '上一篇' : 'Previous'}</span>
+									<strong>{previousPost.title}</strong>
+								</a>
+							) : <span></span>}
+							{nextPost ? (
+								<a href={nextPost.href}>
+									<span>{isZh ? '下一篇' : 'Next'}</span>
+									<strong>{nextPost.title}</strong>
+								</a>
+							) : <span></span>}
+						</nav>
+					)}
+
+					{relatedPosts.length > 0 && (
+						<section class="related-post-section" aria-labelledby="related-post-title">
+							<div class="article-section-heading">
+								<strong id="related-post-title">{isZh ? '相关笔记' : 'Related notes'}</strong>
+								<p>{isZh ? '按相同主题自动推荐，便于继续阅读。' : 'Automatically selected by overlapping topics for continued reading.'}</p>
+							</div>
+							<div class="related-post-grid">
+								{relatedPosts.map((post) => (
+									<a class="related-post-card" href={post.href}>
+										<span><FormattedDate date={post.pubDate} />{post.readingMinutes && <> · {post.readingMinutes} {t.minutes}</>}</span>
+										<strong>{post.title}</strong>
+										<p>{post.description}</p>
+										{post.tags && <small>{post.tags.slice(0, 3).join(' · ')}</small>}
+									</a>
+								))}
+							</div>
+						</section>
+					)}
+
+					<section class="author-box" aria-label={isZh ? '作者信息' : 'Author information'}>
+						<div>
+							<strong>{authorName}</strong>
+							<p>{isZh ? '围绕 GRACE/GRACE‑FO Level‑2 数据处理、滤波产品路由、EWH 数据栈和预览质量控制进行工程化记录。' : 'Engineering records for GRACE/GRACE-FO Level-2 processing, filter-product routing, EWH stacks, and preview quality control.'}</p>
+						</div>
+						<a href={p.about}>{isZh ? '查看项目简介' : 'View project profile'}</a>
+					</section>
+
 					<footer class="article-end-card">
 						<div>
 							<strong>{isZh ? '继续阅读' : 'Continue reading'}</strong>
@@ -95,9 +190,10 @@ const authorName = isZh ? '固体地球物理组' : 'Solid Geophysics Group';
 			const article = document.querySelector('[data-article-content]');
 			const toc = document.querySelector('[data-article-toc]');
 			const progress = document.querySelector('[data-reading-progress]');
+			const langIsZh = document.documentElement.lang.startsWith('zh');
 			if (article && toc) {
 				const headings = Array.from(article.querySelectorAll('h2, h3'));
-				if (!headings.length) toc.innerHTML = '<p>No section headings.</p>';
+				if (!headings.length) toc.innerHTML = `<p>${langIsZh ? '暂无分级标题。' : 'No section headings.'}</p>`;
 				else {
 					toc.innerHTML = headings.map((heading, index) => {
 						if (!heading.id) heading.id = `section-${index + 1}`;
@@ -118,7 +214,7 @@ const authorName = isZh ? '固体地球物理组' : 'Solid Geophysics Group';
 			document.querySelector('[data-copy-link]')?.addEventListener('click', async (event) => {
 				try {
 					await navigator.clipboard.writeText(window.location.href);
-					event.currentTarget.textContent = document.documentElement.lang.startsWith('zh') ? '已复制' : 'Copied';
+					event.currentTarget.textContent = langIsZh ? '已复制' : 'Copied';
 				} catch (error) {}
 			});
 		</script>

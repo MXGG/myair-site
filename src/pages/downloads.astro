@@ -49,6 +49,19 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 					</article>
 				))}
 			</section>
+			<section class="release-checklist" aria-labelledby="release-checklist-title">
+				<div>
+					<p class="section-label">Before download</p>
+					<h2 id="release-checklist-title">Release verification checklist</h2>
+					<p>Use the release page as the single source of truth and check the version note before running local processing.</p>
+				</div>
+				<ol>
+					<li><strong>Version</strong><span>Confirm the release tag, package type, and supported Windows version.</span></li>
+					<li><strong>Data path</strong><span>Keep GSM input, replacement products, masks, and output stacks in separate directories.</span></li>
+					<li><strong>Reproducibility</strong><span>Save the JSON configuration and filter tags together with every exported product.</span></li>
+				</ol>
+			</section>
+
 			<section class="faq-card" aria-labelledby="faq-title">
 				<h2 id="faq-title">FAQ</h2>
 				<details><summary>What information should I check before installing?</summary><p>Confirm the release version, supported Windows version, and whether the package is an installer or portable build.</p></details>

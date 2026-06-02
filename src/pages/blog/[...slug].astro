@@ -1,7 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
-import { getAlternatePath } from '../../data/site';
+import { getAlternatePath, getBlogPath } from '../../data/site';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
@@ -9,8 +9,35 @@ export async function getStaticPaths() {
 }
 const post = Astro.props;
 const { Content } = await render(post);
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const currentIndex = posts.findIndex((item) => item.id === post.id);
+const toRelated = (item) => ({
+	title: item.data.title,
+	description: item.data.description,
+	href: getBlogPath('en', item.id),
+	pubDate: item.data.pubDate,
+	readingMinutes: item.data.readingMinutes,
+	tags: item.data.tags,
+});
+const currentTags = new Set(post.data.tags ?? []);
+const relatedPosts = posts
+	.filter((item) => item.id !== post.id)
+	.map((item) => ({ item, score: (item.data.tags ?? []).filter((tag) => currentTags.has(tag)).length }))
+	.sort((a, b) => b.score - a.score || b.item.data.pubDate.valueOf() - a.item.data.pubDate.valueOf())
+	.slice(0, 3)
+	.map(({ item }) => toRelated(item));
+const nextPost = currentIndex > 0 ? toRelated(posts[currentIndex - 1]) : undefined;
+const previousPost = currentIndex >= 0 && currentIndex < posts.length - 1 ? toRelated(posts[currentIndex + 1]) : undefined;
 ---
 
-<BlogPost {...post.data} lang="en" slug={post.id} alternateHref={getAlternatePath('en', 'blog', post.id)}>
+<BlogPost
+	{...post.data}
+	lang="en"
+	slug={post.id}
+	alternateHref={getAlternatePath('en', 'blog', post.id)}
+	relatedPosts={relatedPosts}
+	previousPost={previousPost}
+	nextPost={nextPost}
+>
 	<Content />
 </BlogPost>
