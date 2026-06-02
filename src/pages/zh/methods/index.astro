@@ -1,0 +1,89 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import Header from '../../../components/Header.astro';
+import { methodsZh, methodIndexIntro } from '../../../data/methods.zh';
+import { paths, site } from '../../../data/site';
+
+const lang = 'zh';
+const t = site[lang];
+const methods = methodsZh.sort((a, b) => a.order - b.order);
+const pageTitle = `${methodIndexIntro.title} | ${t.title}`;
+const pageDescription = methodIndexIntro.subtitle;
+---
+
+<!doctype html>
+<html lang={t.langCode}>
+  <head>
+    <BaseHead title={pageTitle} description={pageDescription} lang={lang} alternateHref={paths.en.methods} />
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: methodIndexIntro.title,
+      description: pageDescription,
+      url: Astro.url.href,
+      inLanguage: 'zh-CN',
+      hasPart: methods.map((method) => ({
+        '@type': 'TechArticle',
+        headline: method.title,
+        description: method.description,
+        url: new URL(`/zh/methods/${method.slug}/`, Astro.site).href,
+      })),
+    })}></script>
+  </head>
+  <body>
+    <Header lang={lang} alternateHref={paths.en.methods} />
+    <main class="page-shell topic-page method-index-page">
+      <nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>方法</span></nav>
+
+      <section class="page-hero compact method-index-hero">
+        <p class="eyebrow">METHODS</p>
+        <h1>{methodIndexIntro.title}</h1>
+        <p>{methodIndexIntro.subtitle}</p>
+        <p class="method-index-description">{methodIndexIntro.description}</p>
+        <div class="method-index-actions">
+          <a class="button primary" href="#method-cards">浏览方法卡片</a>
+          <a class="button ghost" href="#method-flow">查看处理链关系</a>
+        </div>
+      </section>
+
+      <section id="method-cards" class="method-index-grid" aria-label="滤波方法索引">
+        {methods.map((method) => (
+          <article class:list={['method-index-card', method.slug === 'hsaf' && 'featured-method']}>
+            <div class="method-card-topline">
+              <span>{String(method.order).padStart(2, '0')}</span>
+              <strong>{method.methodTag}</strong>
+            </div>
+            <h2>{method.shortTitle}</h2>
+            <p>{method.cardText}</p>
+            <div class="method-tags compact">
+              {method.tags.slice(0, 3).map((tag) => <span>{tag}</span>)}
+            </div>
+            <a href={`/zh/methods/${method.slug}/`}>查看方法笔记</a>
+          </article>
+        ))}
+      </section>
+
+      <section id="method-flow" class="method-flow-section" aria-labelledby="flow-title">
+        <div class="section-heading">
+          <p class="section-label">METHOD ROUTING</p>
+          <h2 id="flow-title">方法关系与产品路由</h2>
+          <p>从预处理球谐系数到格网 EWH/TWSA，再到区域泄漏校正与外部验证，滤波方法应作为连续处理链的一部分记录。</p>
+        </div>
+        <div class="method-flow-chain" aria-label="GRACE Level-2 方法处理链">
+          {methodIndexIntro.flow.map((item, index) => (
+            <>
+              <div class="method-flow-node"><span>{String(index + 1).padStart(2, '0')}</span><strong>{item}</strong></div>
+              {index < methodIndexIntro.flow.length - 1 && <div class="method-flow-arrow" aria-hidden="true">↓</div>}
+            </>
+          ))}
+        </div>
+        <aside class="method-contract-card">
+          <strong>产品追踪约束</strong>
+          <p>{methodIndexIntro.contract}</p>
+        </aside>
+      </section>
+    </main>
+    <Footer lang={lang} />
+  </body>
+</html>

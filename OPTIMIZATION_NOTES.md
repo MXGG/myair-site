@@ -34,3 +34,29 @@ This package contains a second optimization pass for the GRACE L2 Notes blog sit
 ## Notes
 
 `node_modules/`, `.git/`, `.astro/`, and local font files are intentionally excluded from this package. Run `npm install` before local development.
+
+## Round 3 - Method knowledge base implementation
+
+Implemented the Chinese method knowledge base based on `GRACE_L2_Notes_滤波方法页面设计方案.md`.
+
+### Added
+
+- `/zh/methods/` as a full method index page with seven method cards and a method-routing chain.
+- Seven method detail pages:
+  - `/zh/methods/gaussian/`
+  - `/zh/methods/fan/`
+  - `/zh/methods/decorrelation/`
+  - `/zh/methods/combined-filter/`
+  - `/zh/methods/ddk/`
+  - `/zh/methods/hsaf/`
+  - `/zh/methods/leakage-validation/`
+- Shared method data source: `src/data/methods.zh.ts`.
+- Method detail layout: left TOC, central content, right action card.
+- Method metadata grid, tags, formula blocks, product YAML examples, effect/limitation cards, figure placeholders, and related-method links.
+- `TechArticle` JSON-LD for each method page and `CollectionPage` JSON-LD for the method index.
+- Search items for each Chinese method detail page.
+- Config template download at `/templates/method-config-template.yaml`.
+
+### Build
+
+`npm run build` completed successfully and generated 27 static pages.

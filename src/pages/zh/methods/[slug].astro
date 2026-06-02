@@ -1,0 +1,185 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import Header from '../../../components/Header.astro';
+import { methodsZh, methodsBySlug } from '../../../data/methods.zh';
+import { paths, site } from '../../../data/site';
+
+export function getStaticPaths() {
+  return methodsZh.map((method) => ({ params: { slug: method.slug }, props: { method } }));
+}
+
+const { method } = Astro.props;
+const lang = 'zh';
+const t = site[lang];
+const allMethods = methodsZh.sort((a, b) => a.order - b.order);
+const related = method.related.map((slug) => methodsBySlug[slug]).filter(Boolean);
+const tocItems = [
+  { id: 'summary', title: '页面摘要' },
+  ...method.sections.map((section) => ({ id: section.id, title: section.title })),
+  { id: 'parameters', title: '产品标签' },
+  { id: 'effects', title: '效果与局限' },
+  { id: 'figures', title: '图件建议' },
+  { id: 'related', title: '相关方法' },
+];
+const pageTitle = `${method.title} | ${t.title}`;
+const articleLd = {
+  '@context': 'https://schema.org',
+  '@type': 'TechArticle',
+  headline: method.title,
+  description: method.description,
+  datePublished: '2026-06-02',
+  dateModified: '2026-06-02',
+  inLanguage: 'zh-CN',
+  author: {
+    '@type': 'Organization',
+    name: 'Solid Geophysics Group, National Gravity Laboratory, Huazhong University of Science and Technology',
+  },
+  articleSection: 'GRACE Level-2 filtering methods',
+  keywords: method.tags.join(', '),
+  url: Astro.url.href,
+};
+---
+
+<!doctype html>
+<html lang={t.langCode}>
+  <head>
+    <BaseHead title={pageTitle} description={method.description} lang={lang} alternateHref={paths.en.methods} />
+    <script type="application/ld+json" set:html={JSON.stringify(articleLd)}></script>
+  </head>
+  <body>
+    <div class="reading-progress" data-reading-progress aria-hidden="true"></div>
+    <Header lang={lang} alternateHref={paths.en.methods} />
+    <main class="method-detail-shell">
+      <nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><a href={paths.zh.methods}>方法</a><span>/</span><span>{method.shortTitle}</span></nav>
+
+      <section class="method-detail-hero" aria-labelledby="method-title">
+        <p class="eyebrow">METHOD NOTE</p>
+        <h1 id="method-title">{method.title}</h1>
+        <p>{method.description}</p>
+        <div class="method-tags">
+          {method.tags.map((tag) => <span>{tag}</span>)}
+        </div>
+      </section>
+
+      <div class="method-detail-layout">
+        <aside class="method-sidebar method-toc" aria-label="页面目录">
+          <strong>目录</strong>
+          <nav>
+            {tocItems.map((item) => <a href={`#${item.id}`}>{item.title}</a>)}
+          </nav>
+        </aside>
+
+        <article class="method-content method-prose">
+          <section class="method-meta-grid" aria-label="方法元信息">
+            <div><span>处理域</span><strong>{method.domain}</strong></div>
+            <div><span>典型输入</span><strong>{method.input}</strong></div>
+            <div><span>典型输出</span><strong>{method.output}</strong></div>
+          </section>
+
+          <section id="summary" class="method-summary-card">
+            <strong>页面摘要</strong>
+            <p>{method.summary}</p>
+          </section>
+
+          {method.sections.map((section) => (
+            <section id={section.id} class="method-section">
+              <h2>{section.title}</h2>
+              {section.body.map((paragraph) => <p>{paragraph}</p>)}
+              {section.formula && <div class="formula-block method-formula">{`\\[${section.formula}\\]`}</div>}
+              {section.steps && (
+                <ol class="method-step-list">
+                  {section.steps.map((step) => <li>{step}</li>)}
+                </ol>
+              )}
+            </section>
+          ))}
+
+          <section id="parameters" class="method-section">
+            <h2>产品标签与配置示例</h2>
+            <p>该页面中的方法不应被统一保存为 <code>filtered</code>。配置文件至少应保留方法名、产品标签、处理域、上游输入和输出对象。</p>
+            <pre><code>{method.yaml}</code></pre>
+          </section>
+
+          <section id="effects" class="method-section">
+            <h2>效果与局限</h2>
+            <div class="method-effect-grid">
+              {method.effects.map((item, index) => (
+                <article>
+                  <span>{index === 0 ? '效果' : '局限'}</span>
+                  <p>{item}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section id="figures" class="method-section">
+            <h2>页面图件建议</h2>
+            <div class="method-figure-grid">
+              {method.figures.map((figure, index) => (
+                <article>
+                  <div class="figure-placeholder" aria-hidden="true"><span>{String(index + 1).padStart(2, '0')}</span></div>
+                  <p>{figure}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section class="method-ending-card">
+            <strong>使用判断</strong>
+            <p>{method.ending}</p>
+          </section>
+
+          <section id="related" class="method-section related-method-section">
+            <h2>相关方法</h2>
+            <div class="related-method-grid">
+              {related.map((item) => (
+                <a class="related-method-card" href={`/zh/methods/${item.slug}/`}>
+                  <span>{item.methodTag}</span>
+                  <strong>{item.shortTitle}</strong>
+                  <p>{item.description}</p>
+                </a>
+              ))}
+            </div>
+          </section>
+        </article>
+
+        <aside class="method-sidebar method-actions" aria-label="方法操作">
+          <strong>操作</strong>
+          <button type="button" data-copy-link>复制链接</button>
+          <a href={paths.zh.methods}>返回方法索引</a>
+          <a href={paths.zh.pipeline}>查看处理流程</a>
+          <a href="/templates/method-config-template.yaml" download>下载配置模板</a>
+          <hr />
+          <strong>方法清单</strong>
+          <nav class="method-mini-list">
+            {allMethods.map((item) => <a class:list={[item.slug === method.slug && 'active']} href={`/zh/methods/${item.slug}/`}>{item.shortTitle}</a>)}
+          </nav>
+        </aside>
+      </div>
+    </main>
+    <Footer lang={lang} />
+    <script is:inline>
+      const progress = document.querySelector('[data-reading-progress]');
+      const updateProgress = () => {
+        if (!progress) return;
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const ratio = scrollable > 0 ? window.scrollY / scrollable : 0;
+        progress.style.transform = `scaleX(${Math.min(1, Math.max(0, ratio))})`;
+      };
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      window.addEventListener('resize', updateProgress);
+      updateProgress();
+
+      document.querySelector('[data-copy-link]')?.addEventListener('click', async (event) => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          event.currentTarget.textContent = '已复制';
+          window.setTimeout(() => { event.currentTarget.textContent = '复制链接'; }, 1500);
+        } catch (error) {
+          event.currentTarget.textContent = '复制失败';
+        }
+      });
+    </script>
+  </body>
+</html>

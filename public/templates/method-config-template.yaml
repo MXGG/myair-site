@@ -1,0 +1,17 @@
+# GRACE L2 method configuration template
+method: HSAF
+tag: HSAF_P4M6
+domain: grid
+upstream: P4M6_EWH_grid
+input_unit: cmEWH
+grid_resolution: 1deg
+window_length_deg: 30
+embedding_dimension: 10
+mode_number: 6
+step_deg: 1
+quality_checks:
+  - preserve_upstream_product_tag
+  - compare_signal_loss
+  - compare_residual_stripes
+  - record_leakage_assumptions
+output: HSAF_EWH_grid
