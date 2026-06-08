@@ -7,12 +7,32 @@ const lang = 'en';
 const t = site[lang];
 const h = t.home;
 const methods = [
-  ['Gaussian smoothing', 'Baseline isotropic spatial smoothing for high-degree noise suppression.'],
-  ['Decorrelated filtering', 'PnMm style polynomial de-correlation for north-south stripe reduction.'],
-  ['DDK filtering', 'Anisotropic regularized filtering with covariance-aware smoothing behavior.'],
-  ['HSAF / Hankel filtering', 'Adaptive spectral decomposition for stripe suppression and signal preservation.'],
-  ['Leakage correction', 'Scale factor and surrounding signal correction for bounded regions and basins.'],
-  ['Validation', 'Map preview, basin series, annual amplitude, trend, RMSE, and external product consistency.'],
+  ['Gaussian smoothing', 'Baseline isotropic smoothing used as a reference route for high-degree noise suppression.', 'Spatial smoothing'],
+  ['Decorrelated filtering', 'PnMm-style polynomial decorrelation for reducing north-south correlated stripes.', 'De-striping'],
+  ['DDK filtering', 'Anisotropic regularized filtering based on covariance-aware smoothing behavior.', 'Regularization'],
+  ['HSAF / Hankel filtering', 'Adaptive quasi-periodic decomposition for stripe suppression while preserving geophysical signals.', 'Adaptive filtering'],
+  ['Leakage correction', 'Scale-factor recovery and surrounding-signal removal for basins, lakes, and coastal targets.', 'Regional correction'],
+  ['Validation', 'Map preview, basin series, annual amplitude, trend, RMSE, and independent product consistency.', 'Quality control'],
+];
+const comparison = [
+  ['Noise control', 'Stripe residuals, ocean background RMS, spectral energy'],
+  ['Signal preservation', 'Amplitude loss, basin time-series consistency, low-degree behavior'],
+  ['Regional reliability', 'Leakage-in/out, scale factor, coastline buffer, independent validation'],
+  ['Reproducibility', 'Parameter tags, processing logs, exact product route and export folder'],
 ];
 ---
-<!doctype html><html lang={t.langCode}><head><BaseHead title={`Methods | ${t.title}`} description={h.methodLead} lang={lang} alternateHref={paths.zh.methods} /></head><body><Header lang={lang} alternateHref={paths.zh.methods} /><main class="page-shell topic-page"><nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Methods</span></nav><section class="page-hero compact"><p class="eyebrow">Methods</p><h1>Method Notes</h1><p>{h.methodLead}</p></section><section class="topic-card-grid">{methods.map(([title,text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p><a href="/blog/second-post/">Read method note</a></article>)}</section></main><Footer lang={lang} /></body></html>
+<!doctype html>
+<html lang={t.langCode}>
+<head><BaseHead title={`Methods | ${t.title}`} description={h.methodLead} lang={lang} alternateHref={paths.zh.methods} /></head>
+<body>
+<Header lang={lang} alternateHref={paths.zh.methods} />
+<main class="page-shell topic-page">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Methods</span></nav>
+  <section class="page-hero compact"><p class="eyebrow">Methods</p><h1>Method Notes</h1><p>{h.methodLead} This page provides a more systematic placeholder catalogue for method pages that can later be expanded into full technical notes.</p></section>
+  <section class="method-showcase-grid">{methods.map(([title,text,tag], index) => <article class="method-showcase-card"><span>{tag}</span><h2>{title}</h2><p>{text}</p><a href={index === 3 ? '/blog/second-post/' : '/blog/'}>Read related note</a></article>)}</section>
+  <section class="release-table-card"><h2>Comparison checklist</h2><div class="responsive-table"><table><thead><tr><th>Dimension</th><th>Suggested indicators</th></tr></thead><tbody>{comparison.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
+  <section class="note-callout"><strong>Writing plan</strong><p>Later, each method can be split into an independent page such as <code>/methods/hsaf/</code>, <code>/methods/ddk/</code>, and <code>/methods/leakage-correction/</code>.</p></section>
+</main>
+<Footer lang={lang} />
+</body>
+</html>

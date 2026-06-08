@@ -4,7 +4,7 @@ description: '从月尺度 GSM 球谐系数到格网等效水高数据栈的紧�
 pubDate: 'May 27 2026'
 tags: ['处理流程', 'Level-2', 'EWH']
 readingMinutes: 3
-heroImage: '../../assets/grace/processing-setup.png'
+heroImage: '../../assets/grace/dashboard.png'
 ---
 
 这套处理流程的基本原则很明确：MATLAB 与 Python 实现应围绕同一套配置、同一套数据目录和同一套输出约定保持一致。

@@ -7,11 +7,30 @@ const lang = 'zh';
 const t = site[lang];
 const h = t.home;
 const topics = [
-  ['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/zh/blog/first-post/'],
-  ['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/zh/blog/first-post/'],
-  ['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/zh/blog/second-post/'],
-  ['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/zh/blog/third-post/'],
-  ['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/zh/blog/third-post/'],
+  ['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/zh/blog/first-post/', '输入约定'],
+  ['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/zh/blog/first-post/', '改正约定'],
+  ['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/zh/blog/second-post/', '滤波约定'],
+  ['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/zh/blog/third-post/', '合成约定'],
+  ['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/zh/blog/third-post/', '验证约定'],
+];
+const implementationBlocks = [
+  ['配置优先', '占位说明：每次处理应首先由配置文件记录源产品、改正模型、滤波路线、格网设置和输出命名。'],
+  ['产品标签', '占位说明：每个输出产品应保留稳定标签，例如 GAUSS_300、FAN_300_P3M6、DDK4 或 HSAF，避免结果被隐式覆盖。'],
+  ['审计记录', '占位说明：导出结果应包含日志、图像预览、统计结果和可复现所需的元数据。'],
 ];
 ---
-<!doctype html><html lang={t.langCode}><head><BaseHead title={`处理流程 | ${t.title}`} description={h.pipelineLead} lang={lang} alternateHref={paths.en.pipeline} /></head><body><Header lang={lang} alternateHref={paths.en.pipeline} /><main class="page-shell topic-page"><nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>处理流程</span></nav><section class="page-hero compact"><p class="eyebrow">Workflow</p><h1>处理流程</h1><p>{h.pipelineLead}</p></section><section class="topic-card-grid" aria-label="处理步骤">{topics.map(([num, title, text, href]) => <article class="topic-card"><span>{num}</span><h2>{title}</h2><p>{text}</p><a href={href}>查看相关文章</a></article>)}</section><section class="note-callout"><strong>实现说明</strong><p>详细的处理约定仍保留在首页交互式流程卡片中。本页面提供稳定的分享和搜索入口。</p><a class="button primary" href="/zh/#pipeline">打开交互式流程</a></section></main><Footer lang={lang} /></body></html>
+<!doctype html>
+<html lang={t.langCode}>
+<head><BaseHead title={`处理流程 | ${t.title}`} description={h.pipelineLead} lang={lang} alternateHref={paths.en.pipeline} /></head>
+<body>
+<Header lang={lang} alternateHref={paths.en.pipeline} />
+<main class="page-shell topic-page">
+  <nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>处理流程</span></nav>
+  <section class="page-hero compact"><p class="eyebrow">Workflow</p><h1>处理流程</h1><p>{h.pipelineLead} 本页面作为稳定的流程入口，便于搜索引擎收录、外部分享和软件说明引用。</p></section>
+  <section class="pipeline-roadmap" aria-label="处理流程路线">{topics.map(([num, title, text, href, tag]) => <article><span>{num}</span><div><em>{tag}</em><h2>{title}</h2><p>{text}</p><a href={href}>查看相关文章</a></div></article>)}</section>
+  <section class="capability-column-grid">{implementationBlocks.map(([title, text]) => <article class="capability-column"><h3>{title}</h3><p>{text}</p></article>)}</section>
+  <section class="note-callout"><strong>实现说明</strong><p>详细的处理约定仍保留在首页交互式流程卡片中。后续软件界面定稿后，本页还可以嵌入截图或简短演示。</p><a class="button primary" href="/zh/#pipeline">打开交互式流程</a></section>
+</main>
+<Footer lang={lang} />
+</body>
+</html>

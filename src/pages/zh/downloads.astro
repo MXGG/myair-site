@@ -8,6 +8,17 @@ const lang = 'zh';
 const t = site[lang];
 const d = t.downloads;
 const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
+
+const capabilityGroups = [
+	['核心流程', ['Level-2 产品读取', '低阶项替换与基准期异常化', '滤波路线管理', '格网合成与导出']],
+	['分析工具', ['流域平均提取', '年振幅与半年振幅拟合', '长期趋势估计', '泄漏校正占位流程']],
+	['质量检查', ['全球图像预览', '残余条带检查', '参考产品对比', '处理日志导出']],
+];
+const releaseRows = [
+	['V01', 'Windows 安装包', '待确认', '基础 GRACE Level-2 处理流程发布包。'],
+	['便携版', '规划中', '待确认', '预留无安装版分发方案。'],
+	['示例数据集', '规划中', '待提供', '预留教程数据与测试配置。'],
+];
 ---
 
 <!doctype html>
@@ -41,6 +52,47 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 				</div>
 			</section>
 
+
+			<section class="software-overview" aria-labelledby="software-overview-title">
+				<div class="section-heading wide-heading">
+					<p class="section-label">OVERVIEW</p>
+					<h2 id="software-overview-title">功能结构图</h2>
+					<p>此处采用稳定的占位文案描述软件预期功能分组，后续可替换为真实截图和版本说明。</p>
+				</div>
+				<div class="capability-column-grid">
+					{capabilityGroups.map(([title, items]) => (
+						<article class="capability-column">
+							<h3>{title}</h3>
+							<ul>{items.map((item) => <li>{item}</li>)}</ul>
+						</article>
+					))}
+				</div>
+			</section>
+
+			<section class="screenshot-placeholder-grid" aria-labelledby="screen-placeholder-title">
+				<div class="screenshot-placeholder large">
+					<div class="mock-toolbar"><span></span><span></span><span></span></div>
+					<div class="mock-body"><i></i><i></i><i></i><i></i></div>
+				</div>
+				<div class="placeholder-copy">
+					<p class="section-label">PREVIEW</p>
+					<h2 id="screen-placeholder-title">界面预览占位区</h2>
+					<p>软件界面和发布包定稿后，可将此处替换为真实截图或简短演示图。</p>
+				</div>
+			</section>
+
+			<section class="release-table-card" aria-labelledby="release-table-title">
+				<h2 id="release-table-title">版本信息占位表</h2>
+				<div class="responsive-table">
+					<table>
+						<thead><tr><th>版本</th><th>类型</th><th>大小</th><th>说明</th></tr></thead>
+						<tbody>
+							{releaseRows.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}
+						</tbody>
+					</table>
+				</div>
+			</section>
+
 			<section class="download-feature-grid" aria-label="Software features">
 				{d.features.map((feature) => (
 					<article class="download-feature-card">
@@ -49,19 +101,6 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 					</article>
 				))}
 			</section>
-			<section class="release-checklist" aria-labelledby="release-checklist-title">
-				<div>
-					<p class="section-label">下载前检查</p>
-					<h2 id="release-checklist-title">版本核对清单</h2>
-					<p>发布页作为安装包与版本说明的统一入口，运行本地处理前应先核对版本信息。</p>
-				</div>
-				<ol>
-					<li><strong>版本</strong><span>核对 release 标签、包类型和支持的 Windows 版本。</span></li>
-					<li><strong>数据路径</strong><span>将 GSM 输入、替换产品、掩膜和输出栈分别放入独立目录。</span></li>
-					<li><strong>可复现</strong><span>每个导出产品都应同步保存 JSON 配置和滤波产品标识。</span></li>
-				</ol>
-			</section>
-
 			<section class="faq-card" aria-labelledby="faq-title">
 				<h2 id="faq-title">常见问题</h2>
 				<details><summary>安装前需要核对哪些信息？</summary><p>建议核对版本号、支持的 Windows 版本，以及当前发布包是安装版还是便携版。</p></details>

@@ -24,14 +24,27 @@ const formulaTex = [
 	String.raw`\mathrm{EWH}(\theta,\lambda)=\frac{a\rho_e}{3\rho_w}\sum_{l=0}^{l_{\max}}\sum_{m=0}^{l}\frac{2l+1}{1+k_l}\bar{P}_{lm}(\cos\theta)\left(\Delta C_{lm}\cos m\lambda+\Delta S_{lm}\sin m\lambda\right)`,
 	String.raw`\mathrm{TWSA}_{\mathrm{basin}}(t)=\frac{\sum_i A_i\,\mathrm{EWH}_i(t)}{\sum_i A_i}`,
 ];
-const methodLinks = ['/zh/methods/hsaf/', '/zh/methods/gaussian/'];
-
 const stepIcons = [
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 27l13-6 6 6-6 13-4-9-9-4Z"/><path d="M27 9l12 12M32 4l12 12M18 18l12 12"/><path d="M31 21 21 31"/></svg>',
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 13h24M12 24h24M12 35h24"/><circle cx="19" cy="13" r="4"/><circle cx="30" cy="24" r="4"/><circle cx="22" cy="35" r="4"/></svg>',
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 16c8 0 8 16 16 16s8-16 16-16"/><path d="M10 34h28"/><path d="M32 10h8v8"/><path d="M40 10 29 21"/></svg>',
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 12h28v24H10z"/><path d="M10 20h28M10 28h28M19 12v24M29 12v24"/><path d="M6 40h36"/></svg>',
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 25l7 7 14-17"/><path d="M24 7a17 17 0 1 0 0 34 17 17 0 0 0 0-34Z"/></svg>',
+];
+
+const capabilityCards = [
+	['数据导入管理', '占位说明：批量导入 Level-2 GSM 球谐产品，并保留处理中心、版本、月份、最高阶次和低阶项替换元数据。'],
+	['滤波路线对比', '占位说明：并行生成 Gaussian、去相关、DDK 与 HSAF 产品，并通过明确标签管理各类诊断结果。'],
+	['产品快速预览', '占位说明：在导出前检查全球格网图、流域平均、异常时间序列和残余条带结构。'],
+	['流域尺度分析', '占位说明：计算面积加权 TWSA、年/半年振幅、线性趋势、泄漏校正序列和对比表格。'],
+	['可复现输出', '占位说明：输出配置快照、图像预览、处理日志和便于版本归档的结果目录。'],
+	['质量控制记录', '占位说明：汇总图像检查、谱域检查、单位检查、参考产品对比和缺失月份审计结果。'],
+];
+
+const interfacePlaceholders = [
+	['工作流仪表盘', '预留软件工作区截图位置，可展示数据集选择、滤波路线配置和导出状态。'],
+	['格网预览面板', '预留图像或短动画位置，可展示 EWH 格网预览、色标控制和产品对比。'],
+	['流域诊断报告', '预留时间序列图、年振幅图、趋势统计和泄漏校正报告展示位置。'],
 ];
 ---
 
@@ -88,9 +101,35 @@ const stepIcons = [
 				</div>
 			</section>
 
-			<section class="section-block pipeline-section" id="pipeline" aria-labelledby="pipeline-title">
+			<section class="capability-showcase" aria-labelledby="capability-title">
 				<div class="section-heading wide-heading">
 					<p class="section-label">01</p>
+					<h2 id="capability-title">软件功能概览</h2>
+					<p>这里先放置 GRACE Level-2 桌面工作流软件的功能介绍占位文案，后续可替换为真实界面截图、版本功能说明和发布记录。</p>
+				</div>
+				<div class="capability-grid">
+					{capabilityCards.map(([title, text], index) => (
+						<article class="capability-card">
+							<span>{String(index + 1).padStart(2, '0')}</span>
+							<h3>{title}</h3>
+							<p>{text}</p>
+						</article>
+					))}
+				</div>
+				<div class="placeholder-rail" aria-label="软件界面占位区">
+					{interfacePlaceholders.map(([title, text]) => (
+						<article class="placeholder-panel">
+							<div class="placeholder-window" aria-hidden="true"><span></span><span></span><span></span></div>
+							<strong>{title}</strong>
+							<p>{text}</p>
+						</article>
+					))}
+				</div>
+			</section>
+
+			<section class="section-block pipeline-section" id="pipeline" aria-labelledby="pipeline-title">
+				<div class="section-heading wide-heading">
+					<p class="section-label">02</p>
 					<h2 id="pipeline-title">{h.pipelineTitle}</h2>
 					<p>{h.pipelineDetailIntro}</p>
 				</div>
@@ -134,7 +173,7 @@ const stepIcons = [
 			<section class="section-grid" aria-label="GRACE Level-2 网站栏目">
 				<div class="panel feature-panel" id="data">
 					<div class="panel-title">
-						<p class="section-label">02</p>
+						<p class="section-label">03</p>
 						<h2>{h.dataTitle}</h2>
 						<p>{h.dataLead}</p>
 					</div>
@@ -154,7 +193,7 @@ const stepIcons = [
 
 				<div class="panel method-panel" id="methods">
 					<div class="panel-title">
-						<p class="section-label">03</p>
+						<p class="section-label">04</p>
 						<h2>{h.methodTitle}</h2>
 						<p>{h.methodLead}</p>
 					</div>
@@ -165,7 +204,7 @@ const stepIcons = [
 								<div>
 									<h3>{card.title}</h3>
 									<p>{card.text}</p>
-									<a href={methodLinks[index] ?? paths.zh.methods}>查看方法笔记</a>
+									<a href="/zh/blog/second-post/">{t.blog.read}</a>
 								</div>
 							</article>
 						))}
@@ -174,17 +213,15 @@ const stepIcons = [
 
 				<div class="panel posts-panel">
 					<div class="panel-title">
-						<p class="section-label">04</p>
+						<p class="section-label">05</p>
 						<h2>{h.recentTitle}</h2>
 						<p>{h.recentLead}</p>
 					</div>
-					<div class="compact-post-list expanded">
+					<div class="compact-post-list">
 						{posts.map((post) => (
-							<a class="compact-post-card" href={getBlogPath(lang, post.id)}>
-								<span><FormattedDate date={post.data.pubDate} />{post.data.readingMinutes && <> · {post.data.readingMinutes} {t.blog.minutes}</>}</span>
+							<a href={getBlogPath(lang, post.id)}>
+								<span><FormattedDate date={post.data.pubDate} /></span>
 								<strong>{post.data.title}</strong>
-								<p>{post.data.description}</p>
-								<div class="tag-list">{post.data.tags?.slice(0, 3).map((tag) => <span>{tag}</span>)}</div>
 							</a>
 						))}
 					</div>

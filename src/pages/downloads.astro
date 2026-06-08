@@ -8,6 +8,17 @@ const lang = 'en';
 const t = site[lang];
 const d = t.downloads;
 const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
+
+const capabilityGroups = [
+	['Core workflow', ['Level-2 product loading', 'Low-degree replacement and anomaly baseline', 'Filter route management', 'Grid synthesis and export']],
+	['Analysis tools', ['Basin average extraction', 'Annual and semi-annual amplitude fitting', 'Trend estimation', 'Leakage-correction placeholders']],
+	['Quality review', ['Global map preview', 'Residual stripe inspection', 'Reference product comparison', 'Processing log export']],
+];
+const releaseRows = [
+	['V01', 'Windows installer', 'To be confirmed', 'Basic GRACE Level-2 workflow package.'],
+	['Portable build', 'Planned', 'To be confirmed', 'Reserved for a no-install distribution option.'],
+	['Example dataset', 'Planned', 'To be provided', 'Reserved for tutorial data and test configuration.'],
+];
 ---
 
 <!doctype html>
@@ -41,6 +52,47 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 				</div>
 			</section>
 
+
+			<section class="software-overview" aria-labelledby="software-overview-title">
+				<div class="section-heading wide-heading">
+					<p class="section-label">OVERVIEW</p>
+					<h2 id="software-overview-title">Capability map</h2>
+					<p>This block uses stable placeholder copy to describe the expected software capability groups before final screenshots and release notes are available.</p>
+				</div>
+				<div class="capability-column-grid">
+					{capabilityGroups.map(([title, items]) => (
+						<article class="capability-column">
+							<h3>{title}</h3>
+							<ul>{items.map((item) => <li>{item}</li>)}</ul>
+						</article>
+					))}
+				</div>
+			</section>
+
+			<section class="screenshot-placeholder-grid" aria-labelledby="screen-placeholder-title">
+				<div class="screenshot-placeholder large">
+					<div class="mock-toolbar"><span></span><span></span><span></span></div>
+					<div class="mock-body"><i></i><i></i><i></i><i></i></div>
+				</div>
+				<div class="placeholder-copy">
+					<p class="section-label">PREVIEW</p>
+					<h2 id="screen-placeholder-title">Interface preview placeholders</h2>
+					<p>Replace these placeholders with real screenshots after the software interface and release package are finalized.</p>
+				</div>
+			</section>
+
+			<section class="release-table-card" aria-labelledby="release-table-title">
+				<h2 id="release-table-title">Release information placeholder</h2>
+				<div class="responsive-table">
+					<table>
+						<thead><tr><th>Version</th><th>Type</th><th>Size</th><th>Notes</th></tr></thead>
+						<tbody>
+							{releaseRows.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}
+						</tbody>
+					</table>
+				</div>
+			</section>
+
 			<section class="download-feature-grid" aria-label="Software features">
 				{d.features.map((feature) => (
 					<article class="download-feature-card">
@@ -49,19 +101,6 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 					</article>
 				))}
 			</section>
-			<section class="release-checklist" aria-labelledby="release-checklist-title">
-				<div>
-					<p class="section-label">Before download</p>
-					<h2 id="release-checklist-title">Release verification checklist</h2>
-					<p>Use the release page as the single source of truth and check the version note before running local processing.</p>
-				</div>
-				<ol>
-					<li><strong>Version</strong><span>Confirm the release tag, package type, and supported Windows version.</span></li>
-					<li><strong>Data path</strong><span>Keep GSM input, replacement products, masks, and output stacks in separate directories.</span></li>
-					<li><strong>Reproducibility</strong><span>Save the JSON configuration and filter tags together with every exported product.</span></li>
-				</ol>
-			</section>
-
 			<section class="faq-card" aria-labelledby="faq-title">
 				<h2 id="faq-title">FAQ</h2>
 				<details><summary>What information should I check before installing?</summary><p>Confirm the release version, supported Windows version, and whether the package is an installer or portable build.</p></details>

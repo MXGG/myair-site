@@ -31,6 +31,21 @@ const stepIcons = [
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 12h28v24H10z"/><path d="M10 20h28M10 28h28M19 12v24M29 12v24"/><path d="M6 40h36"/></svg>',
 	'<svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 25l7 7 14-17"/><path d="M24 7a17 17 0 1 0 0 34 17 17 0 0 0 0-34Z"/></svg>',
 ];
+
+const capabilityCards = [
+	['Input management', 'Placeholder: batch import Level-2 GSM products, preserve product-center, release, month, lmax, and replacement metadata.'],
+	['Filter comparison', 'Placeholder: run Gaussian, decorrelation, DDK, and HSAF routes side by side with explicit product tags and diagnostics.'],
+	['Product preview', 'Placeholder: inspect global maps, basin averages, anomaly time series, and residual stripe patterns before export.'],
+	['Basin analysis', 'Placeholder: compute area-weighted TWSA, annual/semi-annual amplitudes, linear trends, leakage-corrected series, and comparison tables.'],
+	['Reproducible export', 'Placeholder: write outputs with configuration snapshots, figure previews, processing logs, and checksum-ready release folders.'],
+	['Quality control', 'Placeholder: collect map checks, spectral checks, unit checks, reference-product comparison, and missing-month audit results.'],
+];
+
+const interfacePlaceholders = [
+	['Workflow dashboard', 'Reserved for a screenshot of the desktop processing workspace, including dataset selection, filter routing, and export status.'],
+	['Map preview panel', 'Reserved for a figure or short animation showing gridded EWH preview, color scale control, and product comparison.'],
+	['Basin diagnostics', 'Reserved for time-series plots, annual amplitude maps, trend summaries, and leakage-correction reports.'],
+];
 ---
 
 <!doctype html>
@@ -77,7 +92,6 @@ const stepIcons = [
 					<p class="section-label">00</p>
 					<h2 id="learning-title">Learning Center</h2>
 					<p>Start from a topic, then move between workflow notes, method records, data products, and software releases.</p>
-				</div>
 				<div class="learning-grid">
 					<a class="learning-card" href={paths.en.pipeline}><span>Workflow</span><strong>Processing chain</strong><p>Acquire, preprocess, filter, synthesize, and validate Level-2 products.</p></a>
 					<a class="learning-card" href={paths.en.methods}><span>Methods</span><strong>Filtering notes</strong><p>Compare Gaussian, decorrelation, DDK, HSAF, and leakage correction routes.</p></a>
@@ -86,9 +100,35 @@ const stepIcons = [
 				</div>
 			</section>
 
-			<section class="section-block pipeline-section" id="pipeline" aria-labelledby="pipeline-title">
+			<section class="capability-showcase" aria-labelledby="capability-title">
 				<div class="section-heading wide-heading">
 					<p class="section-label">01</p>
+					<h2 id="capability-title">Software capability overview</h2>
+					<p>Placeholder copy for the GRACE Level-2 desktop workflow software. The section can later be replaced with real screenshots, versioned feature descriptions, and release-specific notes.</p>
+				</div>
+				<div class="capability-grid">
+					{capabilityCards.map(([title, text], index) => (
+						<article class="capability-card">
+							<span>{String(index + 1).padStart(2, '0')}</span>
+							<h3>{title}</h3>
+							<p>{text}</p>
+						</article>
+					))}
+				</div>
+				<div class="placeholder-rail" aria-label="Interface placeholders">
+					{interfacePlaceholders.map(([title, text]) => (
+						<article class="placeholder-panel">
+							<div class="placeholder-window" aria-hidden="true"><span></span><span></span><span></span></div>
+							<strong>{title}</strong>
+							<p>{text}</p>
+						</article>
+					))}
+				</div>
+			</section>
+
+			<section class="section-block pipeline-section" id="pipeline" aria-labelledby="pipeline-title">
+				<div class="section-heading wide-heading">
+					<p class="section-label">02</p>
 					<h2 id="pipeline-title">{h.pipelineTitle}</h2>
 					<p>{h.pipelineDetailIntro}</p>
 				</div>
@@ -132,7 +172,7 @@ const stepIcons = [
 			<section class="section-grid" aria-label="GRACE Level-2 site sections">
 				<div class="panel feature-panel" id="data">
 					<div class="panel-title">
-						<p class="section-label">02</p>
+						<p class="section-label">03</p>
 						<h2>{h.dataTitle}</h2>
 						<p>{h.dataLead}</p>
 					</div>
@@ -152,7 +192,7 @@ const stepIcons = [
 
 				<div class="panel method-panel" id="methods">
 					<div class="panel-title">
-						<p class="section-label">03</p>
+						<p class="section-label">04</p>
 						<h2>{h.methodTitle}</h2>
 						<p>{h.methodLead}</p>
 					</div>
@@ -172,17 +212,15 @@ const stepIcons = [
 
 				<div class="panel posts-panel">
 					<div class="panel-title">
-						<p class="section-label">04</p>
+						<p class="section-label">05</p>
 						<h2>{h.recentTitle}</h2>
 						<p>{h.recentLead}</p>
 					</div>
-					<div class="compact-post-list expanded">
+					<div class="compact-post-list">
 						{posts.map((post) => (
-							<a class="compact-post-card" href={getBlogPath(lang, post.id)}>
-								<span><FormattedDate date={post.data.pubDate} />{post.data.readingMinutes && <> · {post.data.readingMinutes} {t.blog.minutes}</>}</span>
+							<a href={getBlogPath(lang, post.id)}>
+								<span><FormattedDate date={post.data.pubDate} /></span>
 								<strong>{post.data.title}</strong>
-								<p>{post.data.description}</p>
-								<div class="tag-list">{post.data.tags?.slice(0, 3).map((tag) => <span>{tag}</span>)}</div>
 							</a>
 						))}
 					</div>
