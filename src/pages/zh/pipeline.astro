@@ -3,20 +3,23 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { paths, site } from '../../data/site';
+
 const lang = 'zh';
 const t = site[lang];
 const h = t.home;
+
 const topics = [
-  ['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/zh/blog/first-post/', '输入约定'],
-  ['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/zh/blog/first-post/', '改正约定'],
-  ['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/zh/blog/second-post/', '滤波约定'],
-  ['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/zh/blog/third-post/', '合成约定'],
-  ['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/zh/blog/third-post/', '验证约定'],
+	['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/zh/blog/first-post/', '输入约定'],
+	['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/zh/blog/first-post/', '改正约定'],
+	['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/zh/blog/second-post/', '滤波约定'],
+	['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/zh/blog/third-post/', '合成约定'],
+	['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/zh/blog/third-post/', '验证约定'],
 ];
+
 const implementationBlocks = [
-  ['配置优先', '占位说明：每次处理应首先由配置文件记录源产品、改正模型、滤波路线、格网设置和输出命名。'],
-  ['产品标签', '占位说明：每个输出产品应保留稳定标签，例如 GAUSS_300、FAN_300_P3M6、DDK4 或 HSAF，避免结果被隐式覆盖。'],
-  ['审计记录', '占位说明：导出结果应包含日志、图像预览、统计结果和可复现所需的元数据。'],
+	['配置约定', '每次处理从配置文件开始，记录源产品、版本、最高阶次、低阶项替换、GIA 模型、基准期、滤波路线、格网分辨率、掩膜版本和导出目录。'],
+	['产品标签', '不同滤波结果使用独立标签保存，例如 GAUSS_300、FAN_300_P3M6、DDK4 和 HSAF，便于回溯图件、统计结果和导出产品。'],
+	['验证记录', '导出结果包含地图预览、流域平均序列、年/半年振幅、趋势估计、泄漏校正参数、对比表和处理日志。'],
 ];
 ---
 <!doctype html>
@@ -25,11 +28,11 @@ const implementationBlocks = [
 <body>
 <Header lang={lang} alternateHref={paths.en.pipeline} />
 <main class="page-shell topic-page">
-  <nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>处理流程</span></nav>
-  <section class="page-hero compact"><p class="eyebrow">Workflow</p><h1>处理流程</h1><p>{h.pipelineLead} 本页面作为稳定的流程入口，便于搜索引擎收录、外部分享和软件说明引用。</p></section>
-  <section class="pipeline-roadmap" aria-label="处理流程路线">{topics.map(([num, title, text, href, tag]) => <article><span>{num}</span><div><em>{tag}</em><h2>{title}</h2><p>{text}</p><a href={href}>查看相关文章</a></div></article>)}</section>
-  <section class="capability-column-grid">{implementationBlocks.map(([title, text]) => <article class="capability-column"><h3>{title}</h3><p>{text}</p></article>)}</section>
-  <section class="note-callout"><strong>实现说明</strong><p>详细的处理约定仍保留在首页交互式流程卡片中。后续软件界面定稿后，本页还可以嵌入截图或简短演示。</p><a class="button primary" href="/zh/#pipeline">打开交互式流程</a></section>
+	<nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>处理流程</span></nav>
+	<section class="page-hero compact"><p class="eyebrow">Workflow</p><h1>GRACE Level-2 处理流程</h1><p>{h.pipelineLead} 本页面聚焦月尺度 GSM 球谐系数到 EWH 与 TWSA 产品的科学处理流程和软件实现流程。</p></section>
+	<section class="pipeline-roadmap" aria-label="处理流程路线">{topics.map(([num, title, text, href, tag]) => <article><span>{num}</span><div><em>{tag}</em><h2>{title}</h2><p>{text}</p><a href={href}>查看相关文章</a></div></article>)}</section>
+	<section class="capability-column-grid">{implementationBlocks.map(([title, text]) => <article class="capability-column"><h3>{title}</h3><p>{text}</p></article>)}</section>
+	<section class="note-callout"><strong>内容范围</strong><p>网站内容面向 GRACE/GRACE-FO 二级数据处理、HSAF 滤波实验、流域 TWSA 分析、泄漏校正和可视化软件说明。</p><a class="button primary" href="/zh/#pipeline">打开交互式流程</a></section>
 </main>
 <Footer lang={lang} />
 </body>

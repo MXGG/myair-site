@@ -11,102 +11,29 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 
 const capabilityGroups = [
 	['Core workflow', ['Level-2 product loading', 'Low-degree replacement and anomaly baseline', 'Filter route management', 'Grid synthesis and export']],
-	['Analysis tools', ['Basin average extraction', 'Annual and semi-annual amplitude fitting', 'Trend estimation', 'Leakage-correction placeholders']],
+	['Analysis tools', ['Basin average extraction', 'Annual and semi-annual amplitude fitting', 'Trend estimation', 'Regional correction workflow']],
 	['Quality review', ['Global map preview', 'Residual stripe inspection', 'Reference product comparison', 'Processing log export']],
 ];
+
 const releaseRows = [
-	['V01', 'Windows installer', 'To be confirmed', 'Basic GRACE Level-2 workflow package.'],
-	['Portable build', 'Planned', 'To be confirmed', 'Reserved for a no-install distribution option.'],
-	['Example dataset', 'Planned', 'To be provided', 'Reserved for tutorial data and test configuration.'],
+	['V01', 'Windows installer', 'Published through Releases', 'Desktop package for GRACE Level-2 processing, filtering, preview, and basin analysis.'],
+	['Portable archive', 'Optional package', 'Use when available', 'No-install archive for testing or classroom demonstration when an installer is not preferred.'],
+	['Example configuration', 'Small config files', 'Stored with documentation', 'Configuration templates for GSM input, filter routing, grid synthesis, and export rules.'],
 ];
 ---
-
 <!doctype html>
 <html lang={t.langCode}>
-	<head>
-		<BaseHead title={`${d.title} | ${t.title}`} description={d.lead} lang={lang} alternateHref={paths.zh.downloads} />
-	</head>
-	<body>
-		<Header lang={lang} alternateHref={paths.zh.downloads} />
-		<main class="page-shell downloads-shell">
-			<section class="page-hero compact downloads-hero">
-				<p class="eyebrow">{d.eyebrow}</p>
-				<h1>{d.title}</h1>
-				<p>{d.lead}</p>
-			</section>
-
-			<section class="software-card" aria-labelledby="software-title">
-				<div class="software-main">
-					<p class="section-label">{d.versionLabel}</p>
-					<h2 id="software-title">{d.cardTitle}</h2>
-					<p>{d.cardText}</p>
-					<div class="software-actions">
-						<a class="button primary" href={releaseUrl}>{d.button}</a>
-						<span>{d.releaseHint}</span>
-					</div>
-				</div>
-				<div class="software-meta" aria-label="Software metadata">
-					{d.meta.map(([key, value]) => (
-						<div><span>{key}</span><strong>{value}</strong></div>
-					))}
-				</div>
-			</section>
-
-
-			<section class="software-overview" aria-labelledby="software-overview-title">
-				<div class="section-heading wide-heading">
-					<p class="section-label">OVERVIEW</p>
-					<h2 id="software-overview-title">Capability map</h2>
-					<p>This block uses stable placeholder copy to describe the expected software capability groups before final screenshots and release notes are available.</p>
-				</div>
-				<div class="capability-column-grid">
-					{capabilityGroups.map(([title, items]) => (
-						<article class="capability-column">
-							<h3>{title}</h3>
-							<ul>{items.map((item) => <li>{item}</li>)}</ul>
-						</article>
-					))}
-				</div>
-			</section>
-
-			<section class="screenshot-placeholder-grid" aria-labelledby="screen-placeholder-title">
-				<div class="screenshot-placeholder large">
-					<div class="mock-toolbar"><span></span><span></span><span></span></div>
-					<div class="mock-body"><i></i><i></i><i></i><i></i></div>
-				</div>
-				<div class="placeholder-copy">
-					<p class="section-label">PREVIEW</p>
-					<h2 id="screen-placeholder-title">Interface preview placeholders</h2>
-					<p>Replace these placeholders with real screenshots after the software interface and release package are finalized.</p>
-				</div>
-			</section>
-
-			<section class="release-table-card" aria-labelledby="release-table-title">
-				<h2 id="release-table-title">Release information placeholder</h2>
-				<div class="responsive-table">
-					<table>
-						<thead><tr><th>Version</th><th>Type</th><th>Size</th><th>Notes</th></tr></thead>
-						<tbody>
-							{releaseRows.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}
-						</tbody>
-					</table>
-				</div>
-			</section>
-
-			<section class="download-feature-grid" aria-label="Software features">
-				{d.features.map((feature) => (
-					<article class="download-feature-card">
-						<h3>{feature.title}</h3>
-						<p>{feature.text}</p>
-					</article>
-				))}
-			</section>
-			<section class="faq-card" aria-labelledby="faq-title">
-				<h2 id="faq-title">FAQ</h2>
-				<details><summary>What information should I check before installing?</summary><p>Confirm the release version, supported Windows version, and whether the package is an installer or portable build.</p></details>
-				<details><summary>Where are software packages hosted?</summary><p>The download button points to the project release page, where versioned packages and release notes can be collected in one place.</p></details>
-			</section>
-		</main>
-		<Footer lang={lang} />
-	</body>
+<head><BaseHead title={`${d.title} | ${t.title}`} description={d.lead} lang={lang} alternateHref={paths.zh.downloads} /></head>
+<body>
+<Header lang={lang} alternateHref={paths.zh.downloads} />
+<main class="page-shell downloads-shell">
+	<section class="page-hero compact downloads-hero"><p class="eyebrow">Software</p><h1>GRACE Level-2 Processing Software</h1><p>The software page introduces the desktop workflow and release package for GRACE/GRACE-FO Level-2 data preparation, filtering experiments, EWH synthesis, basin analysis, and preview quality control.</p></section>
+	<section class="software-card" aria-labelledby="software-title"><div class="software-main"><p class="section-label">Release package</p><h2 id="software-title">Installer and versioned package</h2><p>The package is intended for local GRACE Level-2 processing practice. It organizes source products, correction settings, filter routes, visualization previews, and export metadata in one reproducible workflow.</p><div class="software-actions"><a class="button primary" href={releaseUrl}>{d.button}</a><span>{d.releaseHint}</span></div></div><div class="software-meta" aria-label="Software metadata">{d.meta.map(([key, value]) => <div><span>{key}</span><strong>{value}</strong></div>)}</div></section>
+	<section class="software-overview" aria-labelledby="software-overview-title"><div class="section-heading wide-heading"><p class="section-label">OVERVIEW</p><h2 id="software-overview-title">Capability map</h2><p>The capability map describes the actual scope of the GRACE Level-2 visualization and processing software.</p></div><div class="capability-column-grid">{capabilityGroups.map(([title, items]) => <article class="capability-column"><h3>{title}</h3><ul>{items.map((item) => <li>{item}</li>)}</ul></article>)}</div></section>
+	<section class="release-table-card" aria-labelledby="release-table-title"><h2 id="release-table-title">Release information</h2><div class="responsive-table"><table><thead><tr><th>Version</th><th>Type</th><th>Status</th><th>Notes</th></tr></thead><tbody>{releaseRows.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
+	<section class="download-feature-grid" aria-label="Software features">{d.features.map((feature) => <article class="download-feature-card"><h3>{feature.title}</h3><p>{feature.text}</p></article>)}</section>
+	<section class="faq-card" aria-labelledby="faq-title"><h2 id="faq-title">FAQ</h2><details><summary>What should I check before installing?</summary><p>Confirm the release version, supported Windows version, package type, and whether the example configuration matches your GRACE product layout.</p></details><details><summary>Where are software packages hosted?</summary><p>The download button points to the GitHub Releases page, where packages and release notes should be collected in one versioned location.</p></details></section>
+</main>
+<Footer lang={lang} />
+</body>
 </html>

@@ -11,102 +11,29 @@ const releaseUrl = 'https://github.com/MXGG/myair-site/releases';
 
 const capabilityGroups = [
 	['核心流程', ['Level-2 产品读取', '低阶项替换与基准期异常化', '滤波路线管理', '格网合成与导出']],
-	['分析工具', ['流域平均提取', '年振幅与半年振幅拟合', '长期趋势估计', '泄漏校正占位流程']],
+	['分析工具', ['流域平均提取', '年振幅与半年振幅拟合', '长期趋势估计', '区域校正流程']],
 	['质量检查', ['全球图像预览', '残余条带检查', '参考产品对比', '处理日志导出']],
 ];
+
 const releaseRows = [
-	['V01', 'Windows 安装包', '待确认', '基础 GRACE Level-2 处理流程发布包。'],
-	['便携版', '规划中', '待确认', '预留无安装版分发方案。'],
-	['示例数据集', '规划中', '待提供', '预留教程数据与测试配置。'],
+	['V01', 'Windows 安装包', '通过 Releases 发布', '面向 GRACE Level-2 数据处理、滤波、预览和流域分析的桌面软件包。'],
+	['便携压缩包', '可选发布包', '发布时使用', '不需要安装的测试或演示版本。'],
+	['示例配置', '小型配置文件', '随文档保存', '用于 GSM 输入、滤波路线、格网合成和导出规则的配置模板。'],
 ];
 ---
-
 <!doctype html>
 <html lang={t.langCode}>
-	<head>
-		<BaseHead title={`${d.title} | ${t.title}`} description={d.lead} lang={lang} alternateHref={paths.en.downloads} />
-	</head>
-	<body>
-		<Header lang={lang} alternateHref={paths.en.downloads} />
-		<main class="page-shell downloads-shell">
-			<section class="page-hero compact downloads-hero">
-				<p class="eyebrow">{d.eyebrow}</p>
-				<h1>{d.title}</h1>
-				<p>{d.lead}</p>
-			</section>
-
-			<section class="software-card" aria-labelledby="software-title">
-				<div class="software-main">
-					<p class="section-label">{d.versionLabel}</p>
-					<h2 id="software-title">{d.cardTitle}</h2>
-					<p>{d.cardText}</p>
-					<div class="software-actions">
-						<a class="button primary" href={releaseUrl}>{d.button}</a>
-						<span>{d.releaseHint}</span>
-					</div>
-				</div>
-				<div class="software-meta" aria-label="Software metadata">
-					{d.meta.map(([key, value]) => (
-						<div><span>{key}</span><strong>{value}</strong></div>
-					))}
-				</div>
-			</section>
-
-
-			<section class="software-overview" aria-labelledby="software-overview-title">
-				<div class="section-heading wide-heading">
-					<p class="section-label">OVERVIEW</p>
-					<h2 id="software-overview-title">功能结构图</h2>
-					<p>此处采用稳定的占位文案描述软件预期功能分组，后续可替换为真实截图和版本说明。</p>
-				</div>
-				<div class="capability-column-grid">
-					{capabilityGroups.map(([title, items]) => (
-						<article class="capability-column">
-							<h3>{title}</h3>
-							<ul>{items.map((item) => <li>{item}</li>)}</ul>
-						</article>
-					))}
-				</div>
-			</section>
-
-			<section class="screenshot-placeholder-grid" aria-labelledby="screen-placeholder-title">
-				<div class="screenshot-placeholder large">
-					<div class="mock-toolbar"><span></span><span></span><span></span></div>
-					<div class="mock-body"><i></i><i></i><i></i><i></i></div>
-				</div>
-				<div class="placeholder-copy">
-					<p class="section-label">PREVIEW</p>
-					<h2 id="screen-placeholder-title">界面预览占位区</h2>
-					<p>软件界面和发布包定稿后，可将此处替换为真实截图或简短演示图。</p>
-				</div>
-			</section>
-
-			<section class="release-table-card" aria-labelledby="release-table-title">
-				<h2 id="release-table-title">版本信息占位表</h2>
-				<div class="responsive-table">
-					<table>
-						<thead><tr><th>版本</th><th>类型</th><th>大小</th><th>说明</th></tr></thead>
-						<tbody>
-							{releaseRows.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}
-						</tbody>
-					</table>
-				</div>
-			</section>
-
-			<section class="download-feature-grid" aria-label="Software features">
-				{d.features.map((feature) => (
-					<article class="download-feature-card">
-						<h3>{feature.title}</h3>
-						<p>{feature.text}</p>
-					</article>
-				))}
-			</section>
-			<section class="faq-card" aria-labelledby="faq-title">
-				<h2 id="faq-title">常见问题</h2>
-				<details><summary>安装前需要核对哪些信息？</summary><p>建议核对版本号、支持的 Windows 版本，以及当前发布包是安装版还是便携版。</p></details>
-				<details><summary>软件包在哪里下载？</summary><p>下载按钮会跳转到项目发布页面，后续可集中放置版本包、更新说明和校验信息。</p></details>
-			</section>
-		</main>
-		<Footer lang={lang} />
-	</body>
+<head><BaseHead title={`${d.title} | ${t.title}`} description={d.lead} lang={lang} alternateHref={paths.en.downloads} /></head>
+<body>
+<Header lang={lang} alternateHref={paths.en.downloads} />
+<main class="page-shell downloads-shell">
+	<section class="page-hero compact downloads-hero"><p class="eyebrow">Software</p><h1>GRACE Level-2 数据处理与可视化软件</h1><p>本页面介绍用于 GRACE/GRACE-FO 二级数据准备、滤波实验、EWH 合成、流域分析和预览质检的桌面工作流软件与发布包。</p></section>
+	<section class="software-card" aria-labelledby="software-title"><div class="software-main"><p class="section-label">Release package</p><h2 id="software-title">安装包与版本发布</h2><p>软件包用于本地 GRACE Level-2 处理实践，将源产品、改正设置、滤波路线、可视化预览和导出元数据组织在一个可复现流程中。</p><div class="software-actions"><a class="button primary" href={releaseUrl}>{d.button}</a><span>{d.releaseHint}</span></div></div><div class="software-meta" aria-label="Software metadata">{d.meta.map(([key, value]) => <div><span>{key}</span><strong>{value}</strong></div>)}</div></section>
+	<section class="software-overview" aria-labelledby="software-overview-title"><div class="section-heading wide-heading"><p class="section-label">OVERVIEW</p><h2 id="software-overview-title">功能结构图</h2><p>功能结构图概括 GRACE Level-2 数据处理与可视化软件的实际范围。</p></div><div class="capability-column-grid">{capabilityGroups.map(([title, items]) => <article class="capability-column"><h3>{title}</h3><ul>{items.map((item) => <li>{item}</li>)}</ul></article>)}</div></section>
+	<section class="release-table-card" aria-labelledby="release-table-title"><h2 id="release-table-title">版本信息</h2><div class="responsive-table"><table><thead><tr><th>版本</th><th>类型</th><th>状态</th><th>说明</th></tr></thead><tbody>{releaseRows.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
+	<section class="download-feature-grid" aria-label="Software features">{d.features.map((feature) => <article class="download-feature-card"><h3>{feature.title}</h3><p>{feature.text}</p></article>)}</section>
+	<section class="faq-card" aria-labelledby="faq-title"><h2 id="faq-title">常见问题</h2><details><summary>安装前需要核对哪些信息？</summary><p>建议核对版本号、支持的 Windows 版本、发布包类型，以及示例配置是否匹配本地 GRACE 数据目录结构。</p></details><details><summary>软件包在哪里下载？</summary><p>下载按钮会跳转到 GitHub Releases 页面，版本包和更新说明应集中保存在该位置。</p></details></section>
+</main>
+<Footer lang={lang} />
+</body>
 </html>

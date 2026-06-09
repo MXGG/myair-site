@@ -3,25 +3,29 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { paths, site } from '../data/site';
+
 const lang = 'en';
 const t = site[lang];
 const h = t.home;
+
 const cards = [
-  ['Level-2 GSM', 'Monthly Stokes coefficients from GRACE/GRACE-FO processing centers. Keep product center, release, degree/order, time tag, and missing-month status explicit.'],
-  ['Gridded EWH', 'Equivalent water height anomaly grids generated after preprocessing, filtering, Love-number correction, and spherical harmonic synthesis.'],
-  ['Mascon references', 'Independent gridded or basin-scale products for checking spatial patterns, seasonal amplitude, long-term trends, and leakage behavior.'],
-  ['Auxiliary data', 'GIA models, SLR replacement coefficients, basin masks, land/ocean masks, hydrological models, and altimetry records used for validation.'],
+	['Level-2 GSM coefficients', 'Monthly Stokes coefficients from HUST-Grace2024, CSR RL06, GFZ RL06, JPL RL06, or comparable GRACE/GRACE-FO products. The workflow keeps center, release, lmax, month tag, and missing-month status visible.'],
+	['Correction products', 'Degree-1 geocenter terms, SLR-based C20/C30 replacement, GIA correction, mean-field baseline removal, and background-field alignment are treated as explicit preprocessing inputs.'],
+	['Gridded EWH / TWSA products', 'Corrected and filtered spherical harmonics are synthesized into equivalent-water-height grids for map preview, basin averaging, annual amplitude, semi-annual amplitude, and trend analysis.'],
+	['Reference and validation data', 'CSR Mascon, GLDAS-Noah, basin masks, land/ocean masks, coastline buffers, and Hydroweb altimetry are used as independent checks for filtered products.'],
 ];
+
 const productMatrix = [
-  ['Raw input', 'GSM coefficients', 'Product center, release, lmax, month flag'],
-  ['Preprocessed anomaly', 'Corrected ΔC/ΔS', 'Degree-1/C20/C30 replacement, GIA model, baseline'],
-  ['Filtered product', 'Tagged coefficient set or grid', 'Filter family, radius/order, HSAF parameters, product tag'],
-  ['Application layer', 'EWH grid / basin series', 'Unit, grid resolution, mask version, leakage/scaling rule'],
+	['Raw input', 'GSM spherical harmonics', 'center, release, lmax, month, background model, missing flag'],
+	['Preprocessed anomaly', 'corrected ΔC/ΔS', 'degree-1 source, C20/C30 source, GIA model, baseline period'],
+	['Filtered branch', 'GAUSS / FAN / PnMm / DDK / HSAF', 'filter family, radius/order, HSAF parameters, product tag'],
+	['Application product', 'EWH grid and basin TWSA series', 'unit, grid spacing, mask, leakage/scaling rule, statistics'],
 ];
-const placeholders = [
-  ['Data lineage diagram', 'Reserved for a diagram showing how raw GSM coefficients move through preprocessing, filtering, synthesis, and validation.'],
-  ['Metadata checklist', 'Reserved for a downloadable checklist defining required product fields and naming conventions.'],
-  ['Example dataset', 'Reserved for a small public test package after data redistribution permissions are confirmed.'],
+
+const governance = [
+	['Immutable input', 'Raw Level-2 files and replacement products are read-only. Derived products are written to versioned output folders.'],
+	['Traceable metadata', 'Every figure, grid, and basin series should be traceable to the exact configuration and product tag that generated it.'],
+	['External consistency', 'Mascon products, hydrological models, and altimetry records are used to check signal behavior after filtering and leakage correction.'],
 ];
 ---
 <!doctype html>
@@ -30,12 +34,12 @@ const placeholders = [
 <body>
 <Header lang={lang} alternateHref={paths.zh.data} />
 <main class="page-shell topic-page">
-  <nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Data</span></nav>
-  <section class="page-hero compact"><p class="eyebrow">Data</p><h1>Data Products</h1><p>{h.dataLead} This page defines the planned data-product vocabulary used by the website and the desktop workflow software.</p></section>
-  <section class="topic-card-grid">{cards.map(([title,text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p></article>)}</section>
-  <section class="release-table-card"><h2>Product lineage placeholder</h2><div class="responsive-table"><table><thead><tr><th>Layer</th><th>Product</th><th>Required metadata</th></tr></thead><tbody>{productMatrix.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
-  <section class="placeholder-rail topic-placeholders">{placeholders.map(([title,text]) => <article class="placeholder-panel"><div class="placeholder-window" aria-hidden="true"><span></span><span></span><span></span></div><strong>{title}</strong><p>{text}</p></article>)}</section>
-  <section class="note-callout"><strong>Quality principle</strong><p>Every product should keep its source, version, baseline, spatial grid, unit, and filter route explicit before any interpretation is made.</p></section>
+	<nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Data</span></nav>
+	<section class="page-hero compact"><p class="eyebrow">Data</p><h1>GRACE Level-2 Data Products</h1><p>{h.dataLead} This page defines the data vocabulary used by the website and visualization software, from GSM coefficients to gridded EWH and basin-scale TWSA diagnostics.</p></section>
+	<section class="topic-card-grid">{cards.map(([title, text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p></article>)}</section>
+	<section class="release-table-card"><h2>Product lineage</h2><div class="responsive-table"><table><thead><tr><th>Layer</th><th>Product</th><th>Required metadata</th></tr></thead><tbody>{productMatrix.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
+	<section class="capability-column-grid">{governance.map(([title, text]) => <article class="capability-column"><h3>{title}</h3><p>{text}</p></article>)}</section>
+	<section class="note-callout"><strong>Data boundary</strong><p>This page documents product structure and processing rules. Large raw datasets and derived scientific outputs should stay outside the website repository unless their distribution terms and file-size policy are clear.</p></section>
 </main>
 <Footer lang={lang} />
 </body>

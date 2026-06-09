@@ -3,22 +3,25 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { paths, site } from '../data/site';
+
 const lang = 'en';
 const t = site[lang];
 const h = t.home;
+
 const methods = [
-  ['Gaussian smoothing', 'Baseline isotropic smoothing used as a reference route for high-degree noise suppression.', 'Spatial smoothing'],
-  ['Decorrelated filtering', 'PnMm-style polynomial decorrelation for reducing north-south correlated stripes.', 'De-striping'],
-  ['DDK filtering', 'Anisotropic regularized filtering based on covariance-aware smoothing behavior.', 'Regularization'],
-  ['HSAF / Hankel filtering', 'Adaptive quasi-periodic decomposition for stripe suppression while preserving geophysical signals.', 'Adaptive filtering'],
-  ['Leakage correction', 'Scale-factor recovery and surrounding-signal removal for basins, lakes, and coastal targets.', 'Regional correction'],
-  ['Validation', 'Map preview, basin series, annual amplitude, trend, RMSE, and independent product consistency.', 'Quality control'],
+	['Gaussian smoothing', 'Isotropic smoothing in the spherical-harmonic domain. It is kept as a baseline for testing signal loss caused by fixed smoothing radii.', 'Spatial smoothing'],
+	['Fan and decorrelation filtering', 'Fan filtering and PnMm decorrelation reduce high-degree and correlated north-south stripe errors. Each route is stored as an explicit comparison product.', 'De-striping'],
+	['DDK filtering', 'DDK products represent covariance-aware anisotropic regularization. DDK4 is used as a practical comparison route for signal-retention tests.', 'Regularization'],
+	['HSAF / Hankel filtering', 'Hankel Spectrum Analysis Filtering decomposes latitude-band sequences into quasi-periodic modes and removes stripe-like components while retaining basin-scale hydrological signals.', 'Adaptive filtering'],
+	['Leakage correction', 'For lakes, closed basins, and coastlines, surrounding-signal removal and scale-factor restoration are used to reduce leakage-in and leakage-out errors.', 'Regional correction'],
+	['Validation', 'Maps, basin series, annual amplitude, trend, RMSE, spectral behavior, Mascon comparison, GLDAS consistency, and altimetry checks are treated as separate evidence layers.', 'Quality control'],
 ];
+
 const comparison = [
-  ['Noise control', 'Stripe residuals, ocean background RMS, spectral energy'],
-  ['Signal preservation', 'Amplitude loss, basin time-series consistency, low-degree behavior'],
-  ['Regional reliability', 'Leakage-in/out, scale factor, coastline buffer, independent validation'],
-  ['Reproducibility', 'Parameter tags, processing logs, exact product route and export folder'],
+	['Noise control', 'residual stripes, ocean-background RMS, spectral energy'],
+	['Signal preservation', 'amplitude loss, basin time-series consistency, low-degree spectrum'],
+	['Regional reliability', 'leakage-in/out, scale factor, basin boundary sensitivity, independent validation'],
+	['Reproducibility', 'parameter tags, configuration snapshot, processing log, product route'],
 ];
 ---
 <!doctype html>
@@ -27,11 +30,11 @@ const comparison = [
 <body>
 <Header lang={lang} alternateHref={paths.zh.methods} />
 <main class="page-shell topic-page">
-  <nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Methods</span></nav>
-  <section class="page-hero compact"><p class="eyebrow">Methods</p><h1>Method Notes</h1><p>{h.methodLead} This page provides a more systematic placeholder catalogue for method pages that can later be expanded into full technical notes.</p></section>
-  <section class="method-showcase-grid">{methods.map(([title,text,tag], index) => <article class="method-showcase-card"><span>{tag}</span><h2>{title}</h2><p>{text}</p><a href={index === 3 ? '/blog/second-post/' : '/blog/'}>Read related note</a></article>)}</section>
-  <section class="release-table-card"><h2>Comparison checklist</h2><div class="responsive-table"><table><thead><tr><th>Dimension</th><th>Suggested indicators</th></tr></thead><tbody>{comparison.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
-  <section class="note-callout"><strong>Writing plan</strong><p>Later, each method can be split into an independent page such as <code>/methods/hsaf/</code>, <code>/methods/ddk/</code>, and <code>/methods/leakage-correction/</code>.</p></section>
+	<nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Methods</span></nav>
+	<section class="page-hero compact"><p class="eyebrow">Methods</p><h1>Filtering and Validation Methods</h1><p>{h.methodLead} The catalogue is focused on conventional filtering, Hankel filtering, leakage correction, and product validation used in the GRACE Level-2 workflow.</p></section>
+	<section class="method-showcase-grid">{methods.map(([title, text, tag], index) => <article class="method-showcase-card"><span>{tag}</span><h2>{title}</h2><p>{text}</p><a href={index === 3 ? '/blog/second-post/' : '/blog/'}>Read related note</a></article>)}</section>
+	<section class="release-table-card"><h2>Comparison checklist</h2><div class="responsive-table"><table><thead><tr><th>Dimension</th><th>Suggested indicators</th></tr></thead><tbody>{comparison.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
+	<section class="note-callout"><strong>Method scope</strong><p>The methods section records the filtering and validation methods used by the GRACE Level-2 pipeline and visualization software.</p></section>
 </main>
 <Footer lang={lang} />
 </body>

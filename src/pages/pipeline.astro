@@ -3,20 +3,23 @@ import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { paths, site } from '../data/site';
+
 const lang = 'en';
 const t = site[lang];
 const h = t.home;
+
 const topics = [
-  ['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/blog/first-post/', 'Input contract'],
-  ['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/blog/first-post/', 'Correction contract'],
-  ['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/blog/second-post/', 'Filter contract'],
-  ['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/blog/third-post/', 'Synthesis contract'],
-  ['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/blog/third-post/', 'Validation contract'],
+	['01', h.pipelineSteps[0][0], h.pipelineSteps[0][1], '/blog/first-post/', 'Input contract'],
+	['02', h.pipelineSteps[1][0], h.pipelineSteps[1][1], '/blog/first-post/', 'Correction contract'],
+	['03', h.pipelineSteps[2][0], h.pipelineSteps[2][1], '/blog/second-post/', 'Filter contract'],
+	['04', h.pipelineSteps[3][0], h.pipelineSteps[3][1], '/blog/third-post/', 'Synthesis contract'],
+	['05', h.pipelineSteps[4][0], h.pipelineSteps[4][1], '/blog/third-post/', 'Validation contract'],
 ];
+
 const implementationBlocks = [
-  ['Configuration first', 'Placeholder: every workflow run should start from a configuration file that records source products, correction models, filtering route, grid settings, and output naming.'],
-  ['Product tags', 'Placeholder: each output product should carry a stable tag such as GAUSS_300, FAN_300_P3M6, DDK4, or HSAF to avoid silent overwriting.'],
-  ['Audit trail', 'Placeholder: exports should include logs, map previews, selected statistics, and metadata required to reproduce the result.'],
+	['Configuration contract', 'Each run starts from a configuration file that records the source product, release, maximum degree, low-degree replacement, GIA model, baseline period, filter route, grid resolution, mask version, and export folder.'],
+	['Product routing', 'Gaussian, Fan, decorrelation, DDK, and HSAF outputs are kept as separate product branches. Tags such as GAUSS_300, FAN_300_P3M6, DDK4, and HSAF make figures and statistics traceable.'],
+	['Validation record', 'Exports include map previews, basin-mean series, annual and semi-annual amplitudes, trend estimates, leakage-correction settings, comparison tables, and a processing log.'],
 ];
 ---
 <!doctype html>
@@ -25,11 +28,11 @@ const implementationBlocks = [
 <body>
 <Header lang={lang} alternateHref={paths.zh.pipeline} />
 <main class="page-shell topic-page">
-  <nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Pipeline</span></nav>
-  <section class="page-hero compact"><p class="eyebrow">Workflow</p><h1>Processing Pipeline</h1><p>{h.pipelineLead} This page provides a stable workflow landing page for search engines, sharing, and software documentation.</p></section>
-  <section class="pipeline-roadmap" aria-label="Pipeline roadmap">{topics.map(([num, title, text, href, tag]) => <article><span>{num}</span><div><em>{tag}</em><h2>{title}</h2><p>{text}</p><a href={href}>Read related note</a></div></article>)}</section>
-  <section class="capability-column-grid">{implementationBlocks.map(([title, text]) => <article class="capability-column"><h3>{title}</h3><p>{text}</p></article>)}</section>
-  <section class="note-callout"><strong>Implementation note</strong><p>Detailed processing contracts remain on the homepage accordion. After the software interface is finalized, this page can also embed screenshots or a short workflow demonstration.</p><a class="button primary" href="/#pipeline">Open interactive pipeline</a></section>
+	<nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Pipeline</span></nav>
+	<section class="page-hero compact"><p class="eyebrow">Workflow</p><h1>GRACE Level-2 Processing Pipeline</h1><p>{h.pipelineLead} This page focuses on the scientific and software workflow required to transform monthly GSM spherical harmonics into auditable EWH and TWSA products.</p></section>
+	<section class="pipeline-roadmap" aria-label="Pipeline roadmap">{topics.map(([num, title, text, href, tag]) => <article><span>{num}</span><div><em>{tag}</em><h2>{title}</h2><p>{text}</p><a href={href}>Read related note</a></div></article>)}</section>
+	<section class="capability-column-grid">{implementationBlocks.map(([title, text]) => <article class="capability-column"><h3>{title}</h3><p>{text}</p></article>)}</section>
+	<section class="note-callout"><strong>Scope</strong><p>This website is organized around GRACE/GRACE-FO Level-2 processing, HSAF filtering experiments, basin-scale TWSA analysis, leakage correction, and the accompanying visualization software.</p><a class="button primary" href="/#pipeline">Open interactive pipeline</a></section>
 </main>
 <Footer lang={lang} />
 </body>

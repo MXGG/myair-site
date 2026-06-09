@@ -3,25 +3,29 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { paths, site } from '../../data/site';
+
 const lang = 'zh';
 const t = site[lang];
 const h = t.home;
+
 const cards = [
-  ['Level-2 GSM', 'GRACE/GRACE-FO 处理中心发布的月尺度 Stokes 球谐系数产品，需要明确处理中心、版本、阶次、月份标识和缺失月份状态。'],
-  ['格网 EWH', '在预处理、滤波、勒夫数改正和球谐合成之后生成的等效水高异常格网产品。'],
-  ['Mascon 参考', '用于检查空间形态、季节振幅、长期趋势和泄漏误差表现的独立格网或流域尺度产品。'],
-  ['辅助数据', '包括 GIA 模型、SLR 替换项、流域掩膜、海陆掩膜、水文模型和卫星测高资料等验证数据。'],
+	['Level-2 GSM 球谐系数', '包括 HUST-Grace2024、CSR RL06、GFZ RL06、JPL RL06 等月尺度 Stokes 球谐系数产品。处理流程应保留处理中心、版本、最高阶次、月份标识和缺失月份状态。'],
+	['低阶项与背景改正', '一阶项地心改正、SLR C20/C30 替换、GIA 改正、平均场扣除和背景场一致化均作为显式预处理输入。'],
+	['EWH / TWSA 格网产品', '改正和滤波后的球谐系数被合成为等效水高异常格网，用于地图预览、流域平均、年/半年振幅和趋势分析。'],
+	['参考与验证数据', 'CSR Mascon、GLDAS-Noah、流域掩膜、海陆掩膜、海岸缓冲区和 Hydroweb 测高序列用于独立验证。'],
 ];
+
 const productMatrix = [
-  ['原始输入', 'GSM 球谐系数', '处理中心、版本、lmax、月份标识'],
-  ['预处理异常', '改正后的 ΔC/ΔS', '一阶项/C20/C30 替换、GIA 模型、基准期'],
-  ['滤波产品', '带标签的系数集或格网', '滤波方法、半径/阶数、HSAF 参数、产品标签'],
-  ['应用层产品', 'EWH 格网 / 流域序列', '单位、格网分辨率、掩膜版本、泄漏/尺度因子规则'],
+	['原始输入', 'GSM 球谐系数', '处理中心、版本、lmax、月份、背景模型、缺失标识'],
+	['预处理异常', '改正后的 ΔC/ΔS', '一阶项来源、C20/C30 来源、GIA 模型、基准期'],
+	['滤波分支', 'GAUSS / FAN / PnMm / DDK / HSAF', '滤波方法、半径/阶数、HSAF 参数、产品标签'],
+	['应用产品', 'EWH 格网与流域 TWSA 序列', '单位、格网分辨率、掩膜、泄漏/尺度因子规则、统计指标'],
 ];
-const placeholders = [
-  ['数据谱系图', '预留示意图位置，用于展示 GSM 系数如何经过预处理、滤波、合成和验证。'],
-  ['元数据检查表', '预留下载型检查表位置，用于定义必须保留的产品字段和命名规则。'],
-  ['示例数据集', '在确认数据再分发权限之后，可预留一个小型公开测试包。'],
+
+const governance = [
+	['原始数据只读', 'Level-2 原始文件和低阶项替换产品不应被覆盖，派生结果写入带版本的输出目录。'],
+	['元数据可追溯', '每张图、每个格网和每条流域序列都应追溯到生成它的配置文件和产品标签。'],
+	['外部一致性检查', 'Mascon 产品、水文模型和测高资料用于检查滤波和泄漏校正后的信号表现。'],
 ];
 ---
 <!doctype html>
@@ -30,12 +34,12 @@ const placeholders = [
 <body>
 <Header lang={lang} alternateHref={paths.en.data} />
 <main class="page-shell topic-page">
-  <nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>数据</span></nav>
-  <section class="page-hero compact"><p class="eyebrow">Data</p><h1>数据产品</h1><p>{h.dataLead} 本页面用于定义网站与桌面工作流软件共用的数据产品词汇和占位说明。</p></section>
-  <section class="topic-card-grid">{cards.map(([title,text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p></article>)}</section>
-  <section class="release-table-card"><h2>产品谱系占位表</h2><div class="responsive-table"><table><thead><tr><th>层级</th><th>产品</th><th>必要元数据</th></tr></thead><tbody>{productMatrix.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
-  <section class="placeholder-rail topic-placeholders">{placeholders.map(([title,text]) => <article class="placeholder-panel"><div class="placeholder-window" aria-hidden="true"><span></span><span></span><span></span></div><strong>{title}</strong><p>{text}</p></article>)}</section>
-  <section class="note-callout"><strong>质量原则</strong><p>任何产品在解释之前，都应明确来源、版本、基准期、空间格网、单位和滤波路线。</p></section>
+	<nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>数据</span></nav>
+	<section class="page-hero compact"><p class="eyebrow">Data</p><h1>GRACE Level-2 数据产品</h1><p>{h.dataLead} 本页面定义网站与可视化软件共用的数据产品词汇，从 GSM 球谐系数到 EWH 格网与流域 TWSA 诊断结果。</p></section>
+	<section class="topic-card-grid">{cards.map(([title, text]) => <article class="topic-card"><h2>{title}</h2><p>{text}</p></article>)}</section>
+	<section class="release-table-card"><h2>产品谱系</h2><div class="responsive-table"><table><thead><tr><th>层级</th><th>产品</th><th>必要元数据</th></tr></thead><tbody>{productMatrix.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
+	<section class="capability-column-grid">{governance.map(([title, text]) => <article class="capability-column"><h3>{title}</h3><p>{text}</p></article>)}</section>
+	<section class="note-callout"><strong>数据边界</strong><p>本页说明产品结构和处理规则。大体量原始数据与研究派生成果不应直接放入网站仓库，除非已明确分发许可和文件体积策略。</p></section>
 </main>
 <Footer lang={lang} />
 </body>

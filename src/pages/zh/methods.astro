@@ -3,22 +3,25 @@ import BaseHead from '../../components/BaseHead.astro';
 import Footer from '../../components/Footer.astro';
 import Header from '../../components/Header.astro';
 import { paths, site } from '../../data/site';
+
 const lang = 'zh';
 const t = site[lang];
 const h = t.home;
+
 const methods = [
-  ['Gaussian 平滑', '作为基准路线的各向同性平滑方法，常用于高阶噪声抑制和基础对比。', '空间平滑'],
-  ['去相关滤波', 'PnMm 等多项式去相关方法用于削弱南北向相关条带结构。', '去条带'],
-  ['DDK 滤波', '具有协方差约束特征的各向异性正则化滤波产品。', '正则化'],
-  ['HSAF / Hankel 滤波', '面向准周期条带噪声抑制和地球物理信号保持的自适应分解方法。', '自适应滤波'],
-  ['泄漏校正', '面向流域、湖泊和海岸带目标区的尺度因子恢复与周边信号扣除。', '区域校正'],
-  ['质量验证', '包括图像预览、流域序列、年振幅、趋势、RMSE 和外部产品一致性检查。', '质量控制'],
+	['Gaussian 平滑', '球谐域中的各向同性平滑方法，作为固定平滑半径下信号衰减分析和基础对比路线。', '空间平滑'],
+	['Fan 与去相关滤波', 'Fan 滤波和 PnMm 多项式去相关用于削弱高阶噪声和南北向相关条带误差。', '去条带'],
+	['DDK 滤波', 'DDK 产品体现协方差约束下的各向异性正则化特征，DDK4 可作为信号保持能力的对照路线。', '正则化'],
+	['HSAF / Hankel 滤波', 'Hankel 谱分析滤波将纬向序列分解为准周期模态，用于抑制条带型分量并保持流域尺度水文信号。', '自适应滤波'],
+	['泄漏校正', '针对湖泊、闭合流域和海岸带目标区，通过周边信号扣除和尺度因子恢复降低内泄漏与外泄漏误差。', '区域校正'],
+	['质量验证', '地图、流域序列、年振幅、趋势、RMSE、谱域行为、Mascon 对比、GLDAS 一致性和测高检核共同构成验证证据。', '质量控制'],
 ];
+
 const comparison = [
-  ['噪声控制', '残余条带、海洋背景 RMS、谱域能量'],
-  ['信号保持', '振幅衰减、流域序列一致性、低阶谱行为'],
-  ['区域可靠性', '内泄漏/外泄漏、尺度因子、海岸缓冲区、独立验证'],
-  ['可复现性', '参数标签、处理日志、产品路线和导出目录'],
+	['噪声控制', '残余条带、海洋背景 RMS、谱域能量'],
+	['信号保持', '振幅衰减、流域序列一致性、低阶谱行为'],
+	['区域可靠性', '内泄漏/外泄漏、尺度因子、流域边界敏感性、独立验证'],
+	['可复现性', '参数标签、配置快照、处理日志、产品路线'],
 ];
 ---
 <!doctype html>
@@ -27,11 +30,11 @@ const comparison = [
 <body>
 <Header lang={lang} alternateHref={paths.en.methods} />
 <main class="page-shell topic-page">
-  <nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>方法</span></nav>
-  <section class="page-hero compact"><p class="eyebrow">Methods</p><h1>方法记录</h1><p>{h.methodLead} 本页面先建立较系统的方法目录占位结构，后续可扩展为完整技术文档。</p></section>
-  <section class="method-showcase-grid">{methods.map(([title,text,tag], index) => <article class="method-showcase-card"><span>{tag}</span><h2>{title}</h2><p>{text}</p><a href={index === 3 ? '/zh/blog/second-post/' : '/zh/blog/'}>查看相关笔记</a></article>)}</section>
-  <section class="release-table-card"><h2>方法对比检查表</h2><div class="responsive-table"><table><thead><tr><th>维度</th><th>建议指标</th></tr></thead><tbody>{comparison.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
-  <section class="note-callout"><strong>后续写作计划</strong><p>后续可将各方法拆分为独立页面，例如 <code>/zh/methods/hsaf/</code>、<code>/zh/methods/ddk/</code> 和 <code>/zh/methods/leakage-correction/</code>。</p></section>
+	<nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><span>方法</span></nav>
+	<section class="page-hero compact"><p class="eyebrow">Methods</p><h1>滤波与验证方法</h1><p>{h.methodLead} 本目录聚焦 GRACE Level-2 工作流中的传统滤波、Hankel 滤波、泄漏校正和产品验证。</p></section>
+	<section class="method-showcase-grid">{methods.map(([title, text, tag], index) => <article class="method-showcase-card"><span>{tag}</span><h2>{title}</h2><p>{text}</p><a href={index === 3 ? '/zh/blog/second-post/' : '/zh/blog/'}>查看相关笔记</a></article>)}</section>
+	<section class="release-table-card"><h2>方法对比检查表</h2><div class="responsive-table"><table><thead><tr><th>维度</th><th>建议指标</th></tr></thead><tbody>{comparison.map((row) => <tr>{row.map((cell) => <td>{cell}</td>)}</tr>)}</tbody></table></div></section>
+	<section class="note-callout"><strong>方法范围</strong><p>方法页仅记录 GRACE Level-2 处理流程与可视化软件实际涉及的滤波、校正和验证方法。</p></section>
 </main>
 <Footer lang={lang} />
 </body>
