@@ -33,18 +33,18 @@ const stepIcons = [
 ];
 
 const capabilityCards = [
-	['Input management', 'Placeholder: batch import Level-2 GSM products, preserve product-center, release, month, lmax, and replacement metadata.'],
-	['Filter comparison', 'Placeholder: run Gaussian, decorrelation, DDK, and HSAF routes side by side with explicit product tags and diagnostics.'],
-	['Product preview', 'Placeholder: inspect global maps, basin averages, anomaly time series, and residual stripe patterns before export.'],
-	['Basin analysis', 'Placeholder: compute area-weighted TWSA, annual/semi-annual amplitudes, linear trends, leakage-corrected series, and comparison tables.'],
-	['Reproducible export', 'Placeholder: write outputs with configuration snapshots, figure previews, processing logs, and checksum-ready release folders.'],
-	['Quality control', 'Placeholder: collect map checks, spectral checks, unit checks, reference-product comparison, and missing-month audit results.'],
+	['Input management', 'batch import Level-2 GSM products, preserve product-center, release, month, lmax, and replacement metadata.'],
+	['Filter comparison', 'run Gaussian, decorrelation, DDK, and HSAF routes side by side with explicit product tags and diagnostics.'],
+	['Product preview', 'inspect global maps, basin averages, anomaly time series, and residual stripe patterns before export.'],
+	['Basin analysis', 'compute area-weighted TWSA, annual/semi-annual amplitudes, linear trends, leakage-corrected series, and comparison tables.'],
+	['Reproducible export', 'write outputs with configuration snapshots, figure previews, processing logs, and checksum-ready release folders.'],
+	['Quality control', 'collect map checks, spectral checks, unit checks, reference-product comparison, and missing-month audit results.'],
 ];
 
-const interfacePlaceholders = [
-	['Workflow dashboard', 'Reserved for a screenshot of the desktop processing workspace, including dataset selection, filter routing, and export status.'],
-	['Map preview panel', 'Reserved for a figure or short animation showing gridded EWH preview, color scale control, and product comparison.'],
-	['Basin diagnostics', 'Reserved for time-series plots, annual amplitude maps, trend summaries, and leakage-correction reports.'],
+const interfacecontents = [
+	['Workflow dashboard', 'a screenshot of the desktop processing workspace, including dataset selection, filter routing, and export status.'],
+	['Map preview panel', 'a figure or short animation showing gridded EWH preview, color scale control, and product comparison.'],
+	['Basin diagnostics', 'time-series plots, annual amplitude maps, trend summaries, and leakage-correction reports.'],
 ];
 ---
 
@@ -104,7 +104,7 @@ const interfacePlaceholders = [
 				<div class="section-heading wide-heading">
 					<p class="section-label">01</p>
 					<h2 id="capability-title">Software capability overview</h2>
-					<p>Placeholder copy for the GRACE Level-2 desktop workflow software. The section can later be replaced with real screenshots, versioned feature descriptions, and release-specific notes.</p>
+					<p>content copy for the GRACE Level-2 desktop workflow software. The section can later be replaced with real screenshots, versioned feature descriptions, and release-specific notes.</p>
 				</div>
 				<div class="capability-grid">
 					{capabilityCards.map(([title, text], index) => (
@@ -115,10 +115,10 @@ const interfacePlaceholders = [
 						</article>
 					))}
 				</div>
-				<div class="placeholder-rail" aria-label="Interface placeholders">
-					{interfacePlaceholders.map(([title, text]) => (
-						<article class="placeholder-panel">
-							<div class="placeholder-window" aria-hidden="true"><span></span><span></span><span></span></div>
+				<div class="content-rail" aria-label="Interface contents">
+					{interfacecontents.map(([title, text]) => (
+						<article class="content-panel">
+							<div class="content-window" aria-hidden="true"><span></span><span></span><span></span></div>
 							<strong>{title}</strong>
 							<p>{text}</p>
 						</article>

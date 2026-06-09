@@ -33,18 +33,18 @@ const stepIcons = [
 ];
 
 const capabilityCards = [
-	['数据导入管理', '占位说明：批量导入 Level-2 GSM 球谐产品，并保留处理中心、版本、月份、最高阶次和低阶项替换元数据。'],
-	['滤波路线对比', '占位说明：并行生成 Gaussian、去相关、DDK 与 HSAF 产品，并通过明确标签管理各类诊断结果。'],
-	['产品快速预览', '占位说明：在导出前检查全球格网图、流域平均、异常时间序列和残余条带结构。'],
-	['流域尺度分析', '占位说明：计算面积加权 TWSA、年/半年振幅、线性趋势、泄漏校正序列和对比表格。'],
-	['可复现输出', '占位说明：输出配置快照、图像预览、处理日志和便于版本归档的结果目录。'],
-	['质量控制记录', '占位说明：汇总图像检查、谱域检查、单位检查、参考产品对比和缺失月份审计结果。'],
+	['数据导入管理', '批量导入 Level-2 GSM 球谐产品，并保留处理中心、版本、月份、最高阶次和低阶项替换元数据。'],
+	['滤波路线对比', '并行生成 Gaussian、去相关、DDK 与 HSAF 产品，并通过明确标签管理各类诊断结果。'],
+	['产品快速预览', '在导出前检查全球格网图、流域平均、异常时间序列和残余条带结构。'],
+	['流域尺度分析', '计算面积加权 TWSA、年/半年振幅、线性趋势、泄漏校正序列和对比表格。'],
+	['可复现输出', '输出配置快照、图像预览、处理日志和便于版本归档的结果目录。'],
+	['质量控制记录', '汇总图像检查、谱域检查、单位检查、参考产品对比和缺失月份审计结果。'],
 ];
 
-const interfacePlaceholders = [
-	['工作流仪表盘', '预留软件工作区截图位置，可展示数据集选择、滤波路线配置和导出状态。'],
-	['格网预览面板', '预留图像或短动画位置，可展示 EWH 格网预览、色标控制和产品对比。'],
-	['流域诊断报告', '预留时间序列图、年振幅图、趋势统计和泄漏校正报告展示位置。'],
+const interfacecontents = [
+	['工作流仪表盘', '软件工作区截图位置，可展示数据集选择、滤波路线配置和导出状态。'],
+	['格网预览面板', '图像或短动画位置，可展示 EWH 格网预览、色标控制和产品对比。'],
+	['流域诊断报告', '时间序列图、年振幅图、趋势统计和泄漏校正报告展示位置。'],
 ];
 ---
 
@@ -105,7 +105,7 @@ const interfacePlaceholders = [
 				<div class="section-heading wide-heading">
 					<p class="section-label">01</p>
 					<h2 id="capability-title">软件功能概览</h2>
-					<p>这里先放置 GRACE Level-2 桌面工作流软件的功能介绍占位文案，后续可替换为真实界面截图、版本功能说明和发布记录。</p>
+					<p>本节概述 GRACE Level-2 桌面工作流软件的数据导入、改正配置、滤波对比、EWH 预览、流域分析和可复现导出能力。</p>
 				</div>
 				<div class="capability-grid">
 					{capabilityCards.map(([title, text], index) => (
@@ -116,10 +116,10 @@ const interfacePlaceholders = [
 						</article>
 					))}
 				</div>
-				<div class="placeholder-rail" aria-label="软件界面占位区">
-					{interfacePlaceholders.map(([title, text]) => (
-						<article class="placeholder-panel">
-							<div class="placeholder-window" aria-hidden="true"><span></span><span></span><span></span></div>
+				<div class="content-rail" aria-label="软件界面功能区">
+					{interfacecontents.map(([title, text]) => (
+						<article class="content-panel">
+							<div class="content-window" aria-hidden="true"><span></span><span></span><span></span></div>
 							<strong>{title}</strong>
 							<p>{text}</p>
 						</article>
