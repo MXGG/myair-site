@@ -29,7 +29,42 @@ New-Item -ItemType Directory -Path $appDirectory -Force | Out-Null
 New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
 
 Write-Host "正在下载本机同步程序……" -ForegroundColor Cyan
-Invoke-WebRequest -Uri $SyncScriptUrl -OutFile $syncScriptPath -UseBasicParsing
+$temporarySyncScriptPath = "$syncScriptPath.$PID.download"
+try {
+    Invoke-WebRequest -Uri $SyncScriptUrl -OutFile $temporarySyncScriptPath -UseBasicParsing
+
+    # Windows PowerShell 5.1 treats a UTF-8 script without a BOM as the
+    # system ANSI code page. Normalize the downloaded script before parsing.
+    $downloadedBytes = [IO.File]::ReadAllBytes($temporarySyncScriptPath)
+    $strictUtf8 = [Text.UTF8Encoding]::new($false, $true)
+    $scriptText = $strictUtf8.GetString($downloadedBytes)
+    if ($scriptText.Length -gt 0 -and $scriptText[0] -eq [char]0xFEFF) {
+        $scriptText = $scriptText.Substring(1)
+    }
+    [IO.File]::WriteAllText(
+        $temporarySyncScriptPath,
+        $scriptText,
+        [Text.UTF8Encoding]::new($true)
+    )
+
+    $parseTokens = $null
+    $parseErrors = $null
+    [Management.Automation.Language.Parser]::ParseFile(
+        $temporarySyncScriptPath,
+        [ref]$parseTokens,
+        [ref]$parseErrors
+    ) | Out-Null
+    if (@($parseErrors).Count -gt 0) {
+        $parseDetails = (@($parseErrors) | ForEach-Object { $_.Message }) -join "；"
+        throw "下载的同步程序未通过语法检查：$parseDetails"
+    }
+
+    Move-Item -LiteralPath $temporarySyncScriptPath -Destination $syncScriptPath -Force
+} finally {
+    if (Test-Path -LiteralPath $temporarySyncScriptPath) {
+        Remove-Item -LiteralPath $temporarySyncScriptPath -Force
+    }
+}
 
 Write-Host "请输入留言板管理员口令。口令会使用 Windows DPAPI 加密，只能由当前用户解密。" -ForegroundColor Cyan
 $secureToken = Read-Host -Prompt "管理员口令" -AsSecureString

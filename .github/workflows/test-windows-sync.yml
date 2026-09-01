@@ -1,0 +1,72 @@
+name: Test Windows guestbook sync
+
+on:
+  push:
+    paths:
+      - "scripts/windows/**"
+      - ".github/workflows/test-windows-sync.yml"
+  pull_request:
+    paths:
+      - "scripts/windows/**"
+      - ".github/workflows/test-windows-sync.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  windows-powershell-5:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate scripts with Windows PowerShell 5.1
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          function Assert-ParseablePowerShell {
+              param([string]$Path)
+              $tokens = $null
+              $parseErrors = $null
+              [Management.Automation.Language.Parser]::ParseFile(
+                  $Path,
+                  [ref]$tokens,
+                  [ref]$parseErrors
+              ) | Out-Null
+              if (@($parseErrors).Count -gt 0) {
+                  $details = (@($parseErrors) | ForEach-Object { $_.Message }) -join "; "
+                  throw "$Path failed PowerShell parsing: $details"
+              }
+          }
+
+          $syncPath = Join-Path $env:GITHUB_WORKSPACE "scripts\windows\sync-guestbook.ps1"
+          $syncBytes = [IO.File]::ReadAllBytes($syncPath)
+          if (
+              $syncBytes.Length -lt 3 -or
+              $syncBytes[0] -ne 0xEF -or
+              $syncBytes[1] -ne 0xBB -or
+              $syncBytes[2] -ne 0xBF
+          ) {
+              throw "sync-guestbook.ps1 must include a UTF-8 BOM for Windows PowerShell 5.1."
+          }
+          Assert-ParseablePowerShell -Path $syncPath
+
+          $installerPath = Join-Path $env:GITHUB_WORKSPACE "scripts\windows\install-guestbook-sync.ps1"
+          $installerBytes = [IO.File]::ReadAllBytes($installerPath)
+          $installerText = [Text.UTF8Encoding]::new($false, $true).GetString($installerBytes)
+          if ($installerText.Length -gt 0 -and $installerText[0] -eq [char]0xFEFF) {
+              $installerText = $installerText.Substring(1)
+          }
+          $temporaryInstaller = Join-Path $env:RUNNER_TEMP "install-guestbook-sync.ps1"
+          try {
+              [IO.File]::WriteAllText(
+                  $temporaryInstaller,
+                  $installerText,
+                  [Text.UTF8Encoding]::new($true)
+              )
+              Assert-ParseablePowerShell -Path $temporaryInstaller
+          } finally {
+              if (Test-Path -LiteralPath $temporaryInstaller) {
+                  Remove-Item -LiteralPath $temporaryInstaller -Force
+              }
+          }
