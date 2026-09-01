@@ -1,4 +1,4 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
     [string]$ApiBase = "https://myair.info/api/guestbook",
     [string]$OutputPath = "E:\myairinfo_logs",
