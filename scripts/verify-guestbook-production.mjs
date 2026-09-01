@@ -1,6 +1,7 @@
 const apiBase = process.env.GUESTBOOK_API_BASE ?? 'https://myair.info/api/guestbook';
 const adminToken = process.env.GUESTBOOK_ADMIN_TOKEN;
 const marker = `deployment-check-${(process.env.GITHUB_SHA ?? Date.now().toString()).slice(0, 12)}`;
+const messageContent = [marker, ...Array.from({ length: 7_999 }, (_, index) => `line-${index + 2}`)].join('\n');
 
 if (!adminToken) throw new Error('GUESTBOOK_ADMIN_TOKEN is required for production verification.');
 
@@ -43,7 +44,7 @@ const imageBytes = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAA
 const submissionBody = new FormData();
 submissionBody.set('name', 'Deployment check');
 submissionBody.set('contact', '');
-submissionBody.set('content', marker);
+submissionBody.set('content', messageContent);
 submissionBody.set('captchaId', captcha.challengeId);
 submissionBody.set('captchaAnswer', captcha.answer);
 submissionBody.set('website', '');
@@ -53,6 +54,7 @@ const submissionResponse = await fetchWithRetry('/messages', {
 	method: 'POST',
 	headers: {
 		Accept: 'application/json',
+		Authorization: `Bearer ${adminToken}`,
 		Origin: 'https://myair.info',
 	},
 	body: submissionBody,
@@ -63,7 +65,7 @@ if (!submission.id) throw new Error('Production test message did not return an I
 try {
 	const listResponse = await fetchWithRetry('/admin/messages?limit=100', { headers: adminHeaders });
 	const list = await listResponse.json();
-	const saved = list.messages?.find((message) => message.id === submission.id && message.content === marker);
+	const saved = list.messages?.find((message) => message.id === submission.id && message.content === messageContent);
 	if (!saved) throw new Error('Production test message was not visible through the private administrator API.');
 	const attachment = saved.attachments?.find((item) => item.name === 'deployment-check.png');
 	if (!attachment?.downloadPath) throw new Error('Production test image metadata was not visible through the private administrator API.');

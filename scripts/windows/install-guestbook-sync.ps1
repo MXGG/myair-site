@@ -12,7 +12,9 @@ $ErrorActionPreference = "Stop"
 function Write-Utf8File {
     param([string]$Path, [string]$Content)
     $encoding = New-Object Text.UTF8Encoding($false)
-    [IO.File]::WriteAllText($Path, $Content, $encoding)
+	$temporaryPath = "$Path.$PID.tmp"
+	[IO.File]::WriteAllText($temporaryPath, $Content, $encoding)
+	Move-Item -LiteralPath $temporaryPath -Destination $Path -Force
 }
 
 $outputRoot = [IO.Path]::GetPathRoot($OutputPath)
@@ -33,7 +35,6 @@ Write-Host "请输入留言板管理员口令。口令会使用 Windows DPAPI �
 $secureToken = Read-Host -Prompt "管理员口令" -AsSecureString
 $encryptedToken = ConvertFrom-SecureString -SecureString $secureToken
 if ([string]::IsNullOrWhiteSpace($encryptedToken)) { throw "未输入管理员口令。" }
-Write-Utf8File -Path $tokenPath -Content $encryptedToken
 
 $credential = New-Object Management.Automation.PSCredential("guestbook", $secureToken)
 $plainToken = $credential.GetNetworkCredential().Password
@@ -48,6 +49,7 @@ try {
     $plainToken = $null
 	$headers = $null
 }
+Write-Utf8File -Path $tokenPath -Content $encryptedToken
 
 $taskName = "MyAirInfoGuestbookSync"
 $arguments = '-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "{0}" -ApiBase "{1}" -OutputPath "{2}" -TokenPath "{3}"' -f $syncScriptPath, $ApiBase, $OutputPath, $tokenPath

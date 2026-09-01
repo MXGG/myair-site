@@ -14,7 +14,7 @@ const copy = {
 		tokenPlaceholder: 'Enter token',
 		login: 'Open records',
 		checking: 'Checking…',
-		invalid: 'The token is invalid or the service is unavailable.',
+		invalid: 'This value does not match the administrator token currently stored on the server.',
 		logout: 'Sign out',
 		reload: 'Reload',
 		exportCsv: 'Export CSV',
@@ -42,7 +42,7 @@ const copy = {
 		tokenPlaceholder: '请输入口令',
 		login: '查看记录',
 		checking: '正在验证……',
-		invalid: '口令无效，或留言服务暂时不可用。',
+		invalid: '输入值与服务器当前保存的 GUESTBOOK_ADMIN_TOKEN 不一致。',
 		logout: '退出管理',
 		reload: '刷新记录',
 		exportCsv: '导出 CSV',
@@ -71,7 +71,7 @@ const copy = {
 		<div class="lock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 10V7a5.5 5.5 0 0 1 11 0v3M5 10h14v11H5z" /><path d="M12 14v3" /></svg></div>
 		<div><h2>{copy.title}</h2><p>{copy.lead}</p></div>
 		<form data-auth-form>
-			<label><span>{copy.token}</span><input name="token" type="password" autocomplete="current-password" placeholder={copy.tokenPlaceholder} required /></label>
+			<label><span>{copy.token}</span><input name="token" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" placeholder={copy.tokenPlaceholder} required /></label>
 			<button class="button primary" type="submit" data-login>{copy.login}</button>
 		</form>
 		<p class="auth-status" data-auth-status role="status" aria-live="polite"></p>

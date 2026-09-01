@@ -19,6 +19,7 @@ interface MessageRow {
 	content: string;
 	created_at: number;
 	read_at: number | null;
+	ready_at: number | null;
 }
 
 interface AttachmentRow {
@@ -53,9 +54,12 @@ const MESSAGE_LIMIT = 3;
 const MESSAGE_DAY_MS = 24 * 60 * 60 * 1000;
 const MESSAGE_DAY_LIMIT = 20;
 const MAX_MESSAGE_LINES = 8000;
+const MAX_MESSAGE_BYTES = 1_800_000;
 const MAX_REQUEST_BYTES = 26 * 1024 * 1024;
+const MAX_JSON_BYTES = 100_000;
 const MAX_IMAGES = 4;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const INCOMPLETE_VISIBILITY_TIMEOUT_MS = 10 * 60 * 1000;
 const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
 const DEFAULT_ORIGINS = ['https://myair.info', 'https://www.myair.info', 'http://localhost:4321', 'http://127.0.0.1:4321'];
 const encoder = new TextEncoder();
@@ -284,39 +288,68 @@ async function verifyCaptcha(env: Env, id: string, answer: string, now: number):
 	return valid && Number(consumed.meta.changes ?? 0) === 1;
 }
 
-async function parseJsonBody(request: Request): Promise<Record<string, unknown> | null> {
-	const contentLength = Number(request.headers.get('Content-Length') ?? 0);
-	if (contentLength > MAX_REQUEST_BYTES) return null;
+async function readBodyBytes(request: Request, maximumBytes: number): Promise<Uint8Array | null> {
+	const declaredLength = Number(request.headers.get('Content-Length') ?? 0);
+	if (declaredLength > maximumBytes) return null;
+	if (!request.body) return new Uint8Array();
+	const reader = request.body.getReader();
+	const chunks: Uint8Array[] = [];
+	let total = 0;
 	try {
-		const text = await request.text();
-		if (encoder.encode(text).byteLength > MAX_REQUEST_BYTES) return null;
-		const body = JSON.parse(text);
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			total += value.byteLength;
+			if (total > maximumBytes) {
+				await reader.cancel('request_too_large');
+				return null;
+			}
+			chunks.push(value);
+		}
+	} finally {
+		reader.releaseLock();
+	}
+	const bytes = new Uint8Array(total);
+	let offset = 0;
+	for (const chunk of chunks) {
+		bytes.set(chunk, offset);
+		offset += chunk.byteLength;
+	}
+	return bytes;
+}
+
+function parseJsonBytes(bytes: Uint8Array): Record<string, unknown> | null {
+	try {
+		const body = JSON.parse(new TextDecoder().decode(bytes));
 		return body && typeof body === 'object' && !Array.isArray(body) ? body as Record<string, unknown> : null;
 	} catch {
 		return null;
 	}
 }
 
+async function parseJsonBody(request: Request): Promise<Record<string, unknown> | null> {
+	const bytes = await readBodyBytes(request, MAX_JSON_BYTES);
+	return bytes ? parseJsonBytes(bytes) : null;
+}
+
 async function parseSubmissionBody(request: Request): Promise<SubmissionBody | null> {
-	const contentLength = Number(request.headers.get('Content-Length') ?? 0);
-	if (contentLength > MAX_REQUEST_BYTES) return null;
-	const contentType = request.headers.get('Content-Type')?.toLowerCase() ?? '';
-	if (contentType.startsWith('application/json')) {
-		const fields = await parseJsonBody(request);
+	const contentType = request.headers.get('Content-Type') ?? '';
+	const bytes = await readBodyBytes(request, MAX_REQUEST_BYTES);
+	if (!bytes) return null;
+	if (contentType.toLowerCase().startsWith('application/json')) {
+		const fields = parseJsonBytes(bytes);
 		return fields ? { fields, images: [] } : null;
 	}
-	if (!contentType.startsWith('multipart/form-data')) return null;
+	if (!contentType.toLowerCase().startsWith('multipart/form-data')) return null;
 	try {
-		const data = await request.formData();
+		const bodyBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
+		const data = await new Response(bodyBuffer, { headers: { 'Content-Type': contentType } }).formData();
 		const fields: Record<string, unknown> = {};
 		for (const key of ['name', 'contact', 'content', 'captchaId', 'captchaAnswer', 'website']) {
 			const value = data.get(key);
 			fields[key] = typeof value === 'string' ? value : '';
 		}
 		const images = data.getAll('images').filter((value): value is File => value instanceof File && value.size > 0);
-		const fieldBytes = Object.values(fields).reduce<number>((total, value) => total + encoder.encode(String(value ?? '')).byteLength, 0);
-		const imageBytes = images.reduce((total, image) => total + image.size, 0);
-		if (fieldBytes + imageBytes > MAX_REQUEST_BYTES) return null;
 		return { fields, images };
 	} catch {
 		return null;
@@ -389,6 +422,9 @@ async function handleSubmission(request: Request, env: Env): Promise<Response> {
 	if (!name || !content || content.length < 2 || lineCount > MAX_MESSAGE_LINES || !captchaId || captchaAnswer.length !== 5) {
 		return json(request, env, { ok: false, code: 'invalid_fields' }, 400);
 	}
+	if (encoder.encode(content).byteLength > MAX_MESSAGE_BYTES) {
+		return json(request, env, { ok: false, code: 'message_too_large' }, 413);
+	}
 	if (parsed.images.length > MAX_IMAGES) return json(request, env, { ok: false, code: 'too_many_images' }, 400);
 	if (parsed.images.some((file) => file.size > MAX_IMAGE_BYTES)) {
 		return json(request, env, { ok: false, code: 'image_too_large' }, 413);
@@ -398,13 +434,16 @@ async function handleSubmission(request: Request, env: Env): Promise<Response> {
 	}
 
 	const now = Date.now();
-	const ipHash = await clientHash(request, env);
-	const [shortWindow, dayWindow] = await Promise.all([
-		rateCount(env, ipHash, 'message', now - MESSAGE_WINDOW_MS),
-		rateCount(env, ipHash, 'message', now - MESSAGE_DAY_MS),
-	]);
-	if (shortWindow >= MESSAGE_LIMIT || dayWindow >= MESSAGE_DAY_LIMIT) {
-		return json(request, env, { ok: false, code: 'rate_limited' }, 429);
+	const administrativeTest = isAdmin(request, env);
+	const ipHash = administrativeTest ? '' : await clientHash(request, env);
+	if (!administrativeTest) {
+		const [shortWindow, dayWindow] = await Promise.all([
+			rateCount(env, ipHash, 'message', now - MESSAGE_WINDOW_MS),
+			rateCount(env, ipHash, 'message', now - MESSAGE_DAY_MS),
+		]);
+		if (shortWindow >= MESSAGE_LIMIT || dayWindow >= MESSAGE_DAY_LIMIT) {
+			return json(request, env, { ok: false, code: 'rate_limited' }, 429);
+		}
 	}
 
 	if (!await verifyCaptcha(env, captchaId, captchaAnswer, now)) {
@@ -416,7 +455,7 @@ async function handleSubmission(request: Request, env: Env): Promise<Response> {
 		return json(request, env, { ok: false, code: prepared.code ?? 'image_invalid' }, prepared.code === 'image_too_large' ? 413 : 400);
 	}
 
-	const inserted = await env.DB.prepare('INSERT INTO guestbook_messages (name, contact, content, created_at, read_at) VALUES (?, ?, ?, ?, NULL)')
+	const inserted = await env.DB.prepare('INSERT INTO guestbook_messages (name, contact, content, created_at, read_at, ready_at) VALUES (?, ?, ?, ?, NULL, 0)')
 		.bind(name, contact || null, content, now)
 		.run();
 	const id = Number(inserted.meta.last_row_id ?? 0);
@@ -433,13 +472,19 @@ async function handleSubmission(request: Request, env: Env): Promise<Response> {
 			});
 			objectKeys.push(objectKey);
 		}
-		await env.DB.batch([
+		const statements = [
 			...prepared.images.map((image, index) => env.DB.prepare(
 				'INSERT INTO guestbook_attachments (id, message_id, object_key, original_name, content_type, byte_size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
 			).bind(image.id, id, objectKeys[index], image.name, image.contentType, image.bytes.byteLength, now)),
-			env.DB.prepare('INSERT INTO guestbook_rate_events (ip_hash, action, created_at) VALUES (?, ?, ?)')
-				.bind(ipHash, 'message', now),
-		]);
+			env.DB.prepare('UPDATE guestbook_messages SET ready_at = ? WHERE id = ? AND ready_at = 0')
+				.bind(Date.now(), id),
+		];
+		if (!administrativeTest) {
+			statements.splice(statements.length - 1, 0, env.DB.prepare(
+				'INSERT INTO guestbook_rate_events (ip_hash, action, created_at) VALUES (?, ?, ?)',
+			).bind(ipHash, 'message', now));
+		}
+		await env.DB.batch(statements);
 		return json(request, env, { ok: true, id, attachmentCount: prepared.images.length }, 201);
 	} catch (error) {
 		if (objectKeys.length) await env.IMAGES.delete(objectKeys).catch(() => undefined);
@@ -454,7 +499,8 @@ function adminToken(request: Request): string {
 }
 
 function isAdmin(request: Request, env: Env): boolean {
-	return Boolean(env.ADMIN_TOKEN) && constantTimeEqual(adminToken(request), env.ADMIN_TOKEN);
+	const configured = env.ADMIN_TOKEN?.trim() ?? '';
+	return Boolean(configured) && constantTimeEqual(adminToken(request).trim(), configured);
 }
 
 function serializeAttachment(row: AttachmentRow) {
@@ -502,11 +548,19 @@ async function handleAdminList(request: Request, env: Env, url: URL): Promise<Re
 	const cursor = Math.max(0, Number(url.searchParams.get('cursor') ?? 0) || 0);
 	const afterMode = url.searchParams.has('after');
 	const after = Math.max(0, Number(url.searchParams.get('after') ?? 0) || 0);
-	const query = afterMode
-		? env.DB.prepare('SELECT id, name, contact, content, created_at, read_at FROM guestbook_messages WHERE id > ? ORDER BY id ASC LIMIT ?').bind(after, limit)
-		: cursor
-			? env.DB.prepare('SELECT id, name, contact, content, created_at, read_at FROM guestbook_messages WHERE id < ? ORDER BY id DESC LIMIT ?').bind(cursor, limit)
-			: env.DB.prepare('SELECT id, name, contact, content, created_at, read_at FROM guestbook_messages ORDER BY id DESC LIMIT ?').bind(limit);
+	let query: D1PreparedStatement;
+	if (afterMode) {
+		const barrier = await env.DB.prepare(
+			'SELECT MIN(id) AS id FROM guestbook_messages WHERE ready_at = 0 AND id > ? AND created_at >= ?',
+		).bind(after, Date.now() - INCOMPLETE_VISIBILITY_TIMEOUT_MS).first<{ id: number | null }>();
+		query = barrier?.id
+			? env.DB.prepare('SELECT id, name, contact, content, created_at, read_at, ready_at FROM guestbook_messages WHERE ready_at > 0 AND id > ? AND id < ? ORDER BY id ASC LIMIT ?').bind(after, barrier.id, limit)
+			: env.DB.prepare('SELECT id, name, contact, content, created_at, read_at, ready_at FROM guestbook_messages WHERE ready_at > 0 AND id > ? ORDER BY id ASC LIMIT ?').bind(after, limit);
+	} else {
+		query = cursor
+			? env.DB.prepare('SELECT id, name, contact, content, created_at, read_at, ready_at FROM guestbook_messages WHERE ready_at > 0 AND id < ? ORDER BY id DESC LIMIT ?').bind(cursor, limit)
+			: env.DB.prepare('SELECT id, name, contact, content, created_at, read_at, ready_at FROM guestbook_messages WHERE ready_at > 0 ORDER BY id DESC LIMIT ?').bind(limit);
+	}
 	const result = await query.all<MessageRow>();
 	const rows = result.results ?? [];
 	const attachments = await attachmentsByMessage(env, rows.map((row) => row.id));
@@ -534,9 +588,11 @@ async function handleAdminDelete(request: Request, env: Env, id: number): Promis
 		.bind(id)
 		.all<{ object_key: string }>();
 	const objectKeys = (attachments.results ?? []).map((row) => row.object_key);
-	if (objectKeys.length) await env.IMAGES.delete(objectKeys);
 	const result = await env.DB.prepare('DELETE FROM guestbook_messages WHERE id = ?').bind(id).run();
 	if (!Number(result.meta.changes ?? 0)) return json(request, env, { ok: false, code: 'not_found' }, 404, true);
+	if (objectKeys.length) {
+		await env.IMAGES.delete(objectKeys).catch((error) => console.error('Guestbook R2 cleanup error', error));
+	}
 	return new Response(null, { status: 204, headers: responseHeaders(request, env, true) });
 }
 
