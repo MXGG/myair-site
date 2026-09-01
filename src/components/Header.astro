@@ -17,6 +17,7 @@ const links = [
 	{ href: p.data, label: t.nav.data },
 	{ href: p.methods, label: t.nav.methods },
 	{ href: p.blog, label: t.nav.blog },
+	{ href: p.guestbook, label: t.nav.guestbook },
 	{ href: p.downloads, label: t.nav.downloads },
 	{ href: p.about, label: t.nav.about },
 ];
@@ -446,7 +447,7 @@ const alternateLanguage = lang === 'en' ? '简体中文' : 'English';
 	.search-empty { padding: 18px; }
 	:global(body.search-open) { overflow: hidden; }
 
-	@media (max-width: 1120px) {
+	@media (max-width: 1240px) {
 		.site-nav { width: calc(100% - 28px); gap: 10px; }
 		.desktop-links,
 		.language-menu { display: none; }

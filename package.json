@@ -9,13 +9,22 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+	"astro": "astro",
+	"typecheck": "tsc --noEmit",
+	"guestbook:check": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
+	"guestbook:migrate": "wrangler d1 migrations apply myair-guestbook --remote",
+	"guestbook:deploy": "wrangler deploy"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",
     "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.7.2",
     "astro": "^6.3.3",
-    "sharp": "^0.34.3"
+	"sharp": "^0.34.3"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20260901.1",
+		"typescript": "^5.9.3",
+		"wrangler": "^4.127.1"
   }
 }

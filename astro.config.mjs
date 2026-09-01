@@ -9,7 +9,12 @@ import { defineConfig, fontProviders } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://myair.info',
-	integrations: [mdx(), sitemap()],
+	integrations: [
+		mdx(),
+		sitemap({
+			filter: (page) => !page.endsWith('/guestbook/admin/'),
+		}),
+	],
 	fonts: [
 		{
 			provider: fontProviders.local(),

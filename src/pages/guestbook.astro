@@ -1,0 +1,40 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Guestbook from '../components/Guestbook.astro';
+import Header from '../components/Header.astro';
+import { paths, site } from '../data/site';
+
+const lang = 'en';
+const t = site[lang];
+---
+
+<!doctype html>
+<html lang={t.langCode}>
+	<head>
+		<BaseHead
+			title={`Private Guestbook | ${t.title}`}
+			description="Send a private message, project question, or suggestion to the maintainer of GRACE L2 Notes without creating an account."
+			lang={lang}
+			alternateHref={paths.zh.guestbook}
+		/>
+	</head>
+	<body>
+		<Header lang={lang} alternateHref={paths.zh.guestbook} />
+		<main class="page-shell topic-page guestbook-page">
+			<nav class="breadcrumb" aria-label="Breadcrumb"><a href={paths.en.home}>Home</a><span>/</span><span>Guestbook</span></nav>
+			<section class="page-hero compact">
+				<p class="eyebrow">Private message</p>
+				<h1>Guestbook</h1>
+				<p>Send a private note about the GRACE Level-2 workflow, the software, or this site. Submitted records are visible only to the site owner.</p>
+			</section>
+			<Guestbook lang={lang} />
+		</main>
+		<Footer lang={lang} />
+	</body>
+</html>
+
+<style>
+	.guestbook-page { padding-bottom: 72px; }
+	.page-hero { margin-inline: auto; text-align: center; }
+</style>

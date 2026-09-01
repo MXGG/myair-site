@@ -47,6 +47,8 @@ Typical functions include:
 - `/zh/` — Simplified Chinese homepage
 - `/blog/` — English blog
 - `/zh/blog/` — Simplified Chinese blog
+- `/guestbook/` — private English guestbook
+- `/zh/guestbook/` — private Simplified Chinese guestbook
 - `/downloads/` — English download page
 - `/zh/downloads/` — Simplified Chinese download page
 - `/about/` — English project information
@@ -62,6 +64,8 @@ cd D:\WebProjects\myair-site
 npm.cmd install
 npm.cmd run build
 ```
+
+The guestbook accepts account-free submissions protected by a one-time image CAPTCHA. Messages are private and can only be viewed or exported from `/guestbook/admin/` or `/zh/guestbook/admin/` with the Worker administrator token. Backend deployment details are in [`workers/guestbook/README.md`](./workers/guestbook/README.md).
 
 Commit and push updates:
 

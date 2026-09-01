@@ -47,6 +47,8 @@ GRACE Level-2 数据处理软件用于支持 GRACE/GRACE-FO Level-2 产品的后
 - `/zh/`：简体中文首页
 - `/blog/`：英文博客
 - `/zh/blog/`：简体中文博客
+- `/guestbook/`：英文私密留言板
+- `/zh/guestbook/`：简体中文私密留言板
 - `/downloads/`：英文下载页
 - `/zh/downloads/`：简体中文下载页
 - `/about/`：英文项目信息
@@ -62,6 +64,8 @@ cd D:\WebProjects\myair-site
 npm.cmd install
 npm.cmd run build
 ```
+
+留言板无需注册账号，并通过一次性图形验证码校验提交。所有留言均为私密记录，访客无法查看；站点所有者可凭 Worker 管理员口令进入 `/guestbook/admin/` 或 `/zh/guestbook/admin/` 查看、标记、删除并导出记录。后端部署说明见 [`workers/guestbook/README.md`](./workers/guestbook/README.md)。
 
 提交并推送网站更新：
 

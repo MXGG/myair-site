@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "myair-guestbook-api",
+  "main": "workers/guestbook/src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "myair.info/api/guestbook/*",
+      "zone_name": "myair.info"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "myair-guestbook",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "workers/guestbook/migrations"
+    }
+  ],
+  "vars": {
+    "ALLOWED_ORIGINS": "https://myair.info,https://www.myair.info,http://localhost:4321,http://127.0.0.1:4321"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

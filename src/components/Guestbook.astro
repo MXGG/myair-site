@@ -1,0 +1,306 @@
+---
+import type { Lang } from '../data/site';
+
+interface Props {
+	lang?: Lang;
+}
+
+const { lang = 'en' } = Astro.props;
+const copy = {
+	en: {
+		title: 'Leave a private message',
+		lead: 'No account is required. Your message is sent privately to the site owner and is never shown to other visitors.',
+		name: 'Name',
+		namePlaceholder: 'How should we call you?',
+		contact: 'Contact (optional)',
+		contactPlaceholder: 'Email or another contact method',
+		message: 'Message',
+		messagePlaceholder: 'Share a question, suggestion, or note…',
+		lineUnit: 'lines',
+		lineLimitError: 'A message can contain at most 3,000 lines.',
+		captcha: 'Image verification',
+		captchaPlaceholder: 'Enter the code',
+		refresh: 'Refresh image',
+		submit: 'Send privately',
+		submitting: 'Sending…',
+		privacyTitle: 'Private by default',
+		privacy: 'Only the site owner can read and export this record. Your contact information is optional and will not appear publicly.',
+		loadingCaptcha: 'Loading image…',
+		captchaError: 'The verification image could not be loaded.',
+		captchaInvalid: 'The image code is incorrect or has expired. Please use the new image and try again.',
+		rateLimited: 'Too many submissions were made from this network. Please try again later.',
+		requestTooLarge: 'This message is too large to send in one request.',
+		validationError: 'Please complete your name, message, and image code.',
+		success: 'Your private message has been sent. Thank you.',
+		postError: 'The message could not be sent.',
+	},
+	zh: {
+		title: '留下私密留言',
+		lead: '无需注册账号。留言只发送给站点所有者，不会向其他访客展示。',
+		name: '昵称',
+		namePlaceholder: '怎么称呼您？',
+		contact: '联系方式（选填）',
+		contactPlaceholder: '邮箱或其他便于回复的联系方式',
+		message: '留言内容',
+		messagePlaceholder: '可以填写问题、建议或想说的话……',
+		lineUnit: '行',
+		lineLimitError: '每条留言最多可以填写 3000 行。',
+		captcha: '图形验证码',
+		captchaPlaceholder: '输入图中字符',
+		refresh: '换一张',
+		submit: '私密提交',
+		submitting: '正在提交……',
+		privacyTitle: '默认私密',
+		privacy: '留言记录仅站点所有者可以查看和导出。联系方式为选填内容，不会向外公开。',
+		loadingCaptcha: '正在加载验证码……',
+		captchaError: '验证码图片加载失败，请稍后重试。',
+		captchaInvalid: '验证码错误或已经过期，请根据新图片重新填写。',
+		rateLimited: '当前网络提交过于频繁，请稍后再试。',
+		requestTooLarge: '本次留言内容过大，无法一次提交。',
+		validationError: '请完整填写昵称、留言内容和图形验证码。',
+		success: '私密留言已提交，感谢您的反馈。',
+		postError: '留言提交失败。',
+	},
+}[lang];
+---
+
+<section class="guestbook-panel" data-guestbook aria-labelledby="guestbook-form-title">
+	<header class="panel-heading">
+		<span class="panel-icon" aria-hidden="true">
+			<svg viewBox="0 0 24 24"><path d="M7 18.5 3.5 21v-5.2A8 8 0 0 1 2 11c0-5 4.5-8.5 10-8.5S22 6 22 11s-4.5 8.5-10 8.5c-1.8 0-3.5-.4-5-1Z" /><path d="M7.5 11h.01M12 11h.01M16.5 11h.01" /></svg>
+		</span>
+		<div>
+			<p class="eyebrow">Private guestbook</p>
+			<h2 id="guestbook-form-title">{copy.title}</h2>
+			<p>{copy.lead}</p>
+		</div>
+	</header>
+
+	<form class="guestbook-form" data-guestbook-form novalidate>
+		<div class="form-row">
+			<label>
+				<span>{copy.name}</span>
+				<input name="name" type="text" minlength="1" maxlength="32" autocomplete="nickname" placeholder={copy.namePlaceholder} required />
+			</label>
+			<label>
+				<span>{copy.contact}</span>
+				<input name="contact" type="text" maxlength="120" autocomplete="email" placeholder={copy.contactPlaceholder} />
+			</label>
+		</div>
+		<label>
+			<span>{copy.message}</span>
+			<textarea name="content" minlength="2" rows="7" placeholder={copy.messagePlaceholder} required></textarea>
+			<small><span data-line-count>0</span> / 3000 {copy.lineUnit}</small>
+		</label>
+		<label class="honeypot" aria-hidden="true">
+			<span>Website</span>
+			<input name="website" type="text" tabindex="-1" autocomplete="off" />
+		</label>
+		<div class="form-row verification-row">
+			<fieldset class="captcha-field">
+				<legend>{copy.captcha}</legend>
+				<div class="captcha-row">
+					<div class="captcha-image-wrap" aria-live="polite">
+						<span data-captcha-loading>{copy.loadingCaptcha}</span>
+						<img data-captcha-image alt={copy.captcha} width="190" height="64" hidden />
+					</div>
+					<button class="captcha-refresh" type="button" data-captcha-refresh>{copy.refresh}</button>
+				</div>
+				<input name="captcha" type="text" inputmode="text" maxlength="5" autocapitalize="characters" autocomplete="off" placeholder={copy.captchaPlaceholder} required />
+			</fieldset>
+			<aside class="privacy-note">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 10V7a5.5 5.5 0 0 1 11 0v3M5 10h14v11H5z" /><path d="M12 14v3" /></svg>
+				<div><strong>{copy.privacyTitle}</strong><p>{copy.privacy}</p></div>
+			</aside>
+		</div>
+		<div class="form-footer">
+			<p class="form-status" data-form-status role="status" aria-live="polite"></p>
+			<button class="button primary" type="submit" data-submit>{copy.submit}</button>
+		</div>
+	</form>
+</section>
+
+<script define:vars={{ copy }}>
+	const API_BASE = '/api/guestbook';
+	const root = document.querySelector('[data-guestbook]');
+	const form = root?.querySelector('[data-guestbook-form]');
+	const formStatus = root?.querySelector('[data-form-status]');
+	const submitButton = root?.querySelector('[data-submit]');
+	const captchaImage = root?.querySelector('[data-captcha-image]');
+	const captchaLoading = root?.querySelector('[data-captcha-loading]');
+	const captchaRefresh = root?.querySelector('[data-captcha-refresh]');
+	const contentInput = form?.querySelector('[name="content"]');
+	const lineCount = root?.querySelector('[data-line-count]');
+	let challengeId = '';
+
+	const setFormStatus = (message, tone = '') => {
+		if (!formStatus) return;
+		formStatus.textContent = message;
+		formStatus.dataset.tone = tone;
+	};
+
+	const loadCaptcha = async () => {
+		challengeId = '';
+		if (captchaImage) captchaImage.hidden = true;
+		if (captchaLoading) {
+			captchaLoading.hidden = false;
+			captchaLoading.textContent = copy.loadingCaptcha;
+		}
+		try {
+			const response = await fetch(`${API_BASE}/captcha`, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+			if (!response.ok) throw new Error(`Captcha ${response.status}`);
+			const data = await response.json();
+			challengeId = data.challengeId;
+			if (captchaImage) {
+				captchaImage.src = data.image;
+				captchaImage.hidden = false;
+			}
+			if (captchaLoading) captchaLoading.hidden = true;
+		} catch (error) {
+			if (captchaLoading) captchaLoading.textContent = copy.captchaError;
+		}
+	};
+
+	const countLines = (value) => value ? value.replace(/\r/g, '').split('\n').length : 0;
+	contentInput?.addEventListener('input', () => {
+		const lines = countLines(contentInput.value);
+		if (lineCount) lineCount.textContent = String(lines);
+		contentInput.setCustomValidity(lines > 3000 ? copy.lineLimitError : '');
+		if (lines > 3000) setFormStatus(copy.lineLimitError, 'error');
+		else if (formStatus?.dataset.tone === 'error' && formStatus.textContent === copy.lineLimitError) setFormStatus('');
+	});
+	captchaRefresh?.addEventListener('click', loadCaptcha);
+
+	form?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const data = new FormData(form);
+		const payload = {
+			name: String(data.get('name') || '').trim(),
+			contact: String(data.get('contact') || '').trim(),
+			content: String(data.get('content') || '').trim(),
+			captchaId: challengeId,
+			captchaAnswer: String(data.get('captcha') || '').trim().toUpperCase(),
+			website: String(data.get('website') || ''),
+		};
+		if (!payload.name || !payload.content || !payload.captchaId || !payload.captchaAnswer) {
+			setFormStatus(copy.validationError, 'error');
+			return;
+		}
+		if (countLines(payload.content) > 3000) {
+			setFormStatus(copy.lineLimitError, 'error');
+			return;
+		}
+		if (submitButton) {
+			submitButton.disabled = true;
+			submitButton.textContent = copy.submitting;
+		}
+		setFormStatus('');
+		try {
+			const response = await fetch(`${API_BASE}/messages`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+				body: JSON.stringify(payload),
+			});
+			const result = await response.json().catch(() => ({}));
+			if (!response.ok) {
+				const errorMessages = {
+					captcha_invalid: copy.captchaInvalid,
+					rate_limited: copy.rateLimited,
+					invalid_fields: copy.validationError,
+					invalid_request: copy.requestTooLarge,
+				};
+				throw new Error(errorMessages[result.code] || copy.postError);
+			}
+			form.reset();
+			if (lineCount) lineCount.textContent = '0';
+			setFormStatus(copy.success, 'success');
+			await loadCaptcha();
+		} catch (error) {
+			setFormStatus(error.message || copy.postError, 'error');
+			await loadCaptcha();
+		} finally {
+			if (submitButton) {
+				submitButton.disabled = false;
+				submitButton.textContent = copy.submit;
+			}
+		}
+	});
+
+	loadCaptcha();
+</script>
+
+<style>
+	.guestbook-panel {
+		width: min(980px, 100%);
+		margin: 24px auto 0;
+		padding: clamp(22px, 4vw, 38px);
+		border: 1px solid var(--line);
+		border-radius: 28px;
+		background: color-mix(in srgb, var(--surface) 86%, transparent);
+		box-shadow: var(--shadow-soft);
+	}
+	.panel-heading { display: grid; grid-template-columns: 58px 1fr; gap: 18px; align-items: start; }
+	.panel-heading h2 { margin-top: 5px; font-size: clamp(1.65rem, 3vw, 2.55rem); }
+	.panel-heading p:last-child { max-width: 720px; margin-top: 9px; color: var(--muted); line-height: 1.65; }
+	.panel-icon { display: grid; width: 58px; height: 58px; place-items: center; border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 18px; background: var(--blue-soft); color: var(--accent-strong); }
+	.panel-icon svg { width: 31px; height: 31px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+	.guestbook-form { display: grid; gap: 20px; margin-top: 30px; }
+	.form-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+	.guestbook-form label { display: grid; gap: 8px; }
+	.guestbook-form label > span, .captcha-field legend { color: var(--ink); font-size: 0.92rem; font-weight: 760; }
+	.guestbook-form input, .guestbook-form textarea {
+		width: 100%;
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		outline: none;
+		background: color-mix(in srgb, var(--surface) 92%, transparent);
+		color: var(--ink);
+		font: inherit;
+		transition: border-color 160ms ease, box-shadow 160ms ease;
+	}
+	.guestbook-form input { min-height: 46px; padding: 0 14px; }
+	.guestbook-form textarea { min-height: 158px; padding: 12px 14px; resize: vertical; line-height: 1.65; }
+	.guestbook-form input:focus, .guestbook-form textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--blue-soft); }
+	.guestbook-form label small { justify-self: end; color: var(--muted); font-size: 0.82rem; }
+	.honeypot { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
+	.verification-row { align-items: stretch; }
+	.captcha-field { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+	.captcha-row { display: grid; grid-template-columns: 190px auto; gap: 10px; align-items: stretch; }
+	.captcha-image-wrap { display: grid; min-height: 64px; place-items: center; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--blue-soft) 55%, var(--surface)); overflow: hidden; color: var(--muted); font-size: 0.82rem; }
+	.captcha-image-wrap img { width: 190px; height: 64px; object-fit: cover; }
+	.captcha-refresh {
+		padding: 0 16px;
+		border: 1px solid var(--line);
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--surface) 88%, transparent);
+		color: var(--accent-strong);
+		font: inherit;
+		font-size: 0.88rem;
+		font-weight: 730;
+		cursor: pointer;
+	}
+	.captcha-refresh:hover { border-color: var(--accent); background: var(--blue-soft); }
+	.privacy-note { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; padding: 18px; border: 1px solid var(--line-soft); border-radius: 18px; background: var(--blue-soft); }
+	.privacy-note svg { width: 30px; height: 30px; fill: none; stroke: var(--accent-strong); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+	.privacy-note strong { color: var(--ink); }
+	.privacy-note p { margin-top: 4px; color: var(--muted); font-size: 0.86rem; line-height: 1.58; }
+	.form-footer { display: flex; min-height: 44px; gap: 18px; align-items: center; justify-content: space-between; }
+	.form-footer .button { flex: none; min-width: 124px; border: 0; cursor: pointer; }
+	.form-footer .button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+	.form-status { font-size: 0.92rem; font-weight: 700; }
+	.form-status[data-tone='success'] { color: #16804f; }
+	.form-status[data-tone='error'] { color: #b42318; }
+	@media (max-width: 760px) {
+		.guestbook-panel { border-radius: 20px; }
+		.form-row { grid-template-columns: 1fr; }
+		.panel-heading { grid-template-columns: 48px 1fr; }
+		.panel-icon { width: 48px; height: 48px; border-radius: 15px; }
+	}
+	@media (max-width: 520px) {
+		.captcha-row { grid-template-columns: 1fr; }
+		.captcha-image-wrap img { width: 100%; object-fit: contain; }
+		.captcha-refresh { min-height: 42px; }
+		.form-footer { align-items: stretch; flex-direction: column; }
+		.form-footer .button { width: 100%; }
+	}
+</style>

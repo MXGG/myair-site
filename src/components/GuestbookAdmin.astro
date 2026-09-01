@@ -1,0 +1,324 @@
+---
+import type { Lang } from '../data/site';
+
+interface Props {
+	lang?: Lang;
+}
+
+const { lang = 'zh' } = Astro.props;
+const copy = {
+	en: {
+		title: 'Guestbook records',
+		lead: 'Enter the administrator token to view and export private messages.',
+		token: 'Administrator token',
+		tokenPlaceholder: 'Enter token',
+		login: 'Open records',
+		checking: 'Checking…',
+		invalid: 'The token is invalid or the service is unavailable.',
+		logout: 'Sign out',
+		reload: 'Reload',
+		exportCsv: 'Export CSV',
+		exportJson: 'Export JSON',
+		loading: 'Loading private records…',
+		empty: 'No private messages have been received.',
+		loadError: 'Records could not be loaded.',
+		unread: 'Unread',
+		read: 'Read',
+		markRead: 'Mark as read',
+		delete: 'Delete',
+		deleteConfirm: 'Permanently delete this private message?',
+		contact: 'Contact',
+		noContact: 'Not provided',
+		count: 'records',
+	},
+	zh: {
+		title: '留言记录管理',
+		lead: '输入管理员口令后，可查看和导出全部私密留言。',
+		token: '管理员口令',
+		tokenPlaceholder: '请输入口令',
+		login: '查看记录',
+		checking: '正在验证……',
+		invalid: '口令无效，或留言服务暂时不可用。',
+		logout: '退出管理',
+		reload: '刷新记录',
+		exportCsv: '导出 CSV',
+		exportJson: '导出 JSON',
+		loading: '正在加载私密留言……',
+		empty: '暂时还没有收到私密留言。',
+		loadError: '留言记录加载失败。',
+		unread: '未读',
+		read: '已读',
+		markRead: '标记已读',
+		delete: '删除',
+		deleteConfirm: '确定永久删除这条私密留言吗？',
+		contact: '联系方式',
+		noContact: '未填写',
+		count: '条记录',
+	},
+}[lang];
+---
+
+<section class="admin-shell" data-guestbook-admin>
+	<div class="auth-card" data-auth-card>
+		<div class="lock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 10V7a5.5 5.5 0 0 1 11 0v3M5 10h14v11H5z" /><path d="M12 14v3" /></svg></div>
+		<div><h2>{copy.title}</h2><p>{copy.lead}</p></div>
+		<form data-auth-form>
+			<label><span>{copy.token}</span><input name="token" type="password" autocomplete="current-password" placeholder={copy.tokenPlaceholder} required /></label>
+			<button class="button primary" type="submit" data-login>{copy.login}</button>
+		</form>
+		<p class="auth-status" data-auth-status role="status" aria-live="polite"></p>
+	</div>
+
+	<div class="records-card" data-records-card hidden>
+		<header>
+			<div><p class="eyebrow">Private records</p><h2>{copy.title}</h2></div>
+			<span class="record-count" data-record-count>0 {copy.count}</span>
+		</header>
+		<div class="admin-actions">
+			<button type="button" data-reload>{copy.reload}</button>
+			<button type="button" data-export="csv" disabled>{copy.exportCsv}</button>
+			<button type="button" data-export="json" disabled>{copy.exportJson}</button>
+			<button class="logout" type="button" data-logout>{copy.logout}</button>
+		</div>
+		<div class="records-status" data-records-status role="status" aria-live="polite"></div>
+		<div class="admin-message-list" data-message-list></div>
+	</div>
+</section>
+
+<script define:vars={{ copy, lang }}>
+	const API_BASE = '/api/guestbook';
+	const SESSION_KEY = 'myair-guestbook-admin-token';
+	const root = document.querySelector('[data-guestbook-admin]');
+	const authCard = root?.querySelector('[data-auth-card]');
+	const authForm = root?.querySelector('[data-auth-form]');
+	const authStatus = root?.querySelector('[data-auth-status]');
+	const loginButton = root?.querySelector('[data-login]');
+	const recordsCard = root?.querySelector('[data-records-card]');
+	const recordsStatus = root?.querySelector('[data-records-status]');
+	const list = root?.querySelector('[data-message-list]');
+	const count = root?.querySelector('[data-record-count]');
+	const reloadButton = root?.querySelector('[data-reload]');
+	const logoutButton = root?.querySelector('[data-logout]');
+	const exportButtons = Array.from(root?.querySelectorAll('[data-export]') || []);
+	let token = '';
+	let records = [];
+
+	const headers = () => ({ Accept: 'application/json', Authorization: `Bearer ${token}` });
+	const setAuthenticated = (authenticated) => {
+		if (authCard) authCard.hidden = authenticated;
+		if (recordsCard) recordsCard.hidden = !authenticated;
+	};
+	const formatDate = (value) => value ? new Intl.DateTimeFormat(lang === 'zh' ? 'zh-CN' : 'en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : '—';
+
+	const createButton = (label, action, id, destructive = false) => {
+		const button = document.createElement('button');
+		button.type = 'button';
+		button.textContent = label;
+		button.dataset.action = action;
+		button.dataset.id = String(id);
+		if (destructive) button.className = 'danger';
+		return button;
+	};
+
+	const render = () => {
+		if (!list || !count) return;
+		list.replaceChildren();
+		count.textContent = `${records.length} ${copy.count}`;
+		exportButtons.forEach((button) => { button.disabled = records.length === 0; });
+		if (!records.length) {
+			if (recordsStatus) { recordsStatus.hidden = false; recordsStatus.textContent = copy.empty; }
+			return;
+		}
+		if (recordsStatus) recordsStatus.hidden = true;
+		records.forEach((record) => {
+			const article = document.createElement('article');
+			article.className = 'admin-message-card';
+			if (!record.readAt) article.dataset.unread = 'true';
+			const header = document.createElement('header');
+			const identity = document.createElement('div');
+			const name = document.createElement('strong');
+			name.textContent = record.name;
+			const created = document.createElement('time');
+			created.dateTime = record.createdAt;
+			created.textContent = formatDate(record.createdAt);
+			identity.append(name, created);
+			const badge = document.createElement('span');
+			badge.className = 'status-badge';
+			badge.textContent = record.readAt ? copy.read : copy.unread;
+			header.append(identity, badge);
+			const body = document.createElement('p');
+			body.className = 'message-body';
+			body.textContent = record.content;
+			const contact = document.createElement('p');
+			contact.className = 'contact-line';
+			const contactLabel = document.createElement('strong');
+			contactLabel.textContent = `${copy.contact}: `;
+			contact.append(contactLabel, document.createTextNode(record.contact || copy.noContact));
+			const actions = document.createElement('footer');
+			if (!record.readAt) actions.append(createButton(copy.markRead, 'read', record.id));
+			actions.append(createButton(copy.delete, 'delete', record.id, true));
+			article.append(header, body, contact, actions);
+			list.append(article);
+		});
+	};
+
+	const loadRecords = async () => {
+		if (recordsStatus) { recordsStatus.hidden = false; recordsStatus.textContent = copy.loading; }
+		if (reloadButton) reloadButton.disabled = true;
+		try {
+			const collected = [];
+			let cursor = '';
+			do {
+				const url = new URL(`${API_BASE}/admin/messages`, window.location.origin);
+				url.searchParams.set('limit', '100');
+				if (cursor) url.searchParams.set('cursor', cursor);
+				const response = await fetch(url, { headers: headers(), cache: 'no-store' });
+				if (response.status === 401) throw new Error('unauthorized');
+				if (!response.ok) throw new Error(`Records ${response.status}`);
+				const data = await response.json();
+				collected.push(...data.messages);
+				cursor = data.nextCursor || '';
+			} while (cursor && collected.length < 10000);
+			records = collected;
+			setAuthenticated(true);
+			render();
+		} catch (error) {
+			if (error.message === 'unauthorized') {
+				sessionStorage.removeItem(SESSION_KEY);
+				token = '';
+				setAuthenticated(false);
+				if (authStatus) authStatus.textContent = copy.invalid;
+			} else if (recordsStatus) {
+				recordsStatus.textContent = copy.loadError;
+			}
+		} finally {
+			if (reloadButton) reloadButton.disabled = false;
+		}
+	};
+
+	const updateRecord = async (id, method, body) => {
+		const response = await fetch(`${API_BASE}/admin/messages/${id}`, {
+			method,
+			headers: { ...headers(), ...(body ? { 'Content-Type': 'application/json' } : {}) },
+			body: body ? JSON.stringify(body) : undefined,
+		});
+		if (!response.ok) throw new Error(`Update ${response.status}`);
+	};
+
+	list?.addEventListener('click', async (event) => {
+		const button = event.target.closest('button[data-action]');
+		if (!button) return;
+		const id = Number(button.dataset.id);
+		button.disabled = true;
+		try {
+			if (button.dataset.action === 'delete') {
+				if (!window.confirm(copy.deleteConfirm)) return;
+				await updateRecord(id, 'DELETE');
+				records = records.filter((item) => item.id !== id);
+			} else {
+				await updateRecord(id, 'PATCH', { read: true });
+				const record = records.find((item) => item.id === id);
+				if (record) record.readAt = new Date().toISOString();
+			}
+			render();
+		} catch (error) {
+			if (recordsStatus) { recordsStatus.hidden = false; recordsStatus.textContent = copy.loadError; }
+		} finally {
+			button.disabled = false;
+		}
+	});
+
+	const download = (filename, content, type) => {
+		const blob = new Blob([content], { type });
+		const url = URL.createObjectURL(blob);
+		const anchor = document.createElement('a');
+		anchor.href = url;
+		anchor.download = filename;
+		document.body.append(anchor);
+		anchor.click();
+		anchor.remove();
+		URL.revokeObjectURL(url);
+	};
+	const stamp = () => new Date().toISOString().replace(/[:.]/g, '-');
+	const csvCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+	const exportRecords = (format) => {
+		if (!records.length) return;
+		if (format === 'json') {
+			download(`myair-private-guestbook-${stamp()}.json`, JSON.stringify({ exportedAt: new Date().toISOString(), records }, null, 2), 'application/json;charset=utf-8');
+			return;
+		}
+		const rows = [['id', 'name', 'contact', 'content', 'created_at', 'read_at'], ...records.map((item) => [item.id, item.name, item.contact, item.content, item.createdAt, item.readAt || ''])];
+		const csv = `\uFEFF${rows.map((row) => row.map(csvCell).join(',')).join('\r\n')}`;
+		download(`myair-private-guestbook-${stamp()}.csv`, csv, 'text/csv;charset=utf-8');
+	};
+
+	authForm?.addEventListener('submit', async (event) => {
+		event.preventDefault();
+		const formData = new FormData(authForm);
+		token = String(formData.get('token') || '').trim();
+		if (!token) return;
+		if (loginButton) { loginButton.disabled = true; loginButton.textContent = copy.checking; }
+		if (authStatus) authStatus.textContent = '';
+		sessionStorage.setItem(SESSION_KEY, token);
+		await loadRecords();
+		if (loginButton) { loginButton.disabled = false; loginButton.textContent = copy.login; }
+	});
+	reloadButton?.addEventListener('click', loadRecords);
+	logoutButton?.addEventListener('click', () => {
+		sessionStorage.removeItem(SESSION_KEY);
+		token = '';
+		records = [];
+		authForm?.reset();
+		setAuthenticated(false);
+	});
+	exportButtons.forEach((button) => button.addEventListener('click', () => exportRecords(button.dataset.export)));
+
+	try {
+		token = sessionStorage.getItem(SESSION_KEY) || '';
+		if (token) loadRecords();
+	} catch (error) {}
+</script>
+
+<style>
+	.admin-shell { width: min(1080px, 100%); margin: 24px auto 0; }
+	.auth-card, .records-card { padding: clamp(22px, 4vw, 36px); border: 1px solid var(--line); border-radius: 26px; background: color-mix(in srgb, var(--surface) 88%, transparent); box-shadow: var(--shadow-soft); }
+	.auth-card { display: grid; grid-template-columns: 58px 1fr; gap: 16px 18px; max-width: 680px; margin: 0 auto; }
+	.lock-icon { display: grid; width: 58px; height: 58px; place-items: center; border-radius: 18px; background: var(--blue-soft); color: var(--accent-strong); }
+	.lock-icon svg { width: 31px; height: 31px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+	.auth-card h2, .records-card h2 { font-size: clamp(1.55rem, 3vw, 2.35rem); }
+	.auth-card p { margin-top: 7px; color: var(--muted); }
+	.auth-card form { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: end; margin-top: 10px; }
+	.auth-card label { display: grid; gap: 7px; color: var(--ink); font-size: 0.9rem; font-weight: 750; }
+	.auth-card input { min-height: 46px; padding: 0 14px; border: 1px solid var(--line); border-radius: 14px; outline: 0; background: var(--surface); color: var(--ink); font: inherit; }
+	.auth-card input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--blue-soft); }
+	.auth-card .button { border: 0; cursor: pointer; }
+	.auth-status { grid-column: 1 / -1; min-height: 1.5rem; color: #b42318 !important; font-size: 0.9rem; font-weight: 700; }
+	.records-card > header { display: flex; gap: 18px; justify-content: space-between; align-items: start; }
+	.record-count { padding: 7px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--blue-soft); color: var(--accent-strong); font-size: 0.86rem; font-weight: 780; }
+	.admin-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0; padding-bottom: 20px; border-bottom: 1px solid var(--line-soft); }
+	.admin-actions button, :global(.admin-message-card footer button) { min-height: 38px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); color: var(--accent-strong); font: inherit; font-size: 0.86rem; font-weight: 730; cursor: pointer; }
+	.admin-actions button:hover:not(:disabled), :global(.admin-message-card footer button:hover:not(:disabled)) { border-color: var(--accent); background: var(--blue-soft); }
+	.admin-actions button:disabled { opacity: 0.5; cursor: not-allowed; }
+	.admin-actions .logout { margin-left: auto; color: var(--muted); }
+	.records-status { padding: 28px; border: 1px dashed var(--line); border-radius: 18px; color: var(--muted); text-align: center; }
+	.admin-message-list { display: grid; gap: 12px; }
+	:global(.admin-message-card) { display: grid; gap: 14px; padding: 20px; border: 1px solid var(--line-soft); border-radius: 18px; background: color-mix(in srgb, var(--surface) 84%, transparent); }
+	:global(.admin-message-card[data-unread='true']) { border-left: 4px solid var(--accent); }
+	:global(.admin-message-card > header) { display: flex; gap: 16px; align-items: start; justify-content: space-between; }
+	:global(.admin-message-card > header div) { display: grid; gap: 2px; }
+	:global(.admin-message-card strong) { color: var(--ink); }
+	:global(.admin-message-card time) { color: var(--muted); font-size: 0.82rem; }
+	:global(.status-badge) { padding: 4px 9px; border-radius: 999px; background: var(--blue-soft); color: var(--accent-strong); font-size: 0.78rem; font-weight: 780; }
+	:global(.message-body) { color: var(--text); line-height: 1.72; white-space: pre-wrap; overflow-wrap: anywhere; }
+	:global(.contact-line) { padding: 10px 12px; border-radius: 12px; background: var(--blue-soft); color: var(--muted); font-size: 0.88rem; overflow-wrap: anywhere; }
+	:global(.admin-message-card footer) { display: flex; flex-wrap: wrap; gap: 8px; }
+	:global(.admin-message-card footer .danger) { color: #b42318; }
+	@media (max-width: 640px) {
+		.auth-card { grid-template-columns: 48px 1fr; }
+		.lock-icon { width: 48px; height: 48px; border-radius: 15px; }
+		.auth-card form { grid-template-columns: 1fr; }
+		.records-card > header { flex-direction: column; }
+		.admin-actions { display: grid; grid-template-columns: 1fr 1fr; }
+		.admin-actions .logout { grid-column: 1 / -1; margin-left: 0; }
+	}
+</style>

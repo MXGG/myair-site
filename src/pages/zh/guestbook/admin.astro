@@ -1,0 +1,28 @@
+---
+import BaseHead from '../../../components/BaseHead.astro';
+import Footer from '../../../components/Footer.astro';
+import GuestbookAdmin from '../../../components/GuestbookAdmin.astro';
+import Header from '../../../components/Header.astro';
+import { paths, site } from '../../../data/site';
+
+const lang = 'zh';
+const t = site[lang];
+---
+
+<!doctype html>
+<html lang={t.langCode}>
+	<head>
+		<BaseHead title={`留言记录管理 | ${t.title}`} description="私密留言记录管理页面。" lang={lang} alternateHref="/guestbook/admin/" />
+		<meta name="robots" content="noindex, nofollow, noarchive" />
+	</head>
+	<body>
+		<Header lang={lang} alternateHref="/guestbook/admin/" />
+		<main class="page-shell topic-page admin-page">
+			<nav class="breadcrumb" aria-label="面包屑导航"><a href={paths.zh.home}>首页</a><span>/</span><a href={paths.zh.guestbook}>留言板</a><span>/</span><span>记录管理</span></nav>
+			<GuestbookAdmin lang={lang} />
+		</main>
+		<Footer lang={lang} />
+	</body>
+</html>
+
+<style>.admin-page { min-height: 72vh; padding-bottom: 72px; }</style>
