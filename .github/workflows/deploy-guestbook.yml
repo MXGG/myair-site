@@ -57,14 +57,34 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Normalize Cloudflare API token
+        if: steps.credentials.outputs.ready == 'true'
+        env:
+          RAW_CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        shell: bash
+        run: |
+          node <<'NODE'
+          const { appendFileSync } = require('node:fs');
+          let token = String(process.env.RAW_CLOUDFLARE_API_TOKEN ?? '').trim();
+          const bearer = token.match(/(?:Authorization\s*:\s*)?Bearer\s+([A-Za-z0-9_.-]+)/i);
+          if (bearer) token = bearer[1];
+          token = token
+            .replace(/^CLOUDFLARE_API_TOKEN\s*=\s*/i, '')
+            .replace(/^["']|["']$/g, '')
+            .replace(/\s+/g, '');
+          if (!token || !/^[A-Za-z0-9_.-]+$/.test(token)) {
+            throw new Error('CLOUDFLARE_API_TOKEN does not contain a valid single-line token.');
+          }
+          console.log(`::add-mask::${token}`);
+          appendFileSync(process.env.GITHUB_ENV, `CLOUDFLARE_API_TOKEN=${token}\n`);
+          NODE
+
       - name: Install dependencies
         if: steps.credentials.outputs.ready == 'true'
         run: npm ci
 
       - name: Create or locate D1 database
         if: steps.credentials.outputs.ready == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: node scripts/bootstrap-guestbook-d1.mjs
 
       - name: Save D1 database ID
@@ -82,20 +102,15 @@ jobs:
 
       - name: Apply database migrations
         if: steps.credentials.outputs.ready == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: npm run guestbook:migrate
 
       - name: Deploy Worker
         if: steps.credentials.outputs.ready == 'true'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: npm run guestbook:deploy
 
       - name: Store Worker secrets
         if: steps.credentials.outputs.ready == 'true'
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GUESTBOOK_ADMIN_TOKEN: ${{ secrets.GUESTBOOK_ADMIN_TOKEN }}
         shell: bash
         run: |
