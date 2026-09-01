@@ -240,7 +240,11 @@ const copy = {
 		URL.revokeObjectURL(url);
 	};
 	const stamp = () => new Date().toISOString().replace(/[:.]/g, '-');
-	const csvCell = (value) => `"${String(value ?? '').replace(/"/g, '""')}"`;
+	const csvCell = (value) => {
+		const text = String(value ?? '');
+		const safe = /^\s*[=+\-@]/.test(text) ? `'${text}` : text;
+		return `"${safe.replace(/"/g, '""')}"`;
+	};
 	const exportRecords = (format) => {
 		if (!records.length) return;
 		if (format === 'json') {

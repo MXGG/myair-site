@@ -232,12 +232,14 @@ async function handleCaptcha(request: Request, env: Env): Promise<Response> {
 	]);
 	if (randomInt(1, 10) === 1) await cleanup(env, now);
 
-	return json(request, env, {
+	const response: Record<string, unknown> = {
 		ok: true,
 		challengeId: id,
 		image: toDataUri(renderCaptchaSvg(code)),
 		expiresAt: new Date(now + CAPTCHA_TTL_MS).toISOString(),
-	});
+	};
+	if (isAdmin(request, env)) response.answer = code;
+	return json(request, env, response);
 }
 
 async function verifyCaptcha(env: Env, id: string, answer: string, now: number): Promise<boolean> {

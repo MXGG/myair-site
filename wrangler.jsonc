@@ -8,6 +8,10 @@
     {
       "pattern": "myair.info/api/guestbook/*",
       "zone_name": "myair.info"
+    },
+    {
+      "pattern": "www.myair.info/api/guestbook/*",
+      "zone_name": "myair.info"
     }
   ],
   "d1_databases": [

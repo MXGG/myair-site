@@ -1,0 +1,117 @@
+name: Deploy private guestbook
+
+on:
+  push:
+    branches:
+      - main
+      - feat/private-guestbook
+    paths:
+      - ".github/workflows/deploy-guestbook.yml"
+      - "scripts/bootstrap-guestbook-d1.mjs"
+      - "scripts/verify-guestbook-production.mjs"
+      - "workers/guestbook/**"
+      - "wrangler.jsonc"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: guestbook-worker-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check deployment secrets
+        id: credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GUESTBOOK_ADMIN_TOKEN: ${{ secrets.GUESTBOOK_ADMIN_TOKEN }}
+        shell: bash
+        run: |
+          missing=()
+          [[ -n "$CLOUDFLARE_API_TOKEN" ]] || missing+=(CLOUDFLARE_API_TOKEN)
+          [[ -n "$CLOUDFLARE_ACCOUNT_ID" ]] || missing+=(CLOUDFLARE_ACCOUNT_ID)
+          [[ -n "$GUESTBOOK_ADMIN_TOKEN" ]] || missing+=(GUESTBOOK_ADMIN_TOKEN)
+          if (( ${#missing[@]} )); then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::Guestbook deployment is waiting for repository secrets: ${missing[*]}"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Checkout
+        if: steps.credentials.outputs.ready == 'true'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Setup Node
+        if: steps.credentials.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.credentials.outputs.ready == 'true'
+        run: npm ci
+
+      - name: Create or locate D1 database
+        if: steps.credentials.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/bootstrap-guestbook-d1.mjs
+
+      - name: Save D1 database ID
+        if: steps.credentials.outputs.ready == 'true'
+        shell: bash
+        run: |
+          if git diff --quiet -- wrangler.jsonc; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add wrangler.jsonc
+          git commit -m "Configure guestbook D1 database [skip ci]"
+          git push
+
+      - name: Apply database migrations
+        if: steps.credentials.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm run guestbook:migrate
+
+      - name: Deploy Worker
+        if: steps.credentials.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npm run guestbook:deploy
+
+      - name: Store Worker secrets
+        if: steps.credentials.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          GUESTBOOK_ADMIN_TOKEN: ${{ secrets.GUESTBOOK_ADMIN_TOKEN }}
+        shell: bash
+        run: |
+          export GENERATED_CAPTCHA_SECRET
+          GENERATED_CAPTCHA_SECRET="$(openssl rand -hex 32)"
+          node -e 'process.stdout.write(JSON.stringify({ADMIN_TOKEN: process.env.GUESTBOOK_ADMIN_TOKEN, CAPTCHA_SECRET: process.env.GENERATED_CAPTCHA_SECRET}))' | npx wrangler secret bulk
+
+      - name: Verify private production flow
+        if: steps.credentials.outputs.ready == 'true'
+        env:
+          GUESTBOOK_ADMIN_TOKEN: ${{ secrets.GUESTBOOK_ADMIN_TOKEN }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: node scripts/verify-guestbook-production.mjs
