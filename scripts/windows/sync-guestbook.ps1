@@ -34,6 +34,7 @@ function Get-SafeFileName {
         $safeName = $safeName.Replace([string]$character, "_")
     }
     $safeName = [regex]::Replace($safeName, "\s+", " ").Trim()
+	$safeName = [regex]::Replace($safeName, "[ .]+$", "")
     if ([string]::IsNullOrWhiteSpace($safeName)) { return "image" }
     if ($safeName.Length -gt 120) { return $safeName.Substring(0, 120) }
     return $safeName

@@ -46,6 +46,7 @@ try {
     throw "管理员口令验证失败，尚未创建计划任务。请确认口令正确后重试。详情：$($_.Exception.Message)"
 } finally {
     $plainToken = $null
+	$headers = $null
 }
 
 $taskName = "MyAirInfoGuestbookSync"

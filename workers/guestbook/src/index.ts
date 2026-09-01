@@ -314,6 +314,9 @@ async function parseSubmissionBody(request: Request): Promise<SubmissionBody | n
 			fields[key] = typeof value === 'string' ? value : '';
 		}
 		const images = data.getAll('images').filter((value): value is File => value instanceof File && value.size > 0);
+		const fieldBytes = Object.values(fields).reduce<number>((total, value) => total + encoder.encode(String(value ?? '')).byteLength, 0);
+		const imageBytes = images.reduce((total, image) => total + image.size, 0);
+		if (fieldBytes + imageBytes > MAX_REQUEST_BYTES) return null;
 		return { fields, images };
 	} catch {
 		return null;
