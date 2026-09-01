@@ -2,7 +2,11 @@
 
 The website sends private guestbook entries to a Cloudflare Worker mounted at `/api/guestbook/*`. D1 stores the records, one-time image CAPTCHA challenges, and short-lived hashed rate-limit events. No message-list endpoint is public.
 
-Each message may contain up to 3,000 lines. The form has no total character-count limit, while the API retains a 1 MB transport ceiling to protect the service from oversized requests.
+Each message may contain up to 8,000 lines. The form has no character-count field; the API retains a 26 MiB total request ceiling to protect the service from oversized requests.
+
+Up to four private JPEG, PNG, WebP, or GIF attachments are accepted per message, with a 5 MiB limit per image. Objects are stored in the private `myair-guestbook-images` R2 bucket and can only be fetched through an administrator-authenticated endpoint.
+
+The Windows helper in `scripts/windows` pulls new messages and attachments over HTTPS every two minutes. It stores records beneath `E:\myairinfo_logs` and keeps the administrator token encrypted with Windows DPAPI.
 
 GitHub Actions deploys the service without exposing credentials. Add these repository secrets before the first deployment:
 

@@ -23,6 +23,12 @@
       "migrations_dir": "workers/guestbook/migrations"
     }
   ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "myair-guestbook-images"
+    }
+  ],
   "vars": {
     "ALLOWED_ORIGINS": "https://myair.info,https://www.myair.info,http://localhost:4321,http://127.0.0.1:4321"
   },
