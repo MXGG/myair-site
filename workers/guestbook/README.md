@@ -7,8 +7,9 @@ Each message may contain up to 3,000 lines. The form has no total character-coun
 GitHub Actions deploys the service without exposing credentials. Add these repository secrets before the first deployment:
 
 - `CLOUDFLARE_API_TOKEN`: a scoped token with Workers Scripts, Workers Routes, and D1 edit permissions.
-- `CLOUDFLARE_ACCOUNT_ID`: the Cloudflare account that owns `myair.info`.
 - `GUESTBOOK_ADMIN_TOKEN`: a unique administrator passphrase of at least 24 random characters. This is the value entered on the administrator page.
+
+The non-secret Cloudflare account ID is recorded in `wrangler.jsonc` so deployment does not depend on copying it into a repository secret.
 
 The workflow creates or reuses the `myair-guestbook` D1 database, commits its non-secret database ID, applies migrations, deploys the Worker, and runs an end-to-end privacy check. It generates a new private CAPTCHA signing secret for each deployment; this can only invalidate CAPTCHA images opened during the deployment window.
 
