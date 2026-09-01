@@ -19,7 +19,7 @@
     {
       "binding": "DB",
       "database_name": "myair-guestbook",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "b45c2530-de0f-43d5-a2b7-a3db3a2e8b8b",
       "migrations_dir": "workers/guestbook/migrations"
     }
   ],
