@@ -17,14 +17,22 @@ const copy = {
 		message: 'Message',
 		messagePlaceholder: 'Share a question, suggestion, or note…',
 		lineUnit: 'lines',
-		lineLimitError: 'A message can contain at most 3,000 lines.',
+		lineLimitError: 'A message can contain at most 8,000 lines.',
+		messageSizeHint: 'UTF-8 text up to about 1.8 MB',
+		messageTooLarge: 'The message text must be about 1.8 MB or smaller.',
+		images: 'Private images (optional)',
+		imageHint: 'Up to 4 JPEG, PNG, WebP, or GIF images; 5 MB each.',
+		imageSelected: '{count} image(s) selected.',
+		tooManyImages: 'You can attach at most 4 images.',
+		imageTooLarge: 'Each image must be 5 MB or smaller.',
+		imageInvalid: 'Only genuine JPEG, PNG, WebP, or GIF images are accepted.',
 		captcha: 'Image verification',
 		captchaPlaceholder: 'Enter the code',
 		refresh: 'Refresh image',
 		submit: 'Send privately',
 		submitting: 'Sending…',
 		privacyTitle: 'Private by default',
-		privacy: 'Only the site owner can read and export this record. Your contact information is optional and will not appear publicly.',
+		privacy: 'Only the site owner can read, download, and export this record and its images. Nothing is shown publicly.',
 		loadingCaptcha: 'Loading image…',
 		captchaError: 'The verification image could not be loaded.',
 		captchaInvalid: 'The image code is incorrect or has expired. Please use the new image and try again.',
@@ -44,14 +52,22 @@ const copy = {
 		message: '留言内容',
 		messagePlaceholder: '可以填写问题、建议或想说的话……',
 		lineUnit: '行',
-		lineLimitError: '每条留言最多可以填写 3000 行。',
+		lineLimitError: '每条留言最多可以填写 8000 行。',
+		messageSizeHint: 'UTF-8 文本不超过约 1.8 MB',
+		messageTooLarge: '留言文本编码后不得超过约 1.8 MB。',
+		images: '私密图片（选填）',
+		imageHint: '最多 4 张，仅支持 JPEG、PNG、WebP、GIF；每张不超过 5 MB。',
+		imageSelected: '已选择 {count} 张图片。',
+		tooManyImages: '最多只能上传 4 张图片。',
+		imageTooLarge: '每张图片不得超过 5 MB。',
+		imageInvalid: '仅支持真实的 JPEG、PNG、WebP 或 GIF 图片。',
 		captcha: '图形验证码',
 		captchaPlaceholder: '输入图中字符',
 		refresh: '换一张',
 		submit: '私密提交',
 		submitting: '正在提交……',
 		privacyTitle: '默认私密',
-		privacy: '留言记录仅站点所有者可以查看和导出。联系方式为选填内容，不会向外公开。',
+		privacy: '留言、联系方式和图片仅站点所有者可以查看、下载和导出，均不会向外公开。',
 		loadingCaptcha: '正在加载验证码……',
 		captchaError: '验证码图片加载失败，请稍后重试。',
 		captchaInvalid: '验证码错误或已经过期，请根据新图片重新填写。',
@@ -90,7 +106,12 @@ const copy = {
 		<label>
 			<span>{copy.message}</span>
 			<textarea name="content" minlength="2" rows="7" placeholder={copy.messagePlaceholder} required></textarea>
-			<small><span data-line-count>0</span> / 3000 {copy.lineUnit}</small>
+			<small><span data-line-count>0</span> / 8000 {copy.lineUnit} · {copy.messageSizeHint}</small>
+		</label>
+		<label class="image-upload">
+			<span>{copy.images}</span>
+			<input name="images" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple />
+			<small data-image-summary>{copy.imageHint}</small>
 		</label>
 		<label class="honeypot" aria-hidden="true">
 			<span>Website</span>
@@ -129,9 +150,16 @@ const copy = {
 	const captchaImage = root?.querySelector('[data-captcha-image]');
 	const captchaLoading = root?.querySelector('[data-captcha-loading]');
 	const captchaRefresh = root?.querySelector('[data-captcha-refresh]');
-	const contentInput = form?.querySelector('[name="content"]');
-	const lineCount = root?.querySelector('[data-line-count]');
-	let challengeId = '';
+		const contentInput = form?.querySelector('[name="content"]');
+		const imagesInput = form?.querySelector('[name="images"]');
+		const imageSummary = root?.querySelector('[data-image-summary]');
+		const lineCount = root?.querySelector('[data-line-count]');
+	const MAX_LINES = 8000;
+	const MAX_MESSAGE_BYTES = 1_800_000;
+		const MAX_IMAGES = 4;
+		const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+		const IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+		let challengeId = '';
 
 	const setFormStatus = (message, tone = '') => {
 		if (!formStatus) return;
@@ -165,54 +193,100 @@ const copy = {
 	contentInput?.addEventListener('input', () => {
 		const lines = countLines(contentInput.value);
 		if (lineCount) lineCount.textContent = String(lines);
-		contentInput.setCustomValidity(lines > 3000 ? copy.lineLimitError : '');
-		if (lines > 3000) setFormStatus(copy.lineLimitError, 'error');
-		else if (formStatus?.dataset.tone === 'error' && formStatus.textContent === copy.lineLimitError) setFormStatus('');
-	});
-	captchaRefresh?.addEventListener('click', loadCaptcha);
+			contentInput.setCustomValidity(lines > MAX_LINES ? copy.lineLimitError : '');
+			if (lines > MAX_LINES) setFormStatus(copy.lineLimitError, 'error');
+			else if (formStatus?.dataset.tone === 'error' && formStatus.textContent === copy.lineLimitError) setFormStatus('');
+		});
+		const selectedImages = () => Array.from(imagesInput?.files || []);
+		const validateImages = () => {
+			const images = selectedImages();
+			if (images.length > MAX_IMAGES) return copy.tooManyImages;
+			if (images.some((file) => file.size > MAX_IMAGE_BYTES)) return copy.imageTooLarge;
+			if (images.some((file) => !IMAGE_TYPES.has(file.type))) return copy.imageInvalid;
+			return '';
+		};
+		imagesInput?.addEventListener('change', () => {
+			const error = validateImages();
+			imagesInput.setCustomValidity(error);
+			if (imageSummary) imageSummary.textContent = error || (selectedImages().length
+				? copy.imageSelected.replace('{count}', String(selectedImages().length))
+				: copy.imageHint);
+			if (error) setFormStatus(error, 'error');
+		});
+		captchaRefresh?.addEventListener('click', loadCaptcha);
 
 	form?.addEventListener('submit', async (event) => {
 		event.preventDefault();
-		const data = new FormData(form);
-		const payload = {
-			name: String(data.get('name') || '').trim(),
-			contact: String(data.get('contact') || '').trim(),
-			content: String(data.get('content') || '').trim(),
-			captchaId: challengeId,
-			captchaAnswer: String(data.get('captcha') || '').trim().toUpperCase(),
-			website: String(data.get('website') || ''),
-		};
-		if (!payload.name || !payload.content || !payload.captchaId || !payload.captchaAnswer) {
-			setFormStatus(copy.validationError, 'error');
-			return;
-		}
-		if (countLines(payload.content) > 3000) {
+			const data = new FormData(form);
+			const name = String(data.get('name') || '').trim();
+			const contact = String(data.get('contact') || '').trim();
+			const content = String(data.get('content') || '').trim();
+			const captchaAnswer = String(data.get('captcha') || '').trim().toUpperCase();
+			if (!name || !content || !challengeId || !captchaAnswer) {
+				setFormStatus(copy.validationError, 'error');
+				return;
+			}
+		if (countLines(content) > MAX_LINES) {
 			setFormStatus(copy.lineLimitError, 'error');
 			return;
 		}
+		if (new TextEncoder().encode(content).byteLength > MAX_MESSAGE_BYTES) {
+			setFormStatus(copy.messageTooLarge, 'error');
+			return;
+		}
+			const imageError = validateImages();
+			if (imageError) {
+				setFormStatus(imageError, 'error');
+				return;
+			}
+			data.set('name', name);
+			data.set('contact', contact);
+			data.set('content', content);
+			data.set('captchaId', challengeId);
+			data.set('captchaAnswer', captchaAnswer);
+			data.delete('captcha');
 		if (submitButton) {
 			submitButton.disabled = true;
 			submitButton.textContent = copy.submitting;
 		}
 		setFormStatus('');
 		try {
+			const hasImages = selectedImages().length > 0;
+			const requestHeaders = { Accept: 'application/json' };
+			let requestBody = data;
+			if (!hasImages) {
+				requestHeaders['Content-Type'] = 'application/json';
+				requestBody = JSON.stringify({
+					name,
+					contact,
+					content,
+					captchaId: challengeId,
+					captchaAnswer,
+					website: String(data.get('website') || ''),
+				});
+			}
 			const response = await fetch(`${API_BASE}/messages`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-				body: JSON.stringify(payload),
+				headers: requestHeaders,
+				body: requestBody,
 			});
 			const result = await response.json().catch(() => ({}));
 			if (!response.ok) {
 				const errorMessages = {
 					captcha_invalid: copy.captchaInvalid,
 					rate_limited: copy.rateLimited,
-					invalid_fields: copy.validationError,
+						invalid_fields: copy.validationError,
 					invalid_request: copy.requestTooLarge,
+					message_too_large: copy.messageTooLarge,
+						too_many_images: copy.tooManyImages,
+						image_too_large: copy.imageTooLarge,
+						image_invalid: copy.imageInvalid,
 				};
 				throw new Error(errorMessages[result.code] || copy.postError);
 			}
-			form.reset();
-			if (lineCount) lineCount.textContent = '0';
+				form.reset();
+				if (lineCount) lineCount.textContent = '0';
+				if (imageSummary) imageSummary.textContent = copy.imageHint;
 			setFormStatus(copy.success, 'success');
 			await loadCaptcha();
 		} catch (error) {
@@ -259,9 +333,12 @@ const copy = {
 		transition: border-color 160ms ease, box-shadow 160ms ease;
 	}
 	.guestbook-form input { min-height: 46px; padding: 0 14px; }
+	.guestbook-form input[type='file'] { height: auto; padding: 10px 12px; cursor: pointer; }
 	.guestbook-form textarea { min-height: 158px; padding: 12px 14px; resize: vertical; line-height: 1.65; }
 	.guestbook-form input:focus, .guestbook-form textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--blue-soft); }
 	.guestbook-form label small { justify-self: end; color: var(--muted); font-size: 0.82rem; }
+	.image-upload { padding: 16px; border: 1px dashed var(--line); border-radius: 16px; background: color-mix(in srgb, var(--blue-soft) 35%, transparent); }
+	.image-upload small { justify-self: start !important; }
 	.honeypot { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
 	.verification-row { align-items: stretch; }
 	.captcha-field { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }

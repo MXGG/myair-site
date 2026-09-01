@@ -11,9 +11,10 @@
     "preview": "astro preview",
 	"astro": "astro",
 	"typecheck": "tsc --noEmit",
-	"guestbook:check": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
-	"guestbook:migrate": "wrangler d1 migrations apply myair-guestbook --remote",
-	"guestbook:deploy": "wrangler deploy"
+		"guestbook:check": "wrangler deploy --dry-run --outdir .wrangler/dry-run",
+		"guestbook:migrate": "wrangler d1 migrations apply myair-guestbook --remote",
+		"guestbook:r2": "node scripts/bootstrap-guestbook-r2.mjs",
+		"guestbook:deploy": "wrangler deploy"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.6",

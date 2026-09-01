@@ -5,9 +5,11 @@ on:
     branches:
       - main
       - feat/private-guestbook
+      - feat/guestbook-image-sync
     paths:
       - ".github/workflows/deploy-guestbook.yml"
       - "scripts/bootstrap-guestbook-d1.mjs"
+      - "scripts/bootstrap-guestbook-r2.mjs"
       - "scripts/verify-guestbook-production.mjs"
       - "workers/guestbook/**"
       - "wrangler.jsonc"
@@ -86,6 +88,10 @@ jobs:
       - name: Create or locate D1 database
         if: steps.credentials.outputs.ready == 'true'
         run: node scripts/bootstrap-guestbook-d1.mjs
+
+      - name: Create or locate private R2 bucket
+        if: steps.credentials.outputs.ready == 'true'
+        run: node scripts/bootstrap-guestbook-r2.mjs
 
       - name: Save D1 database ID
         if: steps.credentials.outputs.ready == 'true'
